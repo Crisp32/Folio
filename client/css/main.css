@@ -1,0 +1,281 @@
+/*
+ * Folio Main CSS File
+ * Connell Reffo 2019
+ */
+
+@import url("https://fonts.googleapis.com/css?family=Ubuntu&display=swap");
+@import url("https://fonts.googleapis.com/css?family=Ubuntu+Mono&display=swap");
+
+/* Tags */
+body {
+  background-color: #252529;
+  color: lightgrey;
+  font-family: 'Ubuntu', sans-serif;
+  margin: auto;
+}
+
+/* IDs */
+#content {
+	display: none;
+}
+
+#loading-info {
+	display: block;
+	font-family: 'Ubuntu Mono', monospace;
+	font-size: 60px;
+	text-align: center;
+	margin-top: 50%;
+}
+
+div#top-bar {
+  background-color: #2f2f33;
+  border-bottom: 3px solid #3c3c42;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+  display: inline-block;
+  width: 100%;
+}
+
+#top-buttons {
+  margin-right: 10px;
+  float: right;
+}
+
+/* Classes */
+.side-logo {
+  color: lightgrey;
+  display: inline-block;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 20px;
+  margin-left: 20px;
+  margin-top: 25px;
+  position: absolute;
+}
+
+.dev-name {
+  margin-bottom: -5px;
+}
+
+.input-field {
+  background-color: #29292e;
+  border: 3px solid #29292e;
+  border-radius: 3px;
+  box-shadow: 0 6px 0px 0px #1e1e24;
+  color: white;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 20px;
+  margin-top: 10px;
+  transition: 0.3s;
+  padding: 5px;
+  width: 100%;
+}
+
+.input-field:focus {
+  background-color: #1e1e24;
+  border-color: #1e1e24;
+  box-shadow: 0 0px 0px 0px #1e1e24;
+  transform: translate(0, 6px);
+  transition: 0.3s;
+}
+
+.second-input {
+  margin-top: 17px;
+}
+
+div.form-header {
+  background-color: white;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: 3px solid #3c3c42;
+  width: 100%;
+  height: 15%;
+}
+
+.header-text {
+  color: #1a1a1a;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 40px;
+  margin: auto;
+  padding-top: 30px;
+  letter-spacing: 2px;
+  transition: 0.3s;
+}
+
+.header-text:hover {
+  color: darkgrey;
+  letter-spacing: 6px;
+  transition: 0.3s;
+}
+
+.reg-page {
+  text-align: center;
+  margin: auto;
+}
+
+.side-info > ul {
+  color: lightgrey;
+  font-family: 'Ubuntu Mono', monospace;
+  list-style-type: none;
+  padding: 0;
+}
+
+.side-info > ul > li {
+  background-color: #29292e;
+  border: 3px solid #29292e;
+  box-shadow: 0 6px 0px 0px #1e1e24;
+  border-radius: 5px;
+  text-align: left;
+  margin: auto;
+  margin-bottom: 30px;
+  padding: 10px;
+  padding-right: 15px;
+  transform: translate(0, 0);
+  transition: 0.25s;
+  width: 104%;
+}
+
+.side-info > ul > li:hover {
+  color: goldenrod;
+  transition: 0.25s;
+}
+
+.p-header {
+  color: white;
+  font-family: 'Ubuntu', sans-serif;
+  font-size: 20px;
+  text-align: left;
+  transition: 0.3s;
+  letter-spacing: 1.5px;
+  margin: auto;
+  margin-top: 20px;
+  margin-left: 40px;
+  width: 80%;
+}
+
+.p-header:focus-within {
+  color: #787878;
+  transition: 0.3s;
+}
+
+.dropdown {
+  cursor: pointer;
+  width: 104%;
+}
+
+.ver-txt {
+  color: #20d7da;
+  margin-bottom: -10px;
+}
+
+div.bullet-point {
+	color: #f53643;
+	display: inline-block;
+}
+  
+button.standard-button {
+	border-radius: 3px;
+	background-color: #29292e;
+	border: 3px solid #29292e;
+	box-shadow: 0 6px 0px 0px #1e1e24;
+	color: #adadad;
+	font-family: 'Ubuntu Mono', monospace;
+	font-size: 20px;
+	padding: 10px;
+	margin-top: 30px;
+	transition: 0.3s;
+	transform: translate(0, 0px);
+}
+  
+button.standard-button:hover {
+	cursor: pointer;
+	background-color: #1e1e24;
+	border-color: #1e1e24;
+	box-shadow: 0 0px 0px 0px #1e1e24;
+	color: white;
+	transition: 0.3s;
+	transform: translate(0, 6px);
+}
+  
+button.reg-button {
+	color: white;
+	background-color: #1a1a1a;
+	border-color: #1a1a1a;
+	box-shadow: 0 6px 0px 0px #131313;
+	margin-left: 17px;
+	margin-top: 40px;
+	transition: 0.3s;
+	width: 83%; }
+  
+button.reg-button:hover {
+	color: white;
+	cursor: pointer;
+	background-color: #131313;
+	border-color: #131313;
+	box-shadow: 0 0px 0px 0px #131313;
+	transition: 0.3s;
+	transform: translate(0, 6px);
+}
+  
+.inl {
+	margin-right: 20px;
+}
+  
+h1.header {
+	color: white;
+	text-align: left;
+	padding-left: 10px;
+	display: inline-block;
+	font-size: 50px;
+	margin-bottom: 20px;
+	margin-top: 20px;
+	margin-left: 10px;
+}
+
+/* Side Info for Large Screens */
+@media (min-width: 1300px) {
+  div.form-container {
+    background-color: #2f2f33;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+    display: inline-block;
+    text-align: center;
+    margin: auto;
+    margin-bottom: 30px;
+    margin-left: 300px;
+    margin-top: 70px;
+    height: 660px;
+    width: 500px; }
+
+  .side-info {
+    display: inline-block;
+    position: absolute;
+    font-size: 30px;
+    margin-left: -280px;
+	margin-top: 250px;
+	}
+}
+
+@media (max-width: 1300px) {
+  .side-info {
+    display: inline-block;
+    font-size: 30px;
+    position: absolute;
+    margin-top: 670px;
+    margin-left: -250px; }
+
+  .form-container {
+    background-color: #2f2f33;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+    text-align: center;
+    margin: auto;
+    margin-bottom: 30px;
+    margin-top: 70px;
+    height: 660px;
+	width: 500px;
+	}
+}
+
+/* Webkit */
+::-webkit-input-placeholder {
+  color: #3c3c42;
+}
