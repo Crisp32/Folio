@@ -72,8 +72,8 @@ else {
     $mail->isSMTP();
     $mail->Host = "smtp.gmail.com";
     $mail->SMTPAuth = true;
-    $mail->Username = "chromacorn52@gmail.com";
-    $mail->Password = "majestic23";
+    $mail->Username = "foliowebapp@gmail.com";
+    $mail->Password = "phpapp2328";
     $mail->Port = 465;
     $mail->SMTPSecure = "ssl";
 
