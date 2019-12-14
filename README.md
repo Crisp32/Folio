@@ -1,2 +1,2 @@
 # Folio
-A web app that allows people can share their experiences, view others' profile, and join communities
+A web app where users can share their experiences, view others' profile, and join communities
