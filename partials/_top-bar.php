@@ -6,7 +6,16 @@
 	</div>
 
 	<div id="top-buttons" >
-		<button class="standard-button inl" >Login</button>
-		<button class="standard-button inl" onclick="location.replace('/register.php')" >Register</button>
+		<?php
+
+		if ($_SERVER['REQUEST_URI'] != "/login.php") {
+			echo '<button class="standard-button inl" >Login</button>';
+		}
+
+		if ($_SERVER['REQUEST_URI'] != "/register.php") {
+			echo '<button class="standard-button inl" onclick="location.replace(\'/register.php\')" >Register</button>';
+		}
+
+		?>
 	</div>
 </div>

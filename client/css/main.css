@@ -201,9 +201,10 @@ button.reg-button {
 	border-color: #1a1a1a;
 	box-shadow: 0 6px 0px 0px #131313;
 	margin-left: 17px;
-	margin-top: 40px;
-	transition: 0.3s;
-	width: 83%; }
+  margin-top: 35px;
+  margin-bottom: 5px;
+	transition: 0.25s;
+	width: calc(83% + 1px); }
   
 button.reg-button:hover {
 	color: white;
@@ -211,7 +212,7 @@ button.reg-button:hover {
 	background-color: #131313;
 	border-color: #131313;
 	box-shadow: 0 0px 0px 0px #131313;
-	transition: 0.3s;
+	transition: 0.25s;
 	transform: translate(0, 6px);
 }
   
@@ -230,6 +231,64 @@ h1.header {
 	margin-left: 10px;
 }
 
+.clientm {
+  transform: translate(0, 200px);
+  transition: transform 0.4s ease;
+  text-align: center;
+  bottom: 30px;
+  margin: auto;
+  position: fixed;
+  width: 100%;
+}
+
+button.clientm-success {
+  color: lightgrey;
+  background-color: #34c24e;
+  box-shadow: 0 6px 0px 0px #29943d, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.5);
+  border: 3px solid #34c24e;
+  border-radius: 3px;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 20px;
+  transform: translate(0, 0);
+  transition: 0.3s, color 0.2s;
+  padding: 10px;
+  margin: auto;
+  width: 300px;
+}
+
+button.clientm-success:hover {
+	cursor: pointer;
+	background-color: #29943d;
+	border-color: #29943d;
+	box-shadow: 0 0px 0px 0px #29943d, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.5);
+	transition: 0.3s;
+	transform: translate(0, 6px);
+}
+
+button.clientm-fail {
+  color: lightgrey;
+  background-color: #c23434;
+  box-shadow: 0 6px 0px 0px #8f2828, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.5);
+  border: 3px solid #c23434;
+  border-radius: 3px;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 20px;
+  transform: translate(0, 0);
+  transition: 0.3s;
+  padding: 10px;
+  margin: auto;
+  width: 300px;
+}
+
+button.clientm-fail:hover {
+	cursor: pointer;
+	background-color: #8f2828;
+	border-color: #8f2828;
+	box-shadow: 0 0px 0px 0px #8f2828, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.5);
+	transition: 0.3s;
+	transform: translate(0, 6px);
+}
+
 /* Side Info for Large Screens */
 @media (min-width: 1300px) {
   div.form-container {
@@ -242,7 +301,7 @@ h1.header {
     margin-bottom: 30px;
     margin-left: 300px;
     margin-top: 70px;
-    height: 660px;
+    height: 680px;
     width: 500px; }
 
   .side-info {
@@ -250,7 +309,7 @@ h1.header {
     position: absolute;
     font-size: 30px;
     margin-left: -280px;
-	margin-top: 250px;
+	  margin-top: 250px;
 	}
 }
 
@@ -270,9 +329,34 @@ h1.header {
     margin: auto;
     margin-bottom: 30px;
     margin-top: 70px;
-    height: 660px;
-	width: 500px;
+    height: 680px;
+	  width: 500px;
 	}
+}
+
+.inner-info {
+  display: block;
+  position: absolute;
+  font-size: 30px;
+  transform: translate(25px, 180px);
+  margin: 0;
+  width: 400px;
+}
+
+.skip-reg {
+  color: lightgrey;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 18px;
+  text-decoration: none;
+  transform: translateX(calc(50% + 20px));
+  transition: 0.15s;
+  width: 230px;
+}
+
+.skip-reg:hover {
+  color: goldenrod;
+  cursor: pointer;
+  transition: 0.15s;
 }
 
 /* Webkit */

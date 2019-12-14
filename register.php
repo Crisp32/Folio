@@ -1,10 +1,10 @@
 <?php
-  include "utils/accounting.php";
+  include "utils/app_main.php";
 ?>
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en" >
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
@@ -32,14 +32,14 @@
         </div> 
 
         <div class="form-container" >
-          <div class="form-header" ><h2 class="header-text" >{ Register }</h2></div>
+          <div class="form-header" ><h2 class="header-text" >Register</h2></div>
           <div id="reg-form" >
             <br />
             <div class="p-header" >Personal Data
-              <input type="text" class="input-field" id="email" placeholder="Example@domain.com" />
+              <input type="text" class="input-field" id="email" placeholder="Email Address" />
               <select type="text" class="input-field dropdown second-input" id="location" >
                 <option default value="" >Account Location</option>
-                <?php echo getLocationOptionsHtml(); ?>
+                <?php echo fetchLocationsHtml(); ?>
               </select>
             </div>
             <br />
@@ -52,10 +52,14 @@
               <input type="password" class="input-field second-input" id="conf-pass" placeholder="Confirm Password" />
             </div>
 
-            <button class="standard-button inl reg-button" onclick="sendRegisterData()" >Register</button>
+            <button class="standard-button inl reg-button" onclick="register()" >Send Verification Code</button>
+            <br /><br />
+            <a class="skip-reg" href="javascript:verifyPage()" >I Already have a Code <div class="bullet-point" >-&gt;</div></a>
           </div>
         </div>
       </div>
+
+      <?php require("partials/_client-msg.php"); ?>
 
     </div>
   </body>
