@@ -4,7 +4,8 @@
  * Connell Reffo 2019
  */
 
-include "app_main.php";
+session_start();
+include_once "app_main.php";
 
 // Get Input
 $username = $_REQUEST["username"];
@@ -17,24 +18,31 @@ $userExists = getUserData($db, "username", "username='$username'");
 $userPass = getUserData($db, "password", "username='$username'");
 $userVerified = getUserData($db, "verified", "username='$username'");
 
-$hashedPass = password_hash($password, PASSWORD_BCRYPT, array("cost" => 11));
-
 // Validate Input
-if ($userVerified != 0) {
-    if (!empty($username)) {
+if (!empty($username)) {
+    // Check Password
+    if (!empty($password)) {
 
-        // Check Password
-        if (!empty($password)) {
+        // Validate Credentials with DB
+        if (!empty($userExists)) {
 
-            // Validate Credentials with DB
-            if (!empty($userExists)) {
+            // Check if Verified
+            if ($userVerified == 0) {
+                echo json_encode(array(
+                    "success" => false,
+                    "message" => "$username is not yet Verified"
+                ));
+            }
+            else {
 
                 // Check for Matching Password
-                if ($hashedPass == $userPass) {
+                if (password_verify($password, $userPass)) {
                     echo json_encode(array(
-                        "success" => false,
+                        "success" => true,
                         "message" => "Successfully logged in as $username"
                     ));
+
+                    $_SESSION["user"] = getUserData($db, "uid", "username='$username'");
                 }
                 else {
                     echo json_encode(array(
@@ -42,32 +50,26 @@ if ($userVerified != 0) {
                         "message" => "Incorrect Password"
                     ));
                 }
-            }
-            else {
-                echo json_encode(array(
-                    "success" => false,
-                    "message" => "There is no Account with the Specified Name"
-                ));
-            }
+            }       
         }
         else {
             echo json_encode(array(
                 "success" => false,
-                "message" => "Invalid Password"
+                "message" => "There is no Account with the Specified Name"
             ));
         }
     }
     else {
         echo json_encode(array(
             "success" => false,
-            "message" => "Invalid Username"
+            "message" => "Invalid Password"
         ));
     }
 }
 else {
     echo json_encode(array(
         "success" => false,
-        "message" => "$username is not yet verified"
+        "message" => "Invalid Username"
     ));
 }
 

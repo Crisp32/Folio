@@ -44,10 +44,16 @@ if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         "message" => "Invalid Email"
     ));
 }
-else if (empty($username)) {
+else if (empty($username) || $username != strip_tags($username)) {
     echo json_encode(array(
         "success" => false,
         "message" => "Invalid Username"
+    ));
+}
+else if (strpos($username, " ") !== false) {
+    echo json_encode(array(
+        "success" => false,
+        "message" => "Username cannot contain Spaces"
     ));
 }
 else if (strlen($username) > $maxChars) {
@@ -56,7 +62,7 @@ else if (strlen($username) > $maxChars) {
         "message" => "Username is too Long (Maximum $maxChars Characters)"
     ));
 }
-else if (empty($password) || empty($confPass)) {
+else if (empty($password) || empty($confPass) || $password != strip_tags($password) || $confPass != strip_tags($confPass)) {
     echo json_encode(array(
         "success" => false,
         "message" => "Invalid Password(s)"

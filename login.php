@@ -1,5 +1,10 @@
 <?php
-  include "utils/app_main.php";
+
+// Prevent Already Logged in Users from Visiting
+if (isset($_SESSION["user"])) {
+  header("Location: index.php");
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -33,7 +38,7 @@
             </div>
             <br />
             <div class="p-header" >Password
-              <input type="password" class="input-field" id="pass" placeholder="Password" />
+              <input type="password" class="input-field" id="login-pass" placeholder="Password" />
             </div>
 
             <button class="standard-button inl reg-button" onclick="login()" >Login</button>

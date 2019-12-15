@@ -8,12 +8,21 @@
 	<div id="top-buttons" >
 		<?php
 
-		if ($_SERVER['REQUEST_URI'] != "/login.php") {
-			echo '<button class="standard-button inl" onclick="location.replace(\'/login.php\')" >Login</button>';
-		}
+		session_start();
 
-		if ($_SERVER['REQUEST_URI'] != "/register.php") {
-			echo '<button class="standard-button inl" onclick="location.replace(\'/register.php\')" >Register</button>';
+		if (isset($_SESSION["user"])) {
+			$user = $_SESSION["user"];
+
+			require("_user-info-bar.php");
+		}
+		else {
+			if ($_SERVER['REQUEST_URI'] != "/login.php") {
+				echo '<button class="standard-button inl" onclick="location.replace(\'/login.php\')" >Login</button>';
+			}
+	
+			if ($_SERVER['REQUEST_URI'] != "/register.php" && $_SERVER['REQUEST_URI'] != "/login.php") {
+				echo '<button class="standard-button inl" onclick="location.replace(\'/register.php\')" >Register</button>';
+			}
 		}
 
 		?>
