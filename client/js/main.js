@@ -43,13 +43,104 @@ function register() {
             }
         },
         error: function(err) {
-            console.log("Error: " + err);
+            popUp("clientm-fail", "Server Request Error: " + err);
         }
     });
 }
 
+function resendVerification() {
+
+    // Get User Input
+    let user = $("#resend-to").val();
+
+    // Send Request
+    $.ajax({
+        type: "POST",
+        url: "../../utils/resend_code.php",
+        dataType: "json",
+        data: {
+            uname: user
+        },
+        success: function(res) {
+            // Display Success/Error to user
+            if (res.success) {
+                popUp("clientm-success", res.message);
+            }
+            else {
+                popUp("clientm-fail", res.message);
+            }
+        },
+        error: function(err) {
+            popUp("clientm-fail", "Server Request Error: " + err);
+        }
+    });
+}
+
+// Final Verification Step for registration
+function verifyAccount() {
+
+    // Get User Input
+    let user = $("#resend-to").val();
+    let code = $("#vcode").val();
+
+    // Send Request
+    $.ajax({
+        type: "POST",
+        url: "../../utils/verify_user.php",
+        dataType: "json",
+        data: {
+            uname: user,
+            code: code
+        },
+        success: function(res) {
+            // Display Success/Error to user
+            if (res.success) {
+                popUp("clientm-success", res.message);
+            }
+            else {
+                popUp("clientm-fail", res.message);
+            }
+        },
+        error: function(err) {
+            popUp("clientm-fail", "Server Request Error: " + err);
+        }
+    });
+}
+
+// Load Verification Prompt
 function verifyPage() {
     $("#reg-form").load("../../partials/_verify-code.php .verify-code");
+}
+
+// Login Function
+function login() {
+
+    // Get User Input
+    let username = $("#username").val();
+    let password = $("#pass").val();
+
+    // Send Request
+    $.ajax({
+        type: "POST",
+        url: "../../utils/login_user.php",
+        dataType: "json",
+        data: {
+            username: username,
+            password: password
+        },
+        success: function(res) {
+            // Display Success/Error to user
+            if (res.success) {
+                popUp("clientm-success", res.message);
+            }
+            else {
+                popUp("clientm-fail", res.message);
+            }
+        },
+        error: function(err) {
+            popUp("clientm-fail", "Server Request Error: " + err);
+        }
+    });
 }
 
 // Server to Client message/error box

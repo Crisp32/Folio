@@ -9,7 +9,7 @@
 		<?php
 
 		if ($_SERVER['REQUEST_URI'] != "/login.php") {
-			echo '<button class="standard-button inl" >Login</button>';
+			echo '<button class="standard-button inl" onclick="location.replace(\'/login.php\')" >Login</button>';
 		}
 
 		if ($_SERVER['REQUEST_URI'] != "/register.php") {

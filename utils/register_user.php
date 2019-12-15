@@ -4,6 +4,7 @@
  * Connell Reffo 2019
  */
 
+include_once "app_main.php";
 
 // Init PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
@@ -11,6 +12,9 @@ use PHPMailer\PHPMailer\PHPMailer;
 require_once("../PHPMailer/PHPMailer.php");
 require_once("../PHPMailer/SMTP.php");
 require_once("../PHPMailer/Exception.php");
+
+// Init DB
+$db = new SQLite3("../db/folio.db");
 
 // Authenticate Input
 $email = $_REQUEST["email"];
@@ -21,6 +25,18 @@ $confPass = $_REQUEST["confPass"];
 
 $maxChars = 20;
 $minPass = 6;
+
+// Insertion Query
+if (empty($location)) {
+    $location = "Unknown";
+}
+
+$code = generateVerificationCode(); // Generate Verification Code
+$passHash = password_hash($password, PASSWORD_BCRYPT, array("cost" => 11));
+$query = "INSERT INTO
+    users(username, email, accountLocation, password, verificationCode, verified) 
+    VALUES('$username', '$email', '$location', '$passHash', '$code', '0')
+";
 
 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(array(
@@ -65,31 +81,52 @@ else if (strlen($password) < $minPass) {
     ));
 }
 else {
+    // Create Account and Send Auth info
     $mail = new PHPMailer();
-    $code = "69";
 
-    // SMTP Settings
-    $mail->isSMTP();
-    $mail->Host = "smtp.gmail.com";
-    $mail->SMTPAuth = true;
-    $mail->Username = "foliowebapp@gmail.com";
-    $mail->Password = "phpapp2328";
-    $mail->Port = 465;
-    $mail->SMTPSecure = "ssl";
+    // Send Email
+    initPHPMailer($mail, $email);
 
-    // Email Settings
-    $mail->isHTML(true);
-    $mail->setFrom($email, $mail->Username);
-    $mail->addAddress($email);
     $mail->Subject = "Folio Verification Code";
-    $mail->Body = "<h2>Hello $username, your verification code is: </h2><h1>$code</h1>";
+    $mail->Body = "
+    <body style='background-color: #252529; padding: 20px; border: 7px solid #252529; border-radius: 7px' >
+        <h2 style='color: white; position: absolute; margin: auto' >Hello $username, your verification code is: </h2>
+        <h1 style='color: #f53643; font-size: 40px; margin-top: 5px; position: absolute' >$code</h1>
+    </body>
+    ";
 
-    if ($mail->send() && $codeSent != "1") {
-        echo json_encode(array(
-            "success" => true,
-            "verify" => true,
-            "message" => "Sent Email Verifaction to " . substr($email, 0, 23)
-        ));
+    // Send Code
+    if ($mail->send()) {
+
+        // Create User
+        if (!empty(getUserData($db, "username", "username='$username'"))) {
+            // Check for duplicate usernames
+            echo json_encode(array(
+                "success" => false,
+                "message" => "An Account with that Username already exists"
+            ));
+        }
+        else if (!empty(getUserData($db, "email", "email='$email'"))) {
+            // Check for duplicate emails
+            echo json_encode(array(
+                "success" => false,
+                "message" => "An Account with that Email already exists"
+            ));
+        }
+        else if (!insertUser($db, $query)) { // Execute Query
+            echo json_encode(array(
+                "success" => false,
+                "message" => "Database Error"
+            ));
+        }
+        else {
+            // Send Successful Response
+            echo json_encode(array(
+                "success" => true,
+                "verify" => true,
+                "message" => "Sent Email Verifaction to " . substr($email, 0, 23)
+            ));
+        }
     }
     else {
         echo json_encode(array(
@@ -97,6 +134,11 @@ else {
             "message" => substr($mail->ErrorInfo, 0, 40) . "..."
         ));
     }
+}
+
+function insertUser($db, $query) { 
+    $result = $db->query($query);
+    return $result;
 }
 
 ?>
