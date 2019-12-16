@@ -1,10 +1,12 @@
 <?php
-  include "utils/app_main.php";
+include "utils/app_main.php";
 
-  // Prevent Already Logged in Users from Visiting
-  if (isset($_SESSION["user"])) {
-    header("Location: index.php");
-  }
+// Prevent Already Logged in Users from Visiting
+session_start();
+
+if (isset($_SESSION["user"])) {
+  header("Location: index.php");
+}
 ?>
 
 <!DOCTYPE html>

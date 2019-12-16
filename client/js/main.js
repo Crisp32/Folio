@@ -3,6 +3,8 @@
  * Connell Reffo 2019
  */
 
+let show = false;
+
 // Display loading until page loads
 window.onload = function() {
     $("#content").css("display", "block");
@@ -14,6 +16,18 @@ window.onload = function() {
             login();
         }
     });
+
+    // Close Account Options when clicked Out
+    if (document.getElementById("acc-options") != null) {
+        this.document.addEventListener("click", function(e) {   
+            if (!document.getElementById("open-options").contains(e.target)) {
+                if (!document.getElementById("acc-options").contains(e.target)) {
+                    show = !show;
+                    hideOptions();
+                }
+            }
+        });
+    }
 }
 
 // Sign Up Request
@@ -157,6 +171,23 @@ function login() {
     });
 }
 
+// Logout Function
+function logout() {
+
+    // Send Logout Request
+    $.ajax({
+        type: "POST",
+        url: "../../utils/logout_user.php",
+        dataType: "json",
+        success: function(res) {
+            location.reload();
+        },
+        error: function(err) {
+            popUp("clientm-fail", "Server Request Error: " + err, null);
+        }
+    });
+}
+
 // Server to Client message/error box
 function popUp(cssClass, content, onclickHyperlink) {
 
@@ -181,4 +212,24 @@ function popDown() {
     let element = $("div.clientm");
 
     element.css("transform", "translate(0, 200px)");
+}
+
+// Account Options Hide/Show Functionality
+function toggleOptions() {
+    show = !show;
+
+    if (show) {
+        showOptions();
+    }
+    else {
+        hideOptions();
+    }
+}
+
+function showOptions() {
+    $(".account-options").css("display", "block");
+}
+
+function hideOptions() {
+    $(".account-options").css("display", "none");
 }

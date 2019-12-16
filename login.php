@@ -1,6 +1,8 @@
 <?php
 
 // Prevent Already Logged in Users from Visiting
+session_start();
+
 if (isset($_SESSION["user"])) {
   header("Location: index.php");
 }

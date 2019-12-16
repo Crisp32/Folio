@@ -315,6 +315,7 @@ button.clientm-fail:hover {
 }
 
 .profile-username-bar {
+  color: white;
   font-size: 25px;
   margin-left: 50px;
   padding: 3px;
@@ -322,6 +323,48 @@ button.clientm-fail:hover {
 
 .profile-bar-container {
   margin-top: -5px;
+}
+
+.options-container-bubble {
+  transform: translate(100px, -110px);
+  position: absolute;
+  pointer-events: none;
+	border: 35px solid transparent;
+	border-bottom-color: #1a1a1c;
+  border-top: 0;
+  height: 80px;
+  z-index: -10;
+}
+
+.account-options {
+  background-color: #1a1a1c;
+  border-radius: 3px;
+  box-shadow: 0 6px 0px 0px #151517, 0 6px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+  display: none;
+  transform: translate(20px, 30px);
+  padding-top: 7px;
+  position: absolute;
+  height: auto;
+  width: 200px;
+  z-index: 2;
+}
+
+.account-options > .skip-reg > .bullet-point {
+  padding-left: 15px;
+}
+
+.account-option {
+  display: inline-block;
+  text-align: left;
+  padding: 8px;
+  margin-left: 6px;
+}
+
+.close-options {
+  margin-bottom: -6px;
+  margin-left: 9px;
+  transform: translateY(-15px);
+  width: 180px;
 }
 
 /* Side Info for Large Screens */

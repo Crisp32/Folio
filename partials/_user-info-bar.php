@@ -18,7 +18,17 @@ if (empty($profileImage)) {
 
 ?>
 
-<div class="profile-bar-container" >
+<div class="profile-bar-container" id="open-options" >
     <img src="<?php echo $profileImage; ?>" class="profile-image-bar" />
-    <button class="standard-button inl profile-username-btn" onclick="" ><div class="profile-username-bar" ><?php echo $username; ?></div></button>
+    <button class="standard-button inl profile-username-btn" onclick="toggleOptions()" ><div class="profile-username-bar" ><?php echo $username; ?></div></button>
+    
+    <div class="account-options" id="acc-options" >
+        <div class="options-container-bubble" ></div>
+
+        <a class="skip-reg" href="/index.php" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Home</div></a><br />
+        <a class="skip-reg" href="" ><div class="bullet-point" >-&gt;</div><div class="account-option" > My Profile</div></a><br />
+        <a class="skip-reg" href="javascript: logout()" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Logout</div></a>
+
+        <br/><button class="standard-button close-options" onclick="toggleOptions()" >Close</button>
+    </div>
 </div>
