@@ -44,7 +44,7 @@ if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         "message" => "Invalid Email"
     ));
 }
-else if (empty($username) || $username != strip_tags($username)) {
+else if (empty($username) || $username != strip_tags($username) || filter_var($username, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(array(
         "success" => false,
         "message" => "Invalid Username"

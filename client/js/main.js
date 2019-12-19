@@ -3,8 +3,6 @@
  * Connell Reffo 2019
  */
 
-let show = false;
-
 // Display loading until page loads
 window.onload = function() {
     $("#content").css("display", "block");
@@ -17,16 +15,83 @@ window.onload = function() {
         }
     });
 
-    // Close Account Options when clicked Out
-    if (document.getElementById("acc-options") != null) {
-        this.document.addEventListener("click", function(e) {   
+    // Search bar Functionality
+    $("#user-search").keyup(function(e) {
+
+        let term = $("#user-search").val();
+
+        // Get Search Result from Server
+        $.ajax({
+            type: "POST",
+            url: "../../utils/search.php",
+            dataType: "json",
+            data: {
+                term: term
+            },
+            success: function(res) {
+                // Display Results
+                if (term != "" && term != null) {
+                    let html = "";
+                    let htmlEmpty = '<div class="res-empty" >Nothing to see Here</div>';
+                    let index = 0;
+
+                    for (let key in res) {
+                        if (res[key].type === "user") {
+                            if (index != res.length - 1) {
+                                html += '<div class="res-item underline" ><a href="/profile.php?uquery=' + res[key].name + '" ><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' (user)</a></div><img class="res-img" src="' + res[key].profileImage + '" >';
+                            }
+                            else {
+                                html += '<div class="res-item" ><a href="/profile.php?uquery=' + res[key].name + '" ><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' (user)</a></div><img class="res-img res-img-undl" src="' + res[key].profileImage + '" >';
+                            }                       
+                        }
+                        index++;
+                    }
+
+                    if (html != null && html != "") {
+                        $("#search-res").html(html);
+                    }
+                    else {
+                        $("#search-res").html(htmlEmpty);
+                    }
+                }
+                else {
+                    $("#search-res").empty();
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Server Request Error: " + err, null);
+            }
+        });
+
+    });
+
+    // Click Events
+    this.document.addEventListener("click", function(e) {
+
+        // Account Options
+        if (document.getElementById("open-options") != null) {
             if (!document.getElementById("open-options").contains(e.target)) {
                 if (!document.getElementById("acc-options").contains(e.target)) {
-                    show = !show;
                     hideOptions();
                 }
             }
-        });
+        }
+        
+
+        // Search Bar
+        if (document.getElementById("search-res") != null) {
+            if (!document.getElementById("search-res").contains(e.target) && !document.getElementById("user-search").contains(e.target)) {
+                $("#search-res").css("display", "none");
+            }
+            else {
+                $("#search-res").css("display", "block");
+            }
+        }
+    });
+
+    // Run On Load from other Scripts
+    if (window.location.pathname == "/profile.php") {
+        triggerOnLoad();
     }
 }
 
@@ -216,14 +281,14 @@ function popDown() {
 
 // Account Options Hide/Show Functionality
 function toggleOptions() {
-    show = !show;
 
-    if (show) {
+    if ($(".account-options").css("display") == "none") {
         showOptions();
     }
     else {
         hideOptions();
     }
+
 }
 
 function showOptions() {

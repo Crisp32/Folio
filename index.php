@@ -16,6 +16,7 @@
     
     <div id="#content" >
       <?php require("partials/_top-bar.php"); ?>
+      <?php require("partials/_footer.php"); ?>
     </div>
   </body>
 </html>

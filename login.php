@@ -50,7 +50,9 @@ if (isset($_SESSION["user"])) {
       </div>
 
       <?php require("partials/_client-msg.php"); ?>
+      <?php require("partials/_footer.php"); ?>
 
     </div>
+
   </body>
 </html>

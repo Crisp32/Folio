@@ -1,10 +1,13 @@
 <div id="top-bar" >
-	<h1 class="header" >Folio</h1>
-	<div class="side-logo" >
-		<div class="ver-txt" ><div class="bullet-point" >{</div>  NA | Beta <div class="bullet-point" >}</div> </div><br />
-		<div class="dev-name" >By Connell Reffo</div>
-	</div>
+	<h1 style="float: left" class="header" >Folio</h1>
 
+	<div style="float: left" >
+		<input type="text" class="input-field" id="user-search" placeholder="Search Folio" />
+
+		<div id="search-res" >
+		</div>
+	</div>
+	
 	<div id="top-buttons" >
 		<?php
 
