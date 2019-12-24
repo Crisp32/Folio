@@ -5,6 +5,7 @@
  */
 
 include_once "app_main.php";
+session_start();
 
 // Init DB
 $db = new SQLite3("../db/folio.db");
@@ -19,13 +20,30 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
     $profileName = getUserData($db, "username", "uid='$uid'");
     $profileBio = getUserData($db, "profileBio", "uid='$uid'");
     $profileLocation = getUserData($db, "accountLocation", "uid='$uid'");
+    $votes = getUserData($db, "votes", "uid='$uid'");
+    $voteCount = calcVotes($votes);
 
     // Null Check DB Response
     if (!empty($profileName) && !empty($uid)) {
+        
         // Null Check Image
         if (empty($profileImage)) {
-            $profileImages = json_decode(file_get_contents($_SERVER["DOCUMENT_ROOT"] . "/json/profile-images.json"), true);
-            $profileImage = $profileImages["default"];
+            $profileImage = "https://ui-avatars.com/api/?background=c9c9c9&color=131313&size=224&bold=true&font-size=0.35&length=3&name=$profileName";
+        }
+
+        // Check Votes
+        $upvoted = false;
+        $downvoted = false;
+
+        if (isset($_SESSION["user"])) {
+            $activeUser = $_SESSION["user"];
+
+            if (strpos($votes, ":$activeUser+") !== false) {
+                $upvoted = true;
+            }
+            else if (strpos($votes, ":$activeUser-") !== false) {
+                $downvoted = true;
+            }
         }
 
         // Send Response to Client
@@ -34,7 +52,10 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
             "username" => $profileName,
             "image" => $profileImage,
             "bio" => $profileBio,
-            "location" => $profileLocation
+            "location" => $profileLocation,
+            "votes" => $voteCount,
+            "upvoted" => $upvoted,
+            "downvoted" => $downvoted
         ));
     }
     else {

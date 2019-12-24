@@ -1,5 +1,5 @@
 <div id="top-bar" >
-	<h1 style="float: left" class="header" >Folio</h1>
+	<img id="logo-img" src="/images/other/folioLogoWhite.svg" >
 
 	<div style="float: left" >
 		<input type="text" class="input-field" id="user-search" placeholder="Search Folio" />

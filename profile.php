@@ -25,10 +25,12 @@
         <div class="center-container" >
           <div id="profile-name-container" >
               <img id="profile-img" src="" />
+              
               <div id="profile-media-container" >
                   <h2 id="profile-name" >404 Error</h2><br />
                   <div style="display: inline-block" ><img class="icon" id="location-icon" src="https://i.pinimg.com/originals/f2/57/78/f25778f30e29a96c44c4f72ef645aa63.png" /><div id="profile-location" >Unknown</div></div>
-                  <div class="upvote vote" title="Upvote" ></div><div class="downvote vote" title="Downvote" ></div>
+                  <div style="margin-left: -10px; transform: translateY(5px)" ><a class="upvote vote" href="javascript:upVoteClick(true)" title="Upvote" ></a><a class="downvote vote" href="javascript:downVoteClick(true)" title="Downvote" ></a></div>
+                  <div class="votes" >0</div>
               </div>
 
               <div id="bio" >Nothing</div>

@@ -28,6 +28,14 @@ function loadProfile(username) {
                 $("#profile-name").text(res.username);
                 $("#bio").text(res.bio);
                 $("#profile-location").text(res.location);
+                $(".votes").text(res.votes);
+
+                if (res.upvoted) {
+                    upVoteClick(false);
+                }
+                else if (res.downvoted) {
+                    downVoteClick(false);
+                }
             }
             else {
                 popUp("clientm-fail", res.message, null);

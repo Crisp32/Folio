@@ -12,8 +12,7 @@ $profileImage = getUserData($db, "profileImagePath", "uid='$sess'");
 
 // Null Check Image
 if (empty($profileImage)) {
-    $profileImages = json_decode(file_get_contents($_SERVER["DOCUMENT_ROOT"] . "/json/profile-images.json"), true);
-    $profileImage = $profileImages["default"];
+    $profileImage = "https://ui-avatars.com/api/?background=c9c9c9&color=131313&size=256&bold=true&font-size=0.35&length=3&name=" . $username;
 }
 
 ?>

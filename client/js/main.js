@@ -279,16 +279,13 @@ function popDown() {
     element.css("transform", "translate(0, 200px)");
 }
 
-// Account Options Hide/Show Functionality
-function toggleOptions() {
-
+function logout_user() {
     if ($(".account-options").css("display") == "none") {
         showOptions();
     }
     else {
         hideOptions();
     }
-
 }
 
 function showOptions() {
@@ -297,4 +294,79 @@ function showOptions() {
 
 function hideOptions() {
     $(".account-options").css("display", "none");
+}
+
+function toggleOptions() {
+    if ($(".account-options").css("display") == "block") {
+        $(".account-options").css("display", "none");
+    }
+    else {
+        $(".account-options").css("display", "block");
+    }
+}
+
+// Vote Button Click
+function upVoteClick(sendReq) {
+    if ($(".upvote").hasClass("upvote-selected")) {
+        $(".upvote").removeClass("upvote-selected");
+        $(".votes").css("color", "lightgrey");
+    }
+    else {
+        $(".upvote").addClass("upvote-selected");
+        $(".downvote").removeClass("downvote-selected");
+
+        $(".votes").css("color", "#75bfa1");
+    }
+
+    if (sendReq) { voteUser(); } 
+}
+
+function downVoteClick(sendReq) {
+    if ($(".downvote").hasClass("downvote-selected")) {
+        $(".downvote").removeClass("downvote-selected");
+        $(".votes").css("color", "lightgrey");
+    }
+    else {
+        $(".downvote").addClass("downvote-selected");
+        $(".upvote").removeClass("upvote-selected");
+
+        $(".votes").css("color", "#c274c2");
+    }
+    
+    if (sendReq) { voteUser(); } 
+}
+
+function voteUser() {
+
+    // Get State of Buttons
+    let upvote = $(".upvote").hasClass("upvote-selected");
+    let downvote = $(".downvote").hasClass("downvote-selected");
+
+    // Send Request to Server
+    $.ajax({
+        type: "POST",
+        url: "../../utils/vote_user.php",
+        dataType: "json",
+        data: {
+            upvote: upvote,
+            downvote: downvote,
+            target: $("#profile-name").text()
+        },
+        success: function(res) {
+            if (res.error != null) {
+                popUp("clientm-fail", res.error, null);
+
+                $(".upvote").removeClass("upvote-selected");
+                $(".downvote").removeClass("downvote-selected");
+
+                $(".votes").css("color", "lightgrey");
+            }
+            else {
+                $(".votes").text(res.votes);
+            }
+        },
+        error: function(err) {
+            popUp("clientm-fail", "Server Request Error: " + err, null);
+        }
+    });
 }

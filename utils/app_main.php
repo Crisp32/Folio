@@ -17,7 +17,7 @@ function fetchLocationsHtml() {
     $final = "";
 
     foreach ($countries as $country) {
-        $final .= "<option value='" . str_replace(" ", "-", $country) . "' >" . $country . "</option>\n";
+        $final .= "<option value='$country' >" . $country . "</option>\n";
     }
 
     return $final;
@@ -41,10 +41,10 @@ function initPHPMailer($mail, $sendTo) {
 
 // Verification Code Algorithm
 function generateVerificationCode() {
-    return strtoupper(substr(md5(strval(rand(0, 100))), 0, 8));
+    return strtoupper(substr(md5(strval(rand(0, 200))), 0, 8));
 }
 
-// Returns a user Object
+// Returns User Information
 function getUserData($db, $column, $condition) {
     $query = $db->query("SELECT $column FROM users WHERE $condition");
     $array = $query->fetchArray();
@@ -57,6 +57,25 @@ function updateUser($db, $column, $value, $condition) {
     $query = $db->query("UPDATE users SET $column = '$value' WHERE $condition");
     
     return $query;
+}
+
+// Calculate Votes
+function calcVotes($votingData) {
+    $votes = explode(":", $votingData);
+    $voteCount = 1;
+
+    if (count($votes) > 0) {
+        foreach ($votes as $vote) {
+            if (strpos($vote, "+") !== false) {
+                $voteCount++;
+            }
+            else {
+                $voteCount--;
+            }
+        }
+    }
+    
+    return $voteCount;
 }
 
 ?>

@@ -154,6 +154,14 @@ div#top-bar {
   transform: translateY(-25%);
 }
 
+#logo-img {
+  float: left;
+  margin: 10px;
+  margin-right: -5px;
+  pointer-events: none;
+  width: 100px;
+}
+
 /* Classes */
 .res-empty {
   color: #ff5f33;
@@ -200,25 +208,64 @@ div#top-bar {
   margin-top: 10px;
 }
 
+.votes {
+  color: lightgrey;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 35px;
+  text-align: left;
+  transform: translateX(100px);
+  transition: 0.3s;
+  overflow: hidden;
+  position: absolute;
+  width: 100px;
+}
+
 .underline {
   border-bottom: 3px solid #1d1d24;
   padding-bottom: 16px;
 }
 
 .vote {
-  transform: translate(17px, 5px);
+  background-image: url("../../images/other/voteIcon.svg");
+  background-repeat: no-repeat;
   position: absolute;
-  height: 25px;
+  filter: none;
+  transition: 0.2s ease;
+  opacity: 0.75;
+  margin: auto;
+  height: 35px;
   width: 25px;
 }
 
+.vote:hover {
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
 .downvote {
-  background: red;
-  transform: translate(57px, 5px);
+  transform: translateX(60px) rotate(180deg);
+}
+
+.downvote:hover {
+  filter: sepia(200%) saturate(1500%) brightness(70%) hue-rotate(200deg);
+}
+
+.downvote-selected {
+  filter: sepia(200%) saturate(1500%) brightness(70%) hue-rotate(200deg);
+  transform: translate(60px, 5px) rotate(180deg);
 }
 
 .upvote {
-  background: blue;
+  transform: translateX(27px);
+}
+
+.upvote:hover {
+  filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(100deg);
+}
+
+.upvote-selected {
+  filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(100deg);
+  transform: translate(27px, -5px);
 }
 
 .profile-section {
@@ -246,6 +293,7 @@ div#top-bar {
 
 .icon {
   display: inline-block;
+  pointer-events: none;
   width: 20px;
 }
 

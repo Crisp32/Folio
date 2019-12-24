@@ -26,6 +26,8 @@ $confPass = $_REQUEST["confPass"];
 $maxChars = 20;
 $minPass = 6;
 
+$illegalChars = "'&*()^%$#@!+:-";
+
 // Insertion Query
 if (empty($location)) {
     $location = "Unknown";
@@ -34,8 +36,8 @@ if (empty($location)) {
 $code = generateVerificationCode(); // Generate Verification Code
 $passHash = password_hash($password, PASSWORD_BCRYPT, array("cost" => 11));
 $query = "INSERT INTO
-    users(username, email, accountLocation, password, verificationCode, verified) 
-    VALUES('$username', '$email', '$location', '$passHash', '$code', '0')
+    users(username, email, accountLocation, password, verificationCode, verified, profileBio, voteCount) 
+    VALUES('$username', '$email', '$location', '$passHash', '$code', '0', 'Sample Bio', '0')
 ";
 
 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -48,6 +50,12 @@ else if (empty($username) || $username != strip_tags($username) || filter_var($u
     echo json_encode(array(
         "success" => false,
         "message" => "Invalid Username"
+    ));
+}
+else if (strpbrk($username, $illegalChars)) {
+    echo json_encode(array(
+        "success" => false,
+        "message" => "Username Cannot Contain $illegalChars"
     ));
 }
 else if (strpos($username, " ") !== false) {
