@@ -103,6 +103,8 @@ function register() {
     let password = $("#pass").val();
     let confPass = $("#conf-pass").val();
 
+    popUp("clientm-fail", "Loading...", null);
+
     $.ajax({
         type: "POST",
         url: "../../utils/register_user.php",
@@ -315,7 +317,7 @@ function upVoteClick(sendReq) {
         $(".upvote").addClass("upvote-selected");
         $(".downvote").removeClass("downvote-selected");
 
-        $(".votes").css("color", "#75bfa1");
+        $(".votes").css("color", "#6a9aba");
     }
 
     if (sendReq) { voteUser(); } 
@@ -332,7 +334,7 @@ function downVoteClick(sendReq) {
 
         $(".votes").css("color", "#c274c2");
     }
-    
+
     if (sendReq) { voteUser(); } 
 }
 
@@ -369,4 +371,100 @@ function voteUser() {
             popUp("clientm-fail", "Server Request Error: " + err, null);
         }
     });
+}
+
+// Settings Functions
+function openSettings() {
+    $("#settings-bg").css("display", "block");
+    hideOptions();
+
+    // Get User Settings
+    $.ajax({
+        type: "POST",
+        url: "../../utils/user_settings.php",
+        dataType: "json",
+        success: function(res) {
+
+            // Display Success/Error to user
+            if (res.success) {
+
+                let loc = res.location;
+                if (loc == "Unknown") {
+                    loc = null;
+                }
+
+                // Load User Data
+                $("#profile-img-select").attr("src", res.image);
+                $("#prof-img-url").attr("value", res.image);
+                $("#bio-textarea").text(res.bio);
+                $(".account-loc-setting").val(loc);
+                $("#allowComments").val(res.comments);
+            }
+            else {
+                popUp("clientm-fail", res.message, null);
+            } 
+        },
+        error: function(err) {
+            popUp("clientm-fail", "Server Request Error: " + err, null);
+        }
+    });
+}
+
+function closeSettings() {
+    $("#settings-bg").css("display", "none");
+}
+
+function saveSettings() {
+    let imgURL = $("#prof-img-url").val();
+    let bio = $("#bio-textarea").val();
+    let location = $("#location").val();
+    let allowComments = $("#allowComments").val();
+
+    // Display Loading Popup
+    popUp("clientm-fail", "Loading...", null);
+
+    // Client End Validation
+    if (imgURL.length > 150) {
+        popUp("clientm-fail", "Image URL cannot exceed 150 Characters", null);
+    }
+    else if (bio.length > 300) {
+        popUp("clientm-fail", "Bio cannot exceed 300 Characters", null);
+    }
+    else if (bio.length == 0) {
+        popUp("clientm-fail", "Bio must be more than 0 Characters", null);
+    }
+    else if (location.length > 30) {
+        popUp("clientm-fail", "There is a Country with a Name that long?", null);
+    }
+    else {
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/save_settings.php",
+            dataType: "json",
+            data: {
+                image: imgURL,
+                bio: bio,
+                location: location,
+                comments: allowComments
+            },
+            success: function(res) {
+                
+                // Display Success/Error to user
+                if (res.success) {
+                    popUp("clientm-success", "Saved!", null);
+
+                    if (imgURL !== null && imgURL !== "") {
+                        $("#profile-img-select").attr("src", imgURL);
+                    }
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                } 
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Save your Settings", null);
+            }
+        });
+    }
 }

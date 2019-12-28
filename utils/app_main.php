@@ -4,17 +4,19 @@
  * Connell Reffo 2019
  */
 
+// List of Possible Countries
+$countries = [
+    "Canada",
+    "Costa Rica",
+    "Cuba",
+    "Mexico",
+    "United States"
+];
+
 // Generate <option> tags for Account Location input field
 function fetchLocationsHtml() {
-    $countries = [
-        "Canada",
-        "Costa Rica",
-        "Cuba",
-        "Mexico",
-        "United States"
-    ];
-
-    $final = "";
+    $countries = $GLOBALS["countries"];
+    $final = "<option value='' >I'd Rather not Say</option>\n";
 
     foreach ($countries as $country) {
         $final .= "<option value='$country' >" . $country . "</option>\n";
@@ -76,6 +78,40 @@ function calcVotes($votingData) {
     }
     
     return $voteCount;
+}
+
+// Prevent SQL Injection Attack
+function escapeString($str) {
+    return str_replace("'", "\'", htmlspecialchars($str, ENT_QUOTES, "UTF-8"));
+}
+
+// Validate Location Boolean
+function validLocation($country) {
+    $countries = $GLOBALS["countries"];
+
+    return in_array($country, $countries);
+}
+
+// Validate that a file exists on Seperate Server
+function validURL($url) {
+    if (!empty($url)) {
+        $header_response = get_headers($url);
+
+        if ($header_response) {
+            if (strpos($header_response[0], "404") !== false){
+                return true;
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return true;
+    }
 }
 
 ?>

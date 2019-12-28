@@ -33,7 +33,7 @@ if (isset($_SESSION["user"])) {
         <div class="login-form-container" >
 
           <div class="form-header" ><h2 class="header-text" >Login</h2></div>
-          <div id="reg-form" >
+          <div>
             <br />
             <div class="p-header" >Account Credentials
               <input type="text" class="input-field" id="username" placeholder="Username or Email" />
@@ -45,8 +45,10 @@ if (isset($_SESSION["user"])) {
 
             <button class="standard-button inl reg-button" onclick="login()" >Login</button>
             <br /><br />
-            <a class="skip-reg" href="/register.php" >Don't Have an Account? Register Now <div class="bullet-point" >-&gt;</div></a>
-        </div>
+            <div class="register-prompt-container" >
+              <a class="skip-reg" href="/register.php" >Don't Have an Account? Register Now <div class="bullet-point" >-&gt;</div></a>
+            </div>
+          </div>
       </div>
 
       <?php require("partials/_client-msg.php"); ?>

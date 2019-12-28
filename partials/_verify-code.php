@@ -11,6 +11,6 @@
     <button class="standard-button inl reg-button" onclick="verifyAccount()" >Register</button>
     <button class="standard-button inl reg-button" style="margin-top: 25px" onclick="resendVerification()" >Resend Code</button>
 
-    <div class="form-footer" ><h2 class="footer-text" >Thanks for using Folio!</h2></div>
+    <div class="form-footer" ><img class="footer-img" src="/images/other/folioLogoBlack.svg" ></div>
 
 </div>

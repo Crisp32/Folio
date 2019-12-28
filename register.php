@@ -30,14 +30,6 @@ if (isset($_SESSION["user"])) {
       <?php require("partials/_top-bar.php"); ?>
 
       <div class="reg-page" >
-        <div class="side-info" >
-          <ul>
-            <li><div class="bullet-point" >-&gt;</div> Explore others' Portfolio</li>
-            <li><div class="bullet-point" >-&gt;</div> Share your Experiences</li>
-            <li><div class="bullet-point" >-&gt;</div> Join Numerous Communities</li>
-          </ul>
-        </div> 
-
         <div class="form-container" >
           <div class="form-header" ><h2 class="header-text" >Register</h2></div>
           <div id="reg-form" >

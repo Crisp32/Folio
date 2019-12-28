@@ -18,25 +18,46 @@ body {
   outline: none;
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* IDs */
+#reg-form {
+  background-color: #2f2f33;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+  padding-bottom: 25px;
+}
+
+#join-date {
+  color: lightgrey;
+  font-size: 23px;
+  transform: translate(20px, 3px);
+  position: absolute;
+}
+
 #search-res {
   background-color: #131317;
   border-radius: 3px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
   display: none;
-  transform: translate(18px, 10px);
+  transform: translateY(10px);
+  left: 5vw;
   transition: 0.3s;
   overflow-y: scroll;
   position: absolute;
-  width: 30vw;
+  width: 90vw;
   min-width: 250px;
-  max-width: 450px;
+  max-width: 90vw;
   max-height: 150px;
   z-index: 3;
 }
 
 #profile-name-container {
   background-color: #2f2f33;
+  border: 3px solid #3c3c42;
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.25);
   display: inline-block;
@@ -58,10 +79,10 @@ body {
   color: white;
   display: inline-block;
   font-family: 'Ubuntu Mono', monospace;
-  font-size: 40px;
+  font-size: 35px;
   font-weight: lighter;
   margin: auto;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   margin-left: 15px;
   overflow: hidden;
   padding-right: 15px;
@@ -70,11 +91,11 @@ body {
 
 #profile-location {
   color: grey;
+  display: inline-block;
   font-size: 30px;
   font-weight: lighter;
   font-family: 'Ubuntu Mono', monospace;
-  transform: translate(30px, -10px);
-  display: inline-block;
+  transform: translate(45px, -10px);
 }
 
 #profile-media-container {
@@ -83,7 +104,9 @@ body {
 }
 
 #location-icon {
-  transform: translate(18px, -3px);
+  transform: translate(3px, -18px);
+  position: absolute;
+  width: 50px;
 }
 
 #content {
@@ -92,16 +115,20 @@ body {
 }
 
 #bio {
-  background-color: #242429;
+  background-color: #29292e;
+  border: none;
   border-radius: 5px;
   box-shadow: 0 6px 0px 0px #1e1e24;
+  color: white;
   font-family: 'Ubuntu', sans-serif;
+  font-size: 17px;
   text-align: left;
   line-height: 23px;
-  margin-top: 10px;
   overflow-wrap: break-word;
-  overflow-y: scroll;
+  overflow-y: auto;
+  resize: none;
   padding: 12px;
+  margin-top: 10px;
   margin-right: 15px;
   margin-bottom: 7px;
   max-height: 100px;
@@ -124,9 +151,6 @@ body {
   margin-top: 15px;
   margin-left: 18px;
   height: 35px;
-  width: 10vw;
-  min-width: 100px;
-  max-width: 300px;
 }
 
 div#top-bar {
@@ -158,15 +182,25 @@ div#top-bar {
   float: left;
   margin: 10px;
   margin-right: -5px;
-  pointer-events: none;
-  width: 100px;
+  margin-top: 20px;
+  width: 120px;
 }
 
 /* Classes */
+.section-disabled {
+  color: grey;
+  font-weight: lighter;
+  font-style: italic;
+  font-size: 22px;
+  float: right;
+  margin-right: 15px;
+}
+
 .res-empty {
   color: #ff5f33;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 20px;
+  font-style: italic;
   text-align: center;
   padding: 20px;
 }
@@ -208,7 +242,16 @@ div#top-bar {
   margin-top: 10px;
 }
 
+.footer-img {
+  pointer-events: none;
+  margin-bottom: 5px;
+  margin-top: 15px;
+  transform: translateY(-2px);
+  width: 200px;
+}
+
 .votes {
+  background-position: center;
   color: lightgrey;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 35px;
@@ -230,7 +273,6 @@ div#top-bar {
   background-repeat: no-repeat;
   position: absolute;
   filter: none;
-  transition: 0.2s ease;
   opacity: 0.75;
   margin: auto;
   height: 35px;
@@ -246,30 +288,25 @@ div#top-bar {
   transform: translateX(60px) rotate(180deg);
 }
 
-.downvote:hover {
-  filter: sepia(200%) saturate(1500%) brightness(70%) hue-rotate(200deg);
-}
-
 .downvote-selected {
   filter: sepia(200%) saturate(1500%) brightness(70%) hue-rotate(200deg);
   transform: translate(60px, 5px) rotate(180deg);
+  transition: 0.2s ease;
 }
 
 .upvote {
   transform: translateX(27px);
 }
 
-.upvote:hover {
-  filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(100deg);
-}
-
 .upvote-selected {
-  filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(100deg);
+  filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(150deg);
   transform: translate(27px, -5px);
+  transition: 0.2s ease;
 }
 
 .profile-section {
-  background-color: #2f2f33;
+  background-color: #18181c;
+  border: 3px solid #3c3c42;
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.25);
   display: inline-block;
@@ -284,11 +321,13 @@ div#top-bar {
 
 .section-title {
   letter-spacing: 2px;
-  margin-left: 17px;
+  margin-top: 12px;
+  margin-left: 12px;
 }
 
 .center-container {
   text-align: center;
+  overflow: hidden;
 }
 
 .icon {
@@ -342,7 +381,8 @@ div.form-footer {
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   border-top: 3px solid #3c3c42;
-  transform: translateY(100px);
+  transform: translateY(25px);
+  margin-top: 10px;
   width: 100%;
   height: 30%;
 }
@@ -459,20 +499,28 @@ button.standard-button:hover {
   
 button.reg-button {
 	color: grey;
-	background-color: #1a1a1a;
+  background-color: #1a1a1a;
+  background-position: center;
 	border-color: #1a1a1a;
 	margin-left: 17px;
   margin-top: 35px;
   margin-bottom: 5px;
-	transition: 0.25s;
-	width: calc(83% + 1px); }
-  
+  transition: 0.3s;
+  width: calc(83% + 1px);
+}
+
 button.reg-button:hover {
 	color: white;
 	cursor: pointer;
-	background-color: #131313;
-	border-color: #131313;
-	transition: 0.25s;
+  background: #1a1a1a radial-gradient(circle, transparent 1%, #1a1a1a 1%) center/15000%;
+	border-color: rgba(0, 0, 0, 0);
+  transition: 0.75s;
+}
+
+button.reg-button:active {
+  background-color: #262626;
+  background-size: 100%;
+  transition: 0s;
 }
   
 .inl {
@@ -498,13 +546,13 @@ h1.header {
   margin: auto;
   position: fixed;
   width: 100%;
-  z-index: 2;
+  z-index: 7;
 }
 
 button.clientm-success {
   color: white;
   background-color: #34c24e;
-  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.5);
   border: 3px solid #34c24e;
   border-radius: 3px;
   font-family: 'Ubuntu Mono', monospace;
@@ -521,14 +569,13 @@ button.clientm-success:hover {
 	cursor: pointer;
 	background-color: #29943d;
 	border-color: #29943d;
-	box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.5);
 	transition: 0.3s;
 }
 
 button.clientm-fail {
   color: white;
   background-color: #c23434;
-  box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.5);
   border: 3px solid #c23434;
   border-radius: 3px;
   font-family: 'Ubuntu Mono', monospace;
@@ -545,7 +592,6 @@ button.clientm-fail:hover {
 	cursor: pointer;
 	background-color: #8f2828;
 	border-color: #8f2828;
-	box-shadow: 0 6px 20px 0 rgba(0, 0, 0, 0.5);
 	transition: 0.3s;
 }
 
@@ -621,33 +667,6 @@ button.clientm-fail:hover {
   width: 180px;
 }
 
-/* Side Info for Large Screens */
-@media (min-width: 1300px) {
-
-  div.form-container {
-    background-color: #2f2f33;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
-    display: inline-block;
-    text-align: center;
-    margin: auto;
-    margin-bottom: 30px;
-    margin-left: 300px;
-    margin-top: 70px;
-    height: 680px;
-    width: 500px;
-  }
-
-  .side-info {
-    display: inline-block;
-    position: absolute;
-    font-size: 30px;
-    margin-left: -280px;
-	  margin-top: 250px;
-  }
-  
-}
-
 .page-footer-container {
   position: relative;
   margin-bottom: 100px;
@@ -674,70 +693,9 @@ button.clientm-fail:hover {
   margin-left: 20px;
 }
 
-/* Mobile Compatibility */
-@media (min-width: 800px) {
-
-  #user-search {
-    width: 300px;
-  }
-
-  #search-res {
-    width: 450px;
-  }
-
-}
-
-@media (max-width: 700px) {
-
-  .account-options {
-    transform: translate(-140px, 105px);
-  }
-
-  .options-container-bubble {
-    transform: translate(130px, -110px);
-  }
-
-  .profile-username-btn {
-    max-width: 61px;
-    overflow: hidden;
-  }
-
-  .profile-username-bar {
-    color: rgba(0, 0, 0, 0);
-  }
-
-}
-
-@media (max-width: 1300px) {
-
-  .side-info {
-    display: inline-block;
-    font-size: 30px;
-    position: absolute;
-    margin-top: 670px;
-    margin-left: -250px; }
-
-  .form-container {
-    background-color: #2f2f33;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
-    text-align: center;
-    margin: auto;
-    margin-bottom: 30px;
-    margin-top: 70px;
-    height: 680px;
-	  width: 500px;
-  }
-  
-}
-
-.inner-info {
-  display: block;
-  position: absolute;
-  font-size: 30px;
-  transform: translate(25px, 180px);
-  margin: 0;
-  width: 400px;
+.votes-container {
+  transform: translate(142px, -50px);
+  margin-left: -10px;
 }
 
 .skip-reg {
@@ -745,9 +703,8 @@ button.clientm-fail:hover {
   font-family: 'Ubuntu Mono', monospace;
   font-size: 18px;
   text-decoration: none;
-  transform: translateX(calc(50% + 20px));
   transition: 0.15s;
-  width: 230px;
+  overflow-wrap: break-word;
 }
 
 .skip-reg:hover {
@@ -766,6 +723,415 @@ div.login-form-container {
   margin-top: 70px;
   height: 470px;
   width: 500px;
+}
+
+.upvote:active {
+  border-radius: 100px;
+  box-shadow: 0 1px 0 5px rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.25);
+  transition: 0.3s ease;
+}
+
+.downvote:active {
+  border-radius: 100px;
+  box-shadow: -1px 1px 0 5px rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.25);
+  transition: 0.15s ease;
+}
+
+.searchbar-long {
+  width: 35vw;
+}
+
+.settings-option-header {
+  font-size: 20px;
+  letter-spacing: 1px;
+  text-align: left;
+  margin: auto;
+  margin-bottom: -15px;
+  margin-left: 22px;
+}
+
+/* Comment UI */
+#comments-container {
+  overflow-y: auto;
+  max-height: 30vh;
+  height: auto;
+  width: 100%;
+}
+
+.comment {
+  color: white;
+  background-color: #29292e;
+  border-radius: 3px;
+  font-size: 18px;
+  text-align: left;
+  letter-spacing: 1px;
+  margin-left: 12px;
+  margin-right: 12px;
+  margin-bottom: 12px;
+  padding: 8px;
+}
+
+.commenter-name {
+  color: #bababa;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.comment-post-date {
+  color: grey;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.comment-content {
+  font-size: 16px;
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  max-height: 60px;
+}
+
+/* User Settings Menu */
+#settings-bg {
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  text-align: center;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  z-index: 4;
+}
+
+#settings-menu {
+  background-color: #2f2f33;
+  border: 3px solid #3c3c42;
+  border-radius: 4px;
+  box-shadow: 0 3px 20px 0 rgba(0, 0, 0, 0.6);
+  transform: translateY(20%);
+  margin: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 50vw;
+  height: auto;
+  max-width: 400px;
+  min-width: 300px;
+  max-height: 540px;
+  min-height: 230px;
+}
+
+#settings-btns-container {
+  right: 0;
+  position: absolute;
+  margin-right: 25px;
+  margin-top: 3px;
+}
+
+#profile-img-select {
+  border-radius: 3px;
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
+  float: left;
+  margin-bottom: 25px;
+  margin-top: 22px;
+  margin-left: 22px;
+  margin-right: 100%;
+  width: 11vw;
+  height: 11vw;
+  max-width: 120px;
+  max-height: 120px;
+  min-width: 70px;
+  min-height: 70px;
+}
+
+#prof-img-url {
+  float: left;
+  margin-bottom: 35px;
+  margin-right: 80px;
+  width: 100%;
+}
+
+#bio-textarea {
+  float: left;
+  text-align: left;
+  margin-bottom: 35px;
+  resize: none;
+  height: 80px;
+  width: 100%;
+}
+
+.account-loc-setting {
+  margin-bottom: 35px;
+  width: 100%;
+}
+
+.other-settings-header {
+  margin-bottom: 5px;
+}
+
+.other-settings-header input {
+  cursor: pointer;
+  background-color: #18181c;
+  border: 3px solid #d3d3d3;
+  border-radius: 3px;
+  transform: translateY(3px);
+  margin-top: 10px;
+  opacity: 1;
+  width: 20px;
+  height: 20px;
+}
+
+/* Save Button */
+button.save-btn {
+  background-color: #34c24e;
+  background-position: center;
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
+  border-color: rgba(0, 0, 0, 0);
+  color: white;
+  transition: 0.5s ease;
+  margin-left: 10px;
+}
+
+button.save-btn:hover {
+  color: lightgrey;
+  background: #36bf50 radial-gradient(circle, transparent 1%, #29943d 1%) center/15000%;
+  border-color: rgba(0, 0, 0, 0);
+  transition: 0.5s ease;
+  margin-left: 10px;
+}
+
+button.save-btn:active {
+  background-color: #29943d;
+  background-size: 100%;
+  transition: 0s;
+}
+
+/* Cancel Button */
+button.close-btn {
+  background-color: #c23434;
+  background-position: center;
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
+  border-color: rgba(0, 0, 0, 0);
+  color: white;
+  transition: 0.5s ease;
+  margin-left: 10px;
+}
+
+button.close-btn:hover {
+  color: lightgrey;
+  background: #bf3636 radial-gradient(circle, transparent 1%, #942929 1%) center/15000%;
+  border-color: rgba(0, 0, 0, 0);
+  transition: 0.5s ease;
+  margin-left: 10px;
+}
+
+button.close-btn:active {
+  background-color: #942929;
+  background-size: 100%;
+  transition: 0s;
+}
+
+/* Mobile Compatibility */
+@media (min-width: 800px) {
+
+  #user-search {
+    width: 320px;
+  }
+
+  #search-res {
+    left: auto;
+    transform: translate(18px, 10px);
+    width: 450px;
+  }
+
+}
+
+@media (max-width: 450px) {
+
+  .top-bar-btns {
+    overflow: hidden;
+    width: 17vw;
+  }
+
+}
+
+@media (min-width: 455px) {
+
+  .downvote:hover {
+    filter: sepia(200%) saturate(1500%) brightness(70%) hue-rotate(200deg);
+  }
+  
+  .upvote:hover {
+    filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(150deg);
+  }
+
+}
+
+/* iPhone 5 (Stupid Small Screen) */
+@media (max-width: 350px) {
+
+  .dev-name {
+    margin-top: 10px;
+  }
+
+}
+
+/* Mobile Viewport Styling */
+@media (max-width: 700px) {
+
+  .profile-section {
+    margin-left: 5px;
+    position: static;
+    width: calc(90vw + 15px);
+  }
+
+  .inl {
+    margin-right: 8px;
+  }
+
+  #bio-textarea, #prof-img-url {
+    max-width: 240px;
+  }
+
+  #top-buttons {
+    margin-right: 0;
+  }
+
+  #profile-name-container {
+    width: 90vw;
+  }
+
+  #profile-name {
+    font-size: 30px; 
+  }
+
+  #profile-media-container {
+    font-size: 10px;
+    transform: translate(-15px, -30px);
+  }
+
+  #join-date {
+    transform: translate(17px, 3px);
+  }
+
+  #profile-location {
+    font-size: 20px;
+    overflow: hidden;
+    transform: translate(45px, -30px);
+    margin-top: 5px;
+    position: absolute;
+    width: 100px;
+  }
+
+  #location-icon {
+    transform: translateY(-35px);
+  }
+
+  #bio {
+    width: 90%;
+  }
+
+  #profile-img {
+    margin-right: 15px;
+    width: 20vw;
+    height: 20vw;
+    min-height: 85px;
+    min-width: 85px;
+  }
+
+  div.login-form-container {
+    width: 90vw;
+  }
+  
+  .searchbar-short {
+    width: 50px;
+  }
+
+  button.reg-button {
+    width: 88%;
+  }
+
+  .p-header {
+    margin-right: -10px;
+    margin-left: 20px;
+    width: calc(88% - 16px);
+  }
+  
+  .register-prompt-container {
+    transform: translateX(25%);
+    width: 70%;
+  }
+
+  /* Shrink User Info */
+  .account-options {
+    transform: translate(-140px, 105px);
+  }
+
+  .options-container-bubble {
+    transform: translate(130px, -110px);
+  }
+
+  .profile-username-btn {
+    width: 68px;
+    height: 58px;
+    overflow: hidden;
+  }
+
+  .profile-username-bar {
+    display: none;
+  }
+
+}
+
+/* Login/Register Form */
+.reg-page {
+  margin-top: -30px;
+}
+
+select.input-field {
+  width: calc(100% + 16px);
+}
+
+.form-container {oined 00-00-0000
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+  text-align: center;
+  margin: auto;
+  margin-bottom: 30px;
+  margin-top: 70px;
+  height: 680px;
+  width: 90vw;
+  max-width: 500px;
+}
+
+@media (max-width: 1300px) {
+
+  .side-info {
+    display: inline-block;
+    font-size: 30px;
+    position: absolute;
+    margin-top: 750px;
+    margin-left: -250px; }
+  
+}
+
+.inner-info {
+  display: block;
+  position: absolute;
+  font-size: 30px;
+  transform: translate(25px, 180px);
+  margin: 0;
+  width: 400px;
+}
+
+/* Override Styling */
+.votes-container {
+  transform: translate(73%, -50px);
+  margin-left: -10px;
+}
+
+.votes {
+  transform: translate(-85px, 3px);
+  text-align: right;
+  padding-right: 5px;
 }
 
 /* Webkit */

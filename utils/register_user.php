@@ -29,15 +29,16 @@ $minPass = 6;
 $illegalChars = "'&*()^%$#@!+:-";
 
 // Insertion Query
-if (empty($location)) {
+if (empty($location) || !validLocation($location)) {
     $location = "Unknown";
 }
 
 $code = generateVerificationCode(); // Generate Verification Code
 $passHash = password_hash($password, PASSWORD_BCRYPT, array("cost" => 11));
+$date = date("j-n-Y");
 $query = "INSERT INTO
-    users(username, email, accountLocation, password, verificationCode, verified, profileBio, voteCount) 
-    VALUES('$username', '$email', '$location', '$passHash', '$code', '0', 'Sample Bio', '0')
+    users(username, email, accountLocation, password, verificationCode, verified, profileBio, voteCount, date, allowComments) 
+    VALUES('$username', '$email', '$location', '$passHash', '$code', '0', 'Sample Bio', '0', '$date', '1')
 ";
 
 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {

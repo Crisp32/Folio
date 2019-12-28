@@ -23,30 +23,44 @@
 
         <!--Profile Page-->
         <div class="center-container" >
-          <div id="profile-name-container" >
-              <img id="profile-img" src="" />
-              
-              <div id="profile-media-container" >
-                  <h2 id="profile-name" >404 Error</h2><br />
-                  <div style="display: inline-block" ><img class="icon" id="location-icon" src="https://i.pinimg.com/originals/f2/57/78/f25778f30e29a96c44c4f72ef645aa63.png" /><div id="profile-location" >Unknown</div></div>
-                  <div style="margin-left: -10px; transform: translateY(5px)" ><a class="upvote vote" href="javascript:upVoteClick(true)" title="Upvote" ></a><a class="downvote vote" href="javascript:downVoteClick(true)" title="Downvote" ></a></div>
-                  <div class="votes" >0</div>
-              </div>
+            <div id="profile-name-container" >
+                <img id="profile-img" src="" />
+                
+                <div id="profile-media-container" >
+                    <h2 id="profile-name" >404 Error</h2><br />
+                    <div style="display: inline-block" ><img class="icon" id="location-icon" src="/images/other/locationIcon.svg" /><div id="profile-location" >Unknown</div></div>
+                    <div id="join-date" >00-00-0000</div>
+                </div>
 
-              <div id="bio" >Nothing</div>
-          </div>
-          <br />
-          <div class="profile-section" >
-            <div class="profile-section-container" >
-              <h2 class="section-title" >My Posts</h2>
+                <div>
+                  <div class="votes-container" >
+                      <a class="upvote vote" href="javascript:upVoteClick(true)" title="Upvote" ></a>
+                      <a class="downvote vote" href="javascript:downVoteClick(true)" title="Downvote" ></a>
+                      <div class="votes" >0</div>
+                  </div>
+                  <textarea id="bio" readonly >
+                    Nothing
+                  </textarea>
+                </div>
             </div>
-          </div>
+          <div>
           <br />
-          <div class="profile-section" >
-            <div class="profile-section-container" >
-              <h2 class="section-title" >Blogs I Contribute To</h2>
+          <div>
+            <div class="profile-section" >
+              <div class="profile-section-container" >
+                <h2 class="section-title" >Blogs</h2>
+              </div>
             </div>
-          </div>
+            <br />
+            <div class="profile-section" >
+              <div class="profile-section-container" >
+                <h2 class="section-title" >Comments <div class="section-disabled" id="comments-disabled-info" >DISABLED</div></h2>
+                <div id="comments-container" >
+                  <div class="comment" ><div class="commenter-name" >Testboi <div class="comment-post-date" >00-00-0000</div></div><div class="comment-content" >Yes Child</div></div>
+                </div>
+              </div>
+            </div>
+          <div>
           
         <?php require("partials/_client-msg.php"); ?>
         <?php require("partials/_footer.php"); ?>

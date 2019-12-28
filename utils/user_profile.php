@@ -20,6 +20,8 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
     $profileName = getUserData($db, "username", "uid='$uid'");
     $profileBio = getUserData($db, "profileBio", "uid='$uid'");
     $profileLocation = getUserData($db, "accountLocation", "uid='$uid'");
+    $allowComments = getUserData($db, "allowComments", "uid='$uid'");
+    $date = getUserData($db, "date", "uid='$uid'");
     $votes = getUserData($db, "votes", "uid='$uid'");
     $voteCount = calcVotes($votes);
 
@@ -29,6 +31,10 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
         // Null Check Image
         if (empty($profileImage)) {
             $profileImage = "https://ui-avatars.com/api/?background=c9c9c9&color=131313&size=224&bold=true&font-size=0.35&length=3&name=$profileName";
+        }
+
+        if (empty($date)) {
+            $date = "00-00-0000";
         }
 
         // Check Votes
@@ -55,7 +61,9 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
             "location" => $profileLocation,
             "votes" => $voteCount,
             "upvoted" => $upvoted,
-            "downvoted" => $downvoted
+            "downvoted" => $downvoted,
+            "date" => $date,
+            "comments" => $allowComments
         ));
     }
     else {

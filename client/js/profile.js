@@ -29,12 +29,19 @@ function loadProfile(username) {
                 $("#bio").text(res.bio);
                 $("#profile-location").text(res.location);
                 $(".votes").text(res.votes);
+                $("#join-date").text(res.date);
 
+                // Display Vote
                 if (res.upvoted) {
                     upVoteClick(false);
                 }
                 else if (res.downvoted) {
                     downVoteClick(false);
+                }
+
+                // Hide Disabled Label
+                if (res.comments == 1) {
+                    $("#comments-disabled-info").css("display", "none");
                 }
             }
             else {

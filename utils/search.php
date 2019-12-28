@@ -6,7 +6,7 @@
 
 include_once "app_main.php";
 
-$searchTerm = $_REQUEST["term"];
+$searchTerm = escapeString($_REQUEST["term"]);
 
 // Init DB
 $db = new SQLite3("../db/folio.db");
