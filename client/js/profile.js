@@ -214,12 +214,51 @@ function loadProfile(username) {
         }
     });
 
+    // Comment Liking
+    $(document).on("click", "a.likes-icon > img", function (e) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        let element = this;
+        let cid = $(element).parent().siblings(".del-comment").attr("name");
+
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/like_comment.php",
+            dataType: "json",
+            data: {
+                cid: cid
+            },
+            success: function(res) {
+                if (res.success) {
+
+                    // Display Like Count
+                    $(element).parent().siblings(".likes-count").text(res.likes);
+                    
+                    if (res.liked) {
+                        $(element).parent().siblings(".likes-count").addClass("liked");
+                    }
+                    else {
+                        $(element).parent().siblings(".likes-count").removeClass("liked");
+                    }
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Server Request Error: " + err, null);
+            }
+        });
+    });
+
 }
 
 function loadErrorProfile() {
 
     // Load Backup Profile Image
-    $("#profile-img").attr("src", "https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcS6r3ITg2jF5uliPX_sh5cHmGaA7S0Yhn59WRnaE26S14czvpa2");
+    $("#profile-img").attr("src", "/images/avatars/01.png");
 }
 
 // Appends a JSON Object containing an account's comment section to the markup

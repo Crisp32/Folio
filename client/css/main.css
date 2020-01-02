@@ -30,13 +30,6 @@ body {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
 }
 
-#join-date {
-  color: lightgrey;
-  font-size: 23px;
-  transform: translate(20px, 3px);
-  position: absolute;
-}
-
 #search-res {
   background-color: #131317;
   border-radius: 3px;
@@ -63,6 +56,7 @@ body {
   text-align: left;
   margin: auto;
   margin-top: 50px;
+  position: relative;
   padding: 15px;
   padding-right: 0;
 }
@@ -70,8 +64,8 @@ body {
 #profile-img {
   display: inline-block;
   border-radius: 5px;
-  width: 140px;
-  height: 140px;
+  width: 115px;
+  height: 115px;
 }
 
 #profile-name {
@@ -88,18 +82,15 @@ body {
   width: 230px;
 }
 
-#profile-location {
-  color: grey;
+#profile-location, #join-date {
   display: inline-block;
-  font-size: 30px;
-  font-weight: lighter;
-  font-family: 'Ubuntu Mono', monospace;
-  transform: translate(45px, -10px);
+  font-weight: bold;
+  letter-spacing: 1px;
 }
 
 #profile-media-container {
   display: inline-block;
-  transform: translateY(-45px);
+  vertical-align: 45px;
 }
 
 #location-icon {
@@ -130,7 +121,7 @@ body {
   margin-top: 10px;
   margin-right: 15px;
   margin-bottom: -3px;
-  max-height: 100px;
+  height: 80px;
   width: 400px;
 }
 
@@ -188,7 +179,19 @@ div#top-bar {
   width: 120px;
 }
 
+#profile-items-container {
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 18px;
+  margin-left: 15px;
+  margin-top: -22px;
+  position: absolute;
+}
+
 /* Classes */
+.profile-item {
+  margin-top: 10px;
+}
+
 .section-disabled {
   color: grey;
   font-weight: lighter;
@@ -275,15 +278,22 @@ div#top-bar {
 }
 
 .vote {
-  background-image: url("../../images/other/voteIcon.svg");
-  background-repeat: no-repeat;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
   border-radius: 10px;
   position: absolute;
   filter: none;
   opacity: 0.75;
   margin: auto;
+  margin-top: 3px;
   height: 35px;
-  width: 25px;
+  width: 28px;
+}
+
+.vote > img {
+  transform: translateX(-2.5px);
+  pointer-events: none;
+  width: 20px;
 }
 
 .vote:hover {
@@ -302,12 +312,12 @@ div#top-bar {
 }
 
 .upvote {
-  transform: translateX(27px);
+  transform: translateX(26px);
 }
 
 .upvote-selected {
   filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(150deg);
-  transform: translate(27px, -5px);
+  transform: translate(26px, -5px);
   transition: 0.2s ease;
 }
 
@@ -325,6 +335,7 @@ a.likes-icon > img:hover {
 
 .liked {
   color: #5cceff;
+  transition: 0.3s;
 }
 
 .profile-section {
@@ -685,23 +696,13 @@ button.clientm-fail:hover {
   margin-right: 10px;
 }
 
-.options-container-bubble {
-  transform: translate(100px, -110px);
-  position: absolute;
-  pointer-events: none;
-	border: 35px solid transparent;
-	border-bottom-color: #1a1a1c;
-  border-top: 0;
-  height: 80px;
-  z-index: -10;
-}
-
 .account-options {
-  background-color: #1a1a1c;
+  background-color: #18181c;
+  border: 3px solid #3c3c42;
   border-radius: 3px;
-  box-shadow: 0 6px 0px 0px #151517, 0 6px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 8px 0 rgba(0, 0, 0, 0.3), 0 3px 20px 0 rgba(0, 0, 0, 0.3);
   display: none;
-  transform: translate(-30px, 105px);
+  transform: translate(-30px, 100px);
   padding-top: 7px;
   position: absolute;
   height: auto;
@@ -754,8 +755,9 @@ button.clientm-fail:hover {
 }
 
 .votes-container {
-  transform: translate(142px, -50px);
-  margin-left: -10px;
+  position: absolute;
+  right: 110px;
+  margin-top: 5px;
 }
 
 .delete-comment {
@@ -877,6 +879,7 @@ div.login-form-container {
   font-size: 22px;
   text-align: right;
   transform: translate(3px, 3px);
+  transition: 0.3s;
 }
 
 .reply-del-comment {
@@ -1197,20 +1200,6 @@ button.close-btn:active {
 
   #profile-media-container {
     font-size: 10px;
-    transform: translate(-15px, -30px);
-  }
-
-  #join-date {
-    transform: translate(17px, 3px);
-  }
-
-  #profile-location {
-    font-size: 20px;
-    overflow: hidden;
-    transform: translate(45px, -30px);
-    margin-top: 5px;
-    position: absolute;
-    width: 100px;
   }
 
   #location-icon {
@@ -1222,11 +1211,22 @@ button.close-btn:active {
   }
 
   #profile-img {
-    margin-right: 15px;
     width: 20vw;
     height: 20vw;
     min-height: 85px;
     min-width: 85px;
+  }
+
+  #join-date-container {
+    margin-top: 2px;
+  }
+
+  #join-date {
+    display: block;
+  }
+
+  #profile-items-container {
+    margin-top: -25px;
   }
 
   div.login-form-container {
@@ -1344,7 +1344,7 @@ select.input-field {
 }
 
 .votes {
-  transform: translate(-85px, 3px);
+  transform: translate(-80px, 3px);
   text-align: right;
   padding-right: 5px;
 }

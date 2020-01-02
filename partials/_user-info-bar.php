@@ -24,8 +24,6 @@ if (empty($profileImage)) {
     </div>
 
     <div class="account-options" id="acc-options" >
-        <div class="options-container-bubble" ></div>
-
         <a class="skip-reg" href="/index.php" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Home</div></a><br />
         <a class="skip-reg" href="/profile.php?uquery=<?php echo $username; ?>" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Profile</div></a><br />
         <a class="skip-reg" href="javascript:openSettings()" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Account</div></a><br />

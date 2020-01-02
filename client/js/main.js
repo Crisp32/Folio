@@ -392,9 +392,14 @@ function openSettings() {
                     loc = null;
                 }
 
+                let imgURL = res.image;
+                if (!imgURL.includes("http")) {
+                    imgURL = "";
+                }
+
                 // Load User Data
                 $("#profile-img-select").attr("src", res.image);
-                $("#prof-img-url").attr("value", res.image);
+                $("#prof-img-url").attr("value", imgURL);
                 $("#bio-textarea").text(res.bio);
                 $(".account-loc-setting").val(loc);
                 $("#allowComments").val(res.comments);
@@ -410,7 +415,7 @@ function openSettings() {
 }
 
 function closeSettings() {
-    $("#settings-bg").css("display", "none");
+    location.reload();
 }
 
 function saveSettings() {
@@ -453,9 +458,7 @@ function saveSettings() {
                 if (res.success) {
                     popUp("clientm-success", "Saved!", null);
 
-                    if (imgURL !== null && imgURL !== "") {
-                        $("#profile-img-select").attr("src", imgURL);
-                    }
+                    $("#profile-img-select").attr("src", res.imgURL);
                 }
                 else {
                     popUp("clientm-fail", res.message, null);

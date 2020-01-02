@@ -35,10 +35,11 @@ if (empty($location) || !validLocation($location)) {
 
 $code = generateVerificationCode(); // Generate Verification Code
 $passHash = password_hash($password, PASSWORD_BCRYPT, array("cost" => 11));
+$profImg = randomProfileImage();
 $date = date("j-n-Y");
 $query = "INSERT INTO
-    users(username, email, accountLocation, password, verificationCode, verified, profileBio, voteCount, date, allowComments) 
-    VALUES('$username', '$email', '$location', '$passHash', '$code', '0', 'Sample Bio', '0', '$date', '1')
+    users(username, email, accountLocation, password, verificationCode, verified, profileBio, voteCount, date, allowComments, profileImagePath) 
+    VALUES('$username', '$email', '$location', '$passHash', '$code', '0', 'Sample Bio', '0', '$date', '1', '$profImg')
 ";
 
 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {

@@ -28,19 +28,19 @@
                 
                 <div id="profile-media-container" >
                     <h2 id="profile-name" >404 Error</h2><br />
-                    <div style="display: inline-block" ><img class="icon" id="location-icon" src="/images/other/locationIcon.svg" /><div id="profile-location" >Unknown</div></div>
-                    <div id="join-date" >00-00-0000</div>
+                    <div id="profile-items-container" >
+                      <div class="profile-item" >Location: <div id="profile-location" >Unknown</div></div>
+                      <div class="profile-item" id="join-date-container" >Joined: <div id="join-date" >00-00-0000</div></div>
+                    </div>
                 </div>
 
                 <div>
                   <div class="votes-container" >
-                      <a class="upvote vote" href="javascript:upVoteClick(true)" title="Upvote" ></a>
-                      <a class="downvote vote" href="javascript:downVoteClick(true)" title="Downvote" ></a>
+                      <button class="upvote vote" onclick="upVoteClick(true)" ><img src="/images/other/voteIcon.svg" ></button>
+                      <button class="downvote vote" onclick="downVoteClick(true)" ><img src="/images/other/voteIcon.svg" ></button>
                       <div class="votes" >0</div>
                   </div>
-                  <textarea id="bio" readonly >
-                    Nothing
-                  </textarea>
+                  <textarea id="bio" readonly >Nothing</textarea>
                 </div>
             </div>
           <div>
@@ -48,7 +48,8 @@
           <div>
             <div class="profile-section" >
               <div class="profile-section-container" >
-                <h2 class="section-title" >Blogs</h2>
+                <h2 class="section-title" >Forums</h2>
+                <div style="font-size: 25px; margin-top: -25px" class="res-empty">No Active Forums to Display</div>
               </div>
             </div>
             <br />

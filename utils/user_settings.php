@@ -17,10 +17,6 @@ if (isset($_SESSION["user"])) {
     // Send User Settings back to Client
     try {
         $profileImage = getUserData($db, "profileImagePath", "uid='$uid'");
-        if (empty($profileImage)) {
-            $profileName = getUserData($db, "username", "uid='$uid'");
-            $profileImage = "https://ui-avatars.com/api/?background=c9c9c9&color=131313&size=224&bold=true&font-size=0.35&length=3&name=$profileName";
-        }
 
         echo json_encode([
             "success" => true,

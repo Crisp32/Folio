@@ -30,6 +30,13 @@ if (isset($_SESSION["user"])) {
         $comments = 1;
     }
 
+    // Null Check Image URL
+    $defImage = false;
+    if (empty($image)) {
+        $image = randomProfileImage();
+        $defImage = true;
+    }
+
     // Location
     if (empty($loc) || !validLocation($loc)) {
         $loc = "Unknown";
@@ -53,7 +60,7 @@ if (isset($_SESSION["user"])) {
             "message" => "Bio must be more than 0 Characters"
         ]);
     }
-    else if (!validURL($image)) {
+    else if (!validURL($image) && !$defImage) {
         echo json_encode([
             "success" => false,
             "message" => "The Specified Image does not Exist"
@@ -66,7 +73,8 @@ if (isset($_SESSION["user"])) {
         // Run Through SQLite
         if ($db->query($query)) {
             echo json_encode([
-                "success" => true
+                "success" => true,
+                "imgURL" => $image
             ]);
         }
         else {

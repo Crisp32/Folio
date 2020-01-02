@@ -125,4 +125,12 @@ function getCommentData($db, $column, $type, $condition) {
     return $array[$column];
 }
 
+// Set a Random Default Profile Picture to User
+function randomProfileImage() {
+    $list = json_decode(file_get_contents("../json/profile-images.json"), true);
+    $image = $list[rand(0, count($list) - 1)];
+
+    return $image;
+}
+
 ?>
