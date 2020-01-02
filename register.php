@@ -24,11 +24,9 @@ if (isset($_SESSION["user"])) {
 
     <!--Render Page-->
     <?php require("partials/_loading.php"); ?>
+    <?php require("partials/_top-bar.php"); ?>
     
     <div id="content" >
-
-      <?php require("partials/_top-bar.php"); ?>
-
       <div class="reg-page" >
         <div class="form-container" >
           <div class="form-header" ><h2 class="header-text" >Register</h2></div>
@@ -49,11 +47,13 @@ if (isset($_SESSION["user"])) {
             <div class="p-header" >Password
               <input type="password" class="input-field" id="pass" placeholder="Password" />
               <input type="password" class="input-field second-input" id="conf-pass" placeholder="Confirm Password" />
+              <button class="standard-button inl reg-button" onclick="register()" >Send Verification Code</button>
             </div>
 
-            <button class="standard-button inl reg-button" onclick="register()" >Send Verification Code</button>
             <br /><br />
-            <a class="skip-reg" href="javascript:verifyPage()" >I Already have a Code <div class="bullet-point" >-&gt;</div></a>
+            <div style="transform: translateY(-20px)" >
+              <a class="skip-reg" href="javascript:verifyPage()" >I Already have a Code <div class="bullet-point" >-&gt;</div></a>
+            </div>
           </div>
         </div>
       </div>

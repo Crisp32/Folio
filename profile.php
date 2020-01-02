@@ -17,10 +17,10 @@
 
     <!--Render Page-->
     <?php require("partials/_loading.php"); ?>
+    <?php require("partials/_top-bar.php"); ?>
     
     <div id="content" >
-        <?php require("partials/_top-bar.php"); ?>
-
+      
         <!--Profile Page-->
         <div class="center-container" >
             <div id="profile-name-container" >
@@ -55,8 +55,8 @@
             <div class="profile-section" >
               <div class="profile-section-container" >
                 <h2 class="section-title" >Comments <div class="section-disabled" id="comments-disabled-info" >DISABLED</div></h2>
+                <div class="add-comment-div" ><input class="add-comment" placeholder="Comment" /><button class="add-comment-btn" onclick="addComment('profile')" >Post</button></div>
                 <div id="comments-container" >
-                  <div class="comment" ><div class="commenter-name" >Testboi <div class="comment-post-date" >00-00-0000</div></div><div class="comment-content" >Yes Child</div></div>
                 </div>
               </div>
             </div>

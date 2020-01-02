@@ -114,4 +114,15 @@ function validURL($url) {
     }
 }
 
+// Retrieve Data from a Comment
+function getCommentData($db, $column, $type, $condition) {
+    $finalCondition = "AND type='$type'";
+    if ($type == "*") { $finalCondition = ""; }
+    
+    $query = $db->query("SELECT $column FROM comments WHERE $condition $finalCondition");
+    $array = $query->fetchArray();
+    
+    return $array[$column];
+}
+
 ?>

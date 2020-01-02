@@ -24,11 +24,9 @@ if (isset($_SESSION["user"])) {
 
     <!--Render Page-->
     <?php require("partials/_loading.php"); ?>
+    <?php require("partials/_top-bar.php"); ?>
     
     <div id="content" >
-
-      <?php require("partials/_top-bar.php"); ?>
-
       <div class="reg-page" >
         <div class="login-form-container" >
 
@@ -41,9 +39,9 @@ if (isset($_SESSION["user"])) {
             <br />
             <div class="p-header" >Password
               <input type="password" class="input-field" id="login-pass" placeholder="Password" />
+              <button class="standard-button inl reg-button" onclick="login()" >Login</button>
             </div>
-
-            <button class="standard-button inl reg-button" onclick="login()" >Login</button>
+            
             <br /><br />
             <div class="register-prompt-container" >
               <a class="skip-reg" href="/register.php" >Don't Have an Account? Register Now <div class="bullet-point" >-&gt;</div></a>

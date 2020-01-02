@@ -13,9 +13,9 @@
 
     <!--Render Page-->
     <?php require("partials/_loading.php"); ?>
+    <?php require("partials/_top-bar.php"); ?>
     
     <div id="content" >
-      <?php require("partials/_top-bar.php"); ?>
       <?php require("partials/_client-msg.php"); ?>
       <?php require("partials/_footer.php"); ?>
     </div>

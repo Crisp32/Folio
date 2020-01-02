@@ -41,7 +41,7 @@ window.onload = function() {
                                 html += '<div class="res-item underline" ><a href="/profile.php?uquery=' + res[key].name + '" ><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' (user)</a></div><img class="res-img" src="' + res[key].profileImage + '" >';
                             }
                             else {
-                                html += '<div class="res-item" ><a href="/profile.php?uquery=' + res[key].name + '" ><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' (user)</a></div><img class="res-img res-img-undl" src="' + res[key].profileImage + '" >';
+                                html += '<div class="res-item last-item" ><a href="/profile.php?uquery=' + res[key].name + '" ><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' (user)</a></div><img style="transform: translate(10px, -50px)" class="res-img res-img-undl" src="' + res[key].profileImage + '" >';
                             }                       
                         }
                         index++;
@@ -76,7 +76,6 @@ window.onload = function() {
                 }
             }
         }
-        
 
         // Search Bar
         if (document.getElementById("search-res") != null) {
@@ -464,6 +463,50 @@ function saveSettings() {
             },
             error: function(err) {
                 popUp("clientm-fail", "Failed to Save your Settings", null);
+            }
+        });
+    }
+}
+
+// Profile Comment Functionality
+function addComment() {
+    let comment = $(".add-comment").val();
+    let profile = $("#profile-name").text();
+
+    // Client Side Validation
+    if (comment.length > 120) {
+        popUp("clientm-fail", "Comment Must be Less than 120 Characters", null);
+    }
+    else if (comment.length == 0) {
+        popUp("clientm-fail", "Comment Must be Greater than 0 Characters", null);
+    }
+    else {
+
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/add_comment.php",
+            dataType: "json",
+            data: {
+                url: window.location.pathname,
+                profile: profile,
+                content: comment
+            },
+            success: function(res) {
+                
+                // Display Success/Error to user
+                if (res.success) {
+                    loadComments(res.comment);
+                    popUp("clientm-success", "Posted Comment!", null);
+                    $(".res-empty").css("display", "none");
+                    $(".add-comment").val("");
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                } 
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
             }
         });
     }
