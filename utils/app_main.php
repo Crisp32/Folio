@@ -4,6 +4,10 @@
  * Connell Reffo 2019
  */
 
+// Public Constants
+$TYPE_PROFILE = "profile";
+$TYPE_FORUMPOST = "forumpost";
+
 // List of Possible Countries
 $countries = [
     "Canada",

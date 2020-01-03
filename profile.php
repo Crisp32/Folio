@@ -49,7 +49,7 @@
             <div class="profile-section" >
               <div class="profile-section-container" >
                 <h2 class="section-title" >Forums</h2>
-                <div style="font-size: 25px; margin-top: -25px" class="res-empty">No Active Forums to Display</div>
+                <div style="font-size: 25px; margin-top: -25px" class="forums-empty res-empty">No Active Forums to Display</div>
               </div>
             </div>
             <br />

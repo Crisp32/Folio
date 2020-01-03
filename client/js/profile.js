@@ -3,10 +3,33 @@
  * Connell Reffo 2019
  */
 
+// Variables
+let loadedComments = 0; // Tracks how many are currently Loaded
+let loadAmounts = 5; // How many Comments to Request and Load when Needed
+let loadedAllComments = false;
+
+// Execute when Page Loads
 function triggerOnLoad() {
 
     // Load Profile Data into Page
     loadProfile(profile);
+
+    // Load Comments as Client Scrolls
+    $(window).scroll(function() {
+        if($(window).scrollTop() + $(window).height() == $(document).height()) {
+            if (!loadedAllComments) {
+                let requestedComments = getProfileComments(loadedComments, loadAmounts, profile);
+    
+                if (requestedComments != null && requestedComments != "") {
+                    loadComments(requestedComments, "append");
+                    loadedComments += loadAmounts;
+                }
+                else {
+                    loadedAllComments = true;
+                }
+            }
+        }
+     });
 
     // Toggles Replies Section of a Comment
     $(document).on("click", ".reply-options", function (e) {
@@ -46,7 +69,7 @@ function triggerOnLoad() {
                     // Remove Comment HTML on Client End
                     $(element).parent().parent().parent().remove();
                     if ($(".delete-comment").length == 0) {
-                        $("#comments-container").prepend('<div style="font-size: 25px" class="res-empty">No Comments to Display</div>');
+                        $("#comments-container").prepend('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
                     }
                 }
                 else {
@@ -196,11 +219,13 @@ function loadProfile(username) {
                 }
 
                 // Display Comments
-                if (res.accountComments == null || res.accountComments == "") {
+                let accountComments = getProfileComments(0, loadAmounts, username);
+                if (accountComments == null || accountComments == "") {
                     $("#comments-container").append('<div style="font-size: 25px" class="res-empty">No Comments to Display</div>');
                 }
                 else {
-                    loadComments(res.accountComments);
+                    loadedComments += loadAmounts;
+                    loadComments(accountComments, "append");
                 }
             }
             else {
@@ -262,7 +287,7 @@ function loadErrorProfile() {
 }
 
 // Appends a JSON Object containing an account's comment section to the markup
-function loadComments(commentsJSON) {
+function loadComments(commentsJSON, method) {
 
     let index = 0;
     for (let comment in commentsJSON) {
@@ -278,7 +303,12 @@ function loadComments(commentsJSON) {
 
         let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a href="../../profile.php?uquery='+commentsJSON[comment][index].user+'" >'+commentsJSON[comment][index].user+'</a> <div class="comment-post-date" >'+commentsJSON[comment][index].date+'</div></div><div class="likes-container" ><a class="likes-icon" ><img title="I Like this Comment" src="/images/other/like-icon.png" ></a><div class="likes-count'+likedClass+'" >'+commentsJSON[comment][index].likes+'</div><br /><div name="'+commentsJSON[comment][index].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment][index].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentsJSON[comment][index].content+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
         
-        $("#comments-container").prepend(commentHTML);
+        if (method == "append") {
+            $("#comments-container").append(commentHTML);
+        }
+        else {
+            $("#comments-container").prepend(commentHTML);
+        }
 
         index++;
     }
@@ -306,4 +336,22 @@ function loadReplies(fullHTML, repliesJSON) {
     }
 
     return replyHTML;
+}
+
+// Get Profile Comments From Server with Specified Range
+function getProfileComments(min, max, username) {
+    let commentsXHR = $.ajax({
+        type: "POST",
+        url: "../../utils/get_comments.php",
+        dataType: "json",
+        async: false,
+        data: {
+            type: "profile",
+            username: username,
+            min: min,
+            max: max
+        }
+    });
+
+    return commentsXHR.responseJSON.comments;
 }

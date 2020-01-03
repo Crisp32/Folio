@@ -491,7 +491,7 @@ function addComment() {
             url: "../../utils/add_comment.php",
             dataType: "json",
             data: {
-                url: window.location.pathname,
+                type: "profile",
                 profile: profile,
                 content: comment
             },
@@ -501,7 +501,7 @@ function addComment() {
                 if (res.success) {
                     loadComments(res.comment);
                     popUp("clientm-success", "Posted Comment!", null);
-                    $(".res-empty").css("display", "none");
+                    $(".comments-empty.res-empty").css("display", "none");
                     $(".add-comment").val("");
                 }
                 else {

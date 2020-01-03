@@ -7,9 +7,6 @@
 include_once "app_main.php";
 session_start();
 
-$profileURL = "/profile.php";
-$blogpostURL = "/blogview.php";
-
 $maxCommentLength = 120;
 
 // Init DB
@@ -21,7 +18,7 @@ if (isset($_SESSION["user"])) {
     $commentType = "";
 
     // Check if posting Comment to Profile
-    if ($_REQUEST["url"] == $profileURL) {
+    if ($_REQUEST["type"] == $TYPE_PROFILE) {
 
         $commentType = "profile";
         $targetProfile = escapeString($_REQUEST["profile"]);
@@ -81,7 +78,7 @@ if (isset($_SESSION["user"])) {
             ]);
         }
     }
-    else if ($_REQUEST["url"] == $blogpostURL) {
+    else if ($_REQUEST["type"] == $TYPE_FORUMPOST) {
         $commentType = "blogpost";
     }
     else {

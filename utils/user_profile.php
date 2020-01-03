@@ -41,80 +41,6 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
         $upvoted = false;
         $downvoted = false;
 
-        // Get Comments
-        if (getUserData($db, "allowComments", "uid='$uid'") == 1) {
-            $queryComments = $db->query("SELECT cid, uid, commenterId, content, postDate, usersLiked, likes, usersReplied, replies FROM comments WHERE uid='$uid' AND type='profile' ORDER BY cid ASC");
-            $comments = [];
-            
-            $index = 0;
-            while ($comment = $queryComments->fetchArray(SQLITE3_ASSOC)) {
-
-                // Get Replies
-                $unformattedReplies = $comment["usersReplied"];
-                $repliesArray = explode("<|n|>", $unformattedReplies);
-                $replies = [];
-
-                foreach ($repliesArray as $reply) {
-                    if (!empty($reply)) {
-                        $replyPieces = explode("<|s|>", $reply);
-                        $delDisplay = "";
-
-                        // Check if Active user can Delete the Comment
-                        if (strval($_SESSION["user"]) == strval($replyPieces[0]) || strval($_SESSION["user"]) == strval($uid)) {
-                            $delDisplay = "block";
-                        }
-                        else {
-                            $delDisplay = "none";
-                        }
-
-                        $replyJSON = [
-                            "user" => getUserData($db, "username", "uid='".$replyPieces[0]."'"),
-                            "content" => $replyPieces[1],
-                            "date" => $replyPieces[2],
-                            "rid" => $replyPieces[3],
-                            "delDisplay" => $delDisplay
-                        ];
-
-                        // Finalize Reply
-                        array_push($replies, $replyJSON);
-                    }
-                }
-
-                // Finalize Comment JSON
-                $delDisplayComment = "";
-
-                // Check if Active user can Delete the Comment
-                if (strval($_SESSION["user"]) == strval($comment["commenterId"]) || strval($_SESSION["user"]) == strval($uid)) {
-                    $delDisplayComment = "block";
-                }
-                else {
-                    $delDisplayComment = "none";
-                }
-
-                // Check if Liked by Active User
-                $liked = false;
-                $currentUser = $_SESSION["user"];
-                if (strpos($comment["usersLiked"], ":$currentUser") !== false && !empty($currentUser)) {
-                    $liked = true;
-                }
-
-                array_push($comments, [
-                    $index => [
-                        "user" => getUserData($db, "username", "uid='".$comment["commenterId"]."'"),
-                        "content" => $comment["content"],
-                        "date" => $comment["postDate"],
-                        "likes" => $comment["likes"],
-                        "liked" => $liked,
-                        "replies" => $replies,
-                        "cid" => $comment["cid"],
-                        "delDisplay" => $delDisplayComment
-                    ]
-                ]);
-
-                $index++;
-            }
-        }
-
         if (isset($_SESSION["user"])) {
             $activeUser = $_SESSION["user"];
 
@@ -137,8 +63,7 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
             "upvoted" => $upvoted,
             "downvoted" => $downvoted,
             "date" => $date,
-            "comments" => $allowComments,
-            "accountComments" => $comments
+            "comments" => $allowComments
         ));
     }
     else {
