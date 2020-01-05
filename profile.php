@@ -15,6 +15,34 @@
     <script src="/client/js/profile.js" ></script>
     <?php require("partials/_included-js.php"); ?>
 
+    <!--Create Forum Modal Interface-->
+    <div class="create-forum-modal-bg" >
+        <div class="create-forum-modal" >
+
+        <!--Forum Image Icon Preview-->
+        <img class="forum-editor-folio" src="/images/other/folioLogoSmall.svg" >
+
+        <!--Create/Cancel Buttons-->
+        <div class="forum-modal-btns" >
+          <button class="standard-button close-btn" onclick="closeForumMenu()" >Close</button>
+          <button class="standard-button save-btn" onclick="createForum()" >Create</button>
+        </div>
+
+        <!--Forum Settings-->
+        <div class="p-header settings-option-header" >Forum Name
+          <input type="text" class="forum-option input-field" id="forum-name" placeholder="Name for Your Forum" />
+        </div><br />
+
+        <div class="p-header settings-option-header" >Forum Icon
+          <input type="text" class="forum-option input-field" id="forum-img-url" placeholder="Custom Forum Icon URL" />
+        </div><br />
+
+        <div class="p-header settings-option-header" >Forum Description
+          <textarea style="margin-bottom: 20px" type="text" class="input-field" id="forum-desc-textarea" >Sample Text</textarea>
+        </div><br />
+      </div>
+    </div>
+
     <!--Render Page-->
     <?php require("partials/_loading.php"); ?>
     <?php require("partials/_top-bar.php"); ?>
@@ -47,13 +75,14 @@
           <br />
           <div>
             <div class="profile-section" >
-              <div class="profile-section-container" >
-                <h2 class="section-title" >Forums</h2>
+              <div class="prof-forum-section profile-section-container" >
+                <h2 class="section-title" >Forums<button class="new-forum new-btn" onclick="openForumMenu()" >+ Create New Forum</button></h2>
                 <div style="font-size: 25px; margin-top: -25px" class="forums-empty res-empty">No Active Forums to Display</div>
+                <div id="joined-forums-container" ></div>
               </div>
             </div>
             <br />
-            <div class="profile-section" >
+            <div id="comment-section" class="profile-section" >
               <div class="profile-section-container" >
                 <h2 class="section-title" >Comments <div class="section-disabled" id="comments-disabled-info" >DISABLED</div></h2>
                 <div class="add-comment-div" ><input class="add-comment" placeholder="Comment" /><button class="add-comment-btn" onclick="addComment('profile')" >Post</button></div>
@@ -62,9 +91,7 @@
               </div>
             </div>
           <div>
-          
         <?php require("partials/_client-msg.php"); ?>
-        <?php require("partials/_footer.php"); ?>
     </div>
   </body>
 </html>

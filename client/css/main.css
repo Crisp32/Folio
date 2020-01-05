@@ -23,6 +23,14 @@ body {
 }
 
 /* IDs */
+#joined-forums-container {
+  display: none;
+}
+
+#comment-section {
+  margin-bottom: 25px;
+}
+
 #reg-form {
   background-color: #2f2f33;
   border-bottom-left-radius: 5px;
@@ -533,11 +541,11 @@ div.bullet-point {
 	color: #adadad;
 	font-family: 'Ubuntu Mono', monospace;
 	font-size: 23px;
-	padding: 10px;
+  padding: 10px;
   margin-top: 20px;
   margin-right: 12px;
   transition: 0.3s;
-  width: 103px;
+  width: auto;
 }
 
 .add-comment-btn:hover {
@@ -548,21 +556,20 @@ div.bullet-point {
 }
   
 button.standard-button {
-	border-radius: 3px;
-	background-color: #242429;
-	border: 3px solid #242429;
+	background-color: #1e1e24;
+  border-radius: 3px;
+  border: none;
 	color: #adadad;
 	font-family: 'Ubuntu Mono', monospace;
 	font-size: 20px;
-	padding: 10px;
+	padding: 13px;
 	margin-top: 20px;
 	transition: 0.3s;
 }
   
 button.standard-button:hover {
 	cursor: pointer;
-	background-color: #1e1e24;
-	border-color: #1e1e24;
+	background-color: #18181c;
 	color: white;
 	transition: 0.3s;
 }
@@ -615,7 +622,7 @@ h1.header {
   margin: auto;
   position: fixed;
   width: 100%;
-  z-index: 7;
+  z-index: 25;
 }
 
 button.clientm-success {
@@ -791,6 +798,33 @@ button.clientm-fail:hover {
   opacity: 0.6;
 }
 
+.new-forum {
+  display: none;
+  float: right;
+  margin-top: -1px;
+  margin-right: 10px;
+}
+
+.new-btn {
+  background-color: #26262b;
+  border: none;
+  border-radius: 3px;
+  color: lightgrey;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 20px;
+  transition: 0.3s ease;
+  padding: 4px;
+  padding-left: 7px;
+  padding-right: 7px;
+}
+
+.new-btn:hover {
+  background-color: #1d1d21;
+  color: #adadad;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
 .skip-reg {
   color: lightgrey;
   font-family: 'Ubuntu Mono', monospace;
@@ -823,6 +857,7 @@ div.login-form-container {
   text-align: center;
   margin: auto;
   margin-top: 10vh;
+  overflow: visible;
   height: 470px;
   width: 500px;
 }
@@ -852,6 +887,62 @@ div.login-form-container {
   margin: auto;
   margin-bottom: -15px;
   margin-left: 22px;
+}
+
+/* Profile Forum UI */
+.profile-forum > * {
+  display: inline-block;
+}
+
+.profile-forum {
+  background-color: #29292e;
+  border: none;
+  border-radius: 3px;
+  margin-bottom: 12px;
+  margin-left: 12px;
+  margin-right: 12px;
+  padding: 8px;
+  position: relative;
+  width: auto;
+}
+
+.profile-forum-icon {
+  border-radius: 3px;
+  margin: 3px;
+  margin-bottom: -1px;
+  width: 80px;
+}
+
+.profile-forum-title {
+  color: lightgrey;
+  font-size: 20px;
+  top: 14px;
+  letter-spacing: 1px;
+  margin-left: 12px;
+  position: absolute;
+}
+
+.profile-forum-desc {
+  color: white;
+  font-size: 16px;
+  letter-spacing: 1px;
+  margin-left: 12px;
+  overflow-wrap: break-word;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 45px;
+  width: calc(100% - 100px);
+}
+
+.profile-forum-date {
+  color: grey;
+  display: inline-block;
+  margin-left: 8px;
+}
+
+#joined-forums-container {
+  max-height: 220px;
+  overflow-y: auto;
 }
 
 /* Comment UI */
@@ -923,13 +1014,13 @@ div.login-form-container {
   padding: 8px;
 }
 
-.commenter-name > a {
+.commenter-name > a, .profile-forum-title > a {
   color: #bababa;
   transition: 0.25s;
   text-decoration: none;
 }
 
-.commenter-name > a:hover {
+.commenter-name > a:hover, .profile-forum-title > a:hover {
   cursor: pointer;
   color: #696969;
   transition: 0.25s;
@@ -974,15 +1065,58 @@ div.login-form-container {
   height: 98%;
 }
 
+.create-forum-modal {
+  background-color: #18181c;
+  border: 3px solid #3c3c42;
+  border-radius: 4px;
+  box-shadow: 0 3px 20px 0 rgba(0, 0, 0, 0.6);
+  transform: translateY(17vh);
+  margin: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 50vw;
+  height: auto;
+  max-width: 400px;
+  min-width: 300px;
+  max-height: 540px;
+  min-height: 230px;
+}
+
+.forum-modal-btns {
+  right: 0;
+  position: absolute;
+  margin-right: 15px;
+  margin-top: -5px;
+}
+
+img.forum-editor-folio {
+  border-radius: 3px;
+  float: left;
+  margin-bottom: 20px;
+  margin-top: 15px;
+  margin-left: 20px;
+  margin-right: 100%;
+  min-width: 72px;
+  width: 20%;
+}
+
+.forum-option {
+  margin-bottom: 20px;
+}
+
+.create-forum-modal-bg .p-header {
+  margin-left: 20px;
+}
+
 /* User Settings Menu */
-#settings-bg {
+#settings-bg, .create-forum-modal-bg {
   background-color: rgba(0, 0, 0, 0.5);
   display: none;
   text-align: center;
   position: fixed;
   width: 100%;
   height: 100%;
-  z-index: 4;
+  z-index: 20;
 }
 
 #settings-menu {
@@ -1009,7 +1143,7 @@ div.login-form-container {
 #settings-btns-container {
   right: 0;
   position: absolute;
-  margin-right: 25px;
+  margin-right: 20px;
   margin-top: 3px;
 }
 
@@ -1036,7 +1170,7 @@ div.login-form-container {
   width: 100%;
 }
 
-#bio-textarea {
+#bio-textarea, #forum-desc-textarea {
   float: left;
   text-align: left;
   margin-bottom: 35px;

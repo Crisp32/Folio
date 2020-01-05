@@ -40,9 +40,14 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
         // Check Votes
         $upvoted = false;
         $downvoted = false;
+        $isActiveUser = false;
 
         if (isset($_SESSION["user"])) {
             $activeUser = $_SESSION["user"];
+
+            if ($activeUser == $uid) {
+                $isActiveUser = true;
+            }
 
             if (strpos($votes, ":$activeUser+") !== false) {
                 $upvoted = true;
@@ -55,6 +60,7 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
         // Send Response to Client
         echo json_encode(array(
             "success" => true,
+            "activeUser" => $isActiveUser,
             "username" => $profileName,
             "image" => $profileImage,
             "bio" => $profileBio,

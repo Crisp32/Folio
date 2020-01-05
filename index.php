@@ -17,7 +17,6 @@
     
     <div id="content" >
       <?php require("partials/_client-msg.php"); ?>
-      <?php require("partials/_footer.php"); ?>
     </div>
   </body>
 </html>

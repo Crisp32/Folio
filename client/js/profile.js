@@ -77,7 +77,7 @@ function triggerOnLoad() {
                 }
             },
             error: function(err) {
-                popUp("clientm-fail", "Server Request Error: " + err, null);
+                popUp("clientm-fail", "Failed to Contact Server", null);
             }
         });
     });
@@ -117,7 +117,7 @@ function triggerOnLoad() {
                 }
             },
             error: function(err) {
-                popUp("clientm-fail", "Server Request Error: " + err, null);
+                popUp("clientm-fail", "Failed to Contact Server", null);
             }
         });
     });
@@ -175,7 +175,7 @@ function triggerOnLoad() {
                     }
                 },
                 error: function(err) {
-                    popUp("clientm-fail", "Server Request Error: " + err, null);
+                    popUp("clientm-fail", "Failed to Contact Server", null);
                 }
             });
         }
@@ -213,6 +213,14 @@ function loadProfile(username) {
                     downVoteClick(false);
                 }
 
+                // Display new Forum Button
+                if (res.activeUser) {
+                    $(".new-forum").css("display", "block");
+                }
+                else {
+                    $(".new-forum").remove();
+                }
+
                 // Hide Disabled Label
                 if (res.comments == 1) {
                     $("#comments-disabled-info").css("display", "none");
@@ -227,6 +235,15 @@ function loadProfile(username) {
                     loadedComments += loadAmounts;
                     loadComments(accountComments, "append");
                 }
+
+                // Display Joined Forums
+                let profileForums = getProfileForums(username);
+                if (profileForums == null || profileForums == "") {
+                    $(".forums-empty").css("display", "block");
+                }
+                else {
+                    loadJoinedForums(profileForums);
+                }
             }
             else {
                 popUp("clientm-fail", res.message, null);
@@ -234,7 +251,7 @@ function loadProfile(username) {
             } 
         },
         error: function(err) {
-            popUp("clientm-fail", "Server Request Error: " + err, null);
+            popUp("clientm-fail", "Failed to Contact Server", null);
             loadErrorProfile();
         }
     });
@@ -273,7 +290,7 @@ function loadProfile(username) {
                 }
             },
             error: function(err) {
-                popUp("clientm-fail", "Server Request Error: " + err, null);
+                popUp("clientm-fail", "Failed to Contact Server", null);
             }
         });
     });
@@ -354,4 +371,101 @@ function getProfileComments(min, max, username) {
     });
 
     return commentsXHR.responseJSON.comments;
+}
+
+// Get Profile Forums
+function getProfileForums(username) {
+    let forumsXHR = $.ajax({
+        type: "POST",
+        url: "../../utils/get_profile_forums.php",
+        dataType: "json",
+        async: false,
+        data: {
+            profile: username
+        }
+    });
+
+    return forumsXHR.responseJSON.forums;
+}
+
+// Forum Creation Menu
+function openForumMenu() {
+    $(".create-forum-modal-bg").css("display", "block");
+}
+
+function closeForumMenu() {
+    $(".create-forum-modal-bg").css("display", "none");
+
+    $(".create-forum-modal input").val("");
+    $(".create-forum-modal textarea").val("Sample Text");
+}
+
+// Render Joined Forums JSON as HTML
+function loadJoinedForums(forums) {
+    let container = $("#joined-forums-container");
+
+    $(container).css("display", "block");
+    $(".forums-empty").css("display", "none");
+
+    for (let forum in forums) {
+        let html = '<div class="profile-forum" ><img class="profile-forum-icon" src="'+forums[forum].icon+'" ><div class="profile-forum-title" title="Owned By '+forums[forum].owner+'" ><a href="/forum.php?fquery='+forums[forum].name+'" >'+forums[forum].name+'</a><div class="profile-forum-date" >'+forums[forum].date+'</div></div><div class="profile-forum-desc" >'+forums[forum].description+'</div></div>';
+        $(container).prepend(html);
+    }
+}
+
+// Forum Creation
+function createForum() {
+    let forumName = $("#forum-name").val();
+    let forumIconURL = $("#forum-img-url").val();
+    let forumDescription = $("#forum-desc-textarea").val();
+
+    // Display 'Loading'
+    popUp("clientm-fail", "Loading", null);
+
+    // Client Side Check
+    if (forumName.length > 20) {
+        popUp("clientm-fail", "Forum Name Must be Under 20 Characters", null);
+    }
+    else if (forumName.length == 0) {
+        popUp("clientm-fail", "Forum Name Must be More than 0 Characters", null);
+    }
+    else if (forumIconURL.length > 150) {
+        popUp("clientm-fail", "Forum Icon URL Must be Under 150 Characters", null);
+    }
+    else if (forumDescription.length > 300) {
+        popUp("clientm-fail", "Forum Description Must be Under 300 Characters", null);
+    }
+    else if (forumDescription.length == 0) {
+        popUp("clientm-fail", "Forum Description Must be More than 0 Characters", null);
+    }
+    else if (forumIconURL.length > 150) {
+        popUp("clientm-fail", "Forum Icon URL Must be Under 150 Characters", null);
+    }
+    else {
+
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/create_forum.php",
+            dataType: "json",
+            data: {
+                name: forumName,
+                description: forumDescription,
+                icon: forumIconURL
+            },
+            success: function(res) {
+                if (res.success) {
+                    popUp("clientm-success", "Created Forum!", null);
+                    loadJoinedForums(res.forum);
+                    closeForumMenu();
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+            }
+        });
+    }
 }

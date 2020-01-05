@@ -38,10 +38,10 @@ window.onload = function() {
                     for (let key in res) {
                         if (res[key].type === "user") {
                             if (index != res.length - 1) {
-                                html += '<div class="res-item underline" ><a href="/profile.php?uquery=' + res[key].name + '" ><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' (user)</a></div><img class="res-img" src="' + res[key].profileImage + '" >';
+                                html += '<div name="'+res[key].name+'" class="res-item underline" ><a><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' (user)</a></div><img class="res-img" src="' + res[key].profileImage + '" >';
                             }
                             else {
-                                html += '<div class="res-item last-item" ><a href="/profile.php?uquery=' + res[key].name + '" ><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' (user)</a></div><img style="transform: translate(10px, -50px)" class="res-img res-img-undl" src="' + res[key].profileImage + '" >';
+                                html += '<div name="'+res[key].name+'" class="res-item last-item" ><a><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' (user)</a></div><img style="transform: translate(10px, -50px)" class="res-img res-img-undl" src="' + res[key].profileImage + '" >';
                             }                       
                         }
                         index++;
@@ -59,10 +59,16 @@ window.onload = function() {
                 }
             },
             error: function(err) {
-                popUp("clientm-fail", "Server Request Error: " + err, null);
+                popUp("clientm-fail", "Failed to Contact Server", null);
             }
         });
 
+    });
+
+    // Search Item Click
+    $(document).on("click", ".res-item", function (e) {
+        let uquery = $(this).attr("name");
+        location.replace("/profile.php?uquery=" + uquery);
     });
 
     // Click Events
@@ -130,7 +136,7 @@ function register() {
             }
         },
         error: function(err) {
-            popUp("clientm-fail", "Server Request Error: " + err, null);
+            popUp("clientm-fail", "Failed to Contact Server", null);
         }
     });
 }
@@ -158,7 +164,7 @@ function resendVerification() {
             }
         },
         error: function(err) {
-            popUp("clientm-fail", "Server Request Error: " + err, null);
+            popUp("clientm-fail", "Failed to Contact Server", null);
         }
     });
 }
@@ -196,7 +202,7 @@ function verifyAccount() {
             }
         },
         error: function(err) {
-            popUp("clientm-fail", "Server Request Error: " + err, null);
+            popUp("clientm-fail", "Failed to Contact Server", null);
         }
     });
 }
@@ -213,28 +219,38 @@ function login() {
     let username = $("#username").val();
     let password = $("#login-pass").val();
 
-    // Send Request
-    $.ajax({
-        type: "POST",
-        url: "../../utils/login_user.php",
-        dataType: "json",
-        data: {
-            username: username,
-            password: password
-        },
-        success: function(res) {
-            // Display Success/Error to user
-            if (res.success) {
-                popUp("clientm-success", res.message + ". Click Here to go to Home Page", "../../index.php");
+    // Client Side Validation
+    if (username.length > 20 || username.length == 0) {
+        popUp("clientm-fail", "Invalid Username", null);
+    }
+    else if (password.length == 0) {
+        popUp("clientm-fail", "Invalid Password", null);
+    }
+    else {
+        
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/login_user.php",
+            dataType: "json",
+            data: {
+                username: username,
+                password: password
+            },
+            success: function(res) {
+                // Display Success/Error to user
+                if (res.success) {
+                    popUp("clientm-success", res.message + ". Click Here to go to Home Page", "../../index.php");
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
             }
-            else {
-                popUp("clientm-fail", res.message, null);
-            }
-        },
-        error: function(err) {
-            popUp("clientm-fail", "Server Request Error: " + err, null);
-        }
-    });
+        });
+    }
 }
 
 // Logout Function
@@ -249,7 +265,7 @@ function logout() {
             location.reload();
         },
         error: function(err) {
-            popUp("clientm-fail", "Server Request Error: " + err, null);
+            popUp("clientm-fail", "Failed to Contact Server", null);
         }
     });
 }
@@ -367,7 +383,7 @@ function voteUser() {
             }
         },
         error: function(err) {
-            popUp("clientm-fail", "Server Request Error: " + err, null);
+            popUp("clientm-fail", "Failed to Contact Server", null);
         }
     });
 }
@@ -409,7 +425,7 @@ function openSettings() {
             } 
         },
         error: function(err) {
-            popUp("clientm-fail", "Server Request Error: " + err, null);
+            popUp("clientm-fail", "Failed to Contact Server", null);
         }
     });
 }
