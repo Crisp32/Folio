@@ -13,21 +13,31 @@ $db = new SQLite3("../db/folio.db");
 
 // Generate Results
 $queryUsers = $db->query("SELECT username, profileImagePath FROM users WHERE username LIKE '%$searchTerm%'");
-$arrayUsers = [];
+$queryForums = $db->query("SELECT name, iconPath FROM forums WHERE name LIKE '%$searchTerm%'");
 
+$arrayFinal = [];
+
+// Get Users
 while ($res = $queryUsers->fetchArray(SQLITE3_ASSOC)) {
-    
-    $profImg = $res["profileImagePath"];
-
-    array_push($arrayUsers, [
+    array_push($arrayFinal, [
             "name" => $res["username"],
-            "profileImage" => $profImg,
+            "profileImage" => $res["profileImagePath"],
             "type" => "user"
         ]
     );
 }
 
+// Get Forums
+while ($res = $queryForums->fetchArray(SQLITE3_ASSOC)) {
+    array_push($arrayFinal, [
+            "name" => $res["name"],
+            "profileImage" => $res["iconPath"],
+            "type" => "forum"
+        ]
+    );
+}
+
 // Return Results to Client
-echo json_encode($arrayUsers);
+echo json_encode($arrayFinal);
 
 ?>

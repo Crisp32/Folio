@@ -90,7 +90,7 @@ body {
   width: 230px;
 }
 
-#profile-location, #join-date {
+#profile-location, #join-date, #creation-date, #forum-owner {
   display: inline-block;
   font-weight: bold;
   letter-spacing: 1px;
@@ -196,6 +196,29 @@ div#top-bar {
 }
 
 /* Classes */
+.view-members {
+  background-color: #1e1e24;
+  border: 3px solid #3c3c42;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.25);
+  color: white;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 20px;
+  transition: 0.3s;
+  margin-top: 20px;
+  margin-bottom: 15px;
+  margin-left: 3px;
+  padding: 9px;
+  width: 468px;
+}
+
+.view-members:hover {
+  background-color: #18181c;
+  color: lightgrey;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
 .profile-item {
   margin-top: 10px;
 }
@@ -686,6 +709,7 @@ button.clientm-fail:hover {
 
 .profile-username-btn {
   text-align: left;
+  overflow: visible;
   width: auto;
 }
 
@@ -913,7 +937,7 @@ div.login-form-container {
   width: 80px;
 }
 
-.profile-forum-title {
+.profile-forum-title, .forum-member-name {
   color: lightgrey;
   font-size: 20px;
   top: 14px;
@@ -938,6 +962,78 @@ div.login-form-container {
   color: grey;
   display: inline-block;
   margin-left: 8px;
+}
+
+.member-img {
+  border-radius: 3px;
+  margin: 3px;
+  margin-bottom: -1px;
+  width: 60px;
+  height: 60px;
+}
+
+.member-default-option {
+  background-color: white;
+  border-radius: 2px;
+  border: none;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 16px;
+  transition: 0.3s;
+  margin-left: 8px;
+  padding: 3px;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.member-default-option:hover, .close-members-modal:hover {
+  background-color: #a3a3a3;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.close-members-modal {
+  background-color: white;
+  border: none;
+  border-radius: 2px;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 20px;
+  transition: 0.3s;
+  transform: translateX(-34px);
+  margin-bottom: 15px;
+  margin-top: 5px;
+  padding: 6px;
+  width: 60%;
+}
+
+.member-option-red {
+  color: white;
+  background: #f53643;
+}
+
+.member-option-red:hover {
+  color: lightgrey;
+  background: #b0232d;
+}
+
+.member-option-green {
+  color: white;
+  background: #2abf59;
+}
+
+.member-option-green:hover {
+  color: lightgrey;
+  background: #1f9143;
+}
+
+.member-options {
+  float: left;
+  transform: translate(68px, -25px);
+  overflow-x: hidden;
+  height: auto;
+}
+
+#members-modal > .modal-content {
+  min-width: 330px;
 }
 
 #joined-forums-container {
@@ -1046,6 +1142,13 @@ div.login-form-container {
   margin-right: 75px;
 }
 
+.forum-member-name {
+  overflow-x: hidden;
+  overflow-y: hidden;
+  height: 25px;
+  width: calc(100%, -20px);
+}
+
 .replies {
   display: none;
 }
@@ -1108,8 +1211,38 @@ img.forum-editor-folio {
   margin-left: 20px;
 }
 
+.modal-content {
+  background-color: #18181c;
+  border: 3px solid #3c3c42;
+  border-radius: 4px;
+  box-shadow: 0 3px 20px 0 rgba(0, 0, 0, 0.6);
+  transform: translateY(17vh);
+  margin: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width: 50vw;
+  height: auto;
+  max-width: 400px;
+  min-width: 300px;
+  min-height: 100px;
+}
+
+.modal-title {
+  font-size: 30px;
+  margin-top: 17px;
+}
+
+#members-container {
+  text-align: left;
+  margin-top: -10px;
+  margin-bottom: 8px;
+  max-height: 530px;
+  height: auto;
+  width: auto;
+}
+
 /* User Settings Menu */
-#settings-bg, .create-forum-modal-bg {
+#settings-bg, .create-forum-modal-bg, .modal-bg {
   background-color: rgba(0, 0, 0, 0.5);
   display: none;
   text-align: center;
@@ -1306,10 +1439,29 @@ button.close-btn:active {
 /* Mobile Viewport Styling */
 @media (max-width: 700px) {
 
+  .forum-img {
+    margin-right: 10px;
+  }
+
+  .forum-media {
+    transform: translateY(8px);
+    margin-top: -3px;
+    margin-left: -14px;
+    margin-right: 20px;
+  }
+
+  .view-members {
+    width: calc(90vw + 20px);
+  }
+
   .profile-section {
     margin-left: 5px;
     position: static;
     width: calc(90vw + 15px);
+  }
+
+  .profile-forum-date {
+    display: none;
   }
 
   .inl {
@@ -1341,7 +1493,7 @@ button.close-btn:active {
   }
 
   #bio {
-    width: 90%;
+    width: calc(90% - 10px);
   }
 
   #profile-img {
@@ -1407,7 +1559,6 @@ button.close-btn:active {
   .profile-username-btn {
     width: 68px;
     height: 58px;
-    overflow: hidden;
   }
 
   .profile-username-bar {

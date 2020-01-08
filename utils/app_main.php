@@ -76,6 +76,73 @@ class Forum {
             throw new Exception("Property FID is not Assigned");
         }
     }
+
+    public function hasMember($uid) {
+        $forumId = $this->FID;
+
+        // Check if Forum ID is Assigned
+        if (isset($forumId)) {
+            if ($uid !== null && $uid !== "") {
+                $db = $this->database;
+                
+                // Get String of Members
+                $selectQuery = $db->query("SELECT members FROM forums WHERE fid='$forumId'");
+                $members = $selectQuery->fetchArray()["members"];
+
+                // Return Boolean
+                return (strpos($members, ":$uid") !== false);
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            throw new Exception("Property FID is not Assigned");
+        }
+    }
+
+    public function getMembers() {
+        $forumId = $this->FID;
+
+        // Check if Forum ID is Assigned
+        if (isset($forumId)) {
+            $db = $this->database;
+                
+            // Get String of Members
+            $selectQuery = $db->query("SELECT members FROM forums WHERE fid='$forumId'");
+            $members = $selectQuery->fetchArray()["members"];
+
+            // Return Array of Members' UID
+            return explode(":", $members);
+        }
+        else {
+            throw new Exception("Property FID is not Assigned");
+        }
+    }
+
+    public function isModerator($uid) {
+        $forumId = $this->FID;
+
+        // Check if Forum ID is Assigned
+        if (isset($forumId)) {
+            if ($uid !== null && $uid !== "") {
+                $db = $this->database;
+                
+                // Get String of Moderators
+                $selectQuery = $db->query("SELECT mods FROM forums WHERE fid='$forumId'");
+                $mods = $selectQuery->fetchArray()["mods"];
+
+                // Return Boolean
+                return (strpos($mods, ":$uid") !== false || $uid == $this->ownerUID);
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            throw new Exception("Property FID is not Assigned");
+        }
+    }
 }
 
 class User {
@@ -211,7 +278,7 @@ function generateVerificationCode() {
 }
 
 // Returns User Information
-function getUserData($db, $column, $condition) {
+function getUserData(SQLite3 $db, $column, $condition) {
     $query = $db->query("SELECT $column FROM users WHERE $condition");
     $array = $query->fetchArray();
 
@@ -219,7 +286,7 @@ function getUserData($db, $column, $condition) {
 }
 
 // Change Users in DB
-function updateUser($db, $column, $value, $condition) {
+function updateUser(SQLite3 $db, $column, $value, $condition) {
     $query = $db->query("UPDATE users SET $column = '$value' WHERE $condition");
     
     return $query;
@@ -279,7 +346,7 @@ function validURL($url) {
 }
 
 // Retrieve Data from a Comment
-function getCommentData($db, $column, $type, $condition) {
+function getCommentData(SQLite3 $db, $column, $type, $condition) {
     $finalCondition = "AND type='$type'";
     if ($type == "*") { $finalCondition = ""; }
     

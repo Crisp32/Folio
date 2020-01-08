@@ -347,7 +347,7 @@ function loadReplies(fullHTML, repliesJSON) {
         }
         replyHTML += replyOptions;
         for (let reply in replies) {
-            replyHTML += '<div class="comment reply" ><div class="reply-indent" ></div><div class="commenter-name" >'+replies[reply].user+' <div class="comment-post-date" >'+replies[reply].date+'</div></div><div><div name="'+replies[reply].rid+'" class="delete-comment reply-del-comment noselect" style="display: '+replies[reply].delDisplay+'" >Delete</div></div><div class="comment-content" style="margin-bottom: 5px" >'+replies[reply].content+'</div></div>';
+            replyHTML += '<div class="comment reply" ><div class="reply-indent" ></div><div class="commenter-name" ><a href="/profile.php?uquery='+replies[reply].user+'" >'+replies[reply].user+'</a> <div class="comment-post-date" >'+replies[reply].date+'</div></div><div><div name="'+replies[reply].rid+'" class="delete-comment reply-del-comment noselect" style="display: '+replies[reply].delDisplay+'" >Delete</div></div><div class="comment-content" style="margin-bottom: 5px" >'+replies[reply].content+'</div></div>';
         }
         replyHTML += endReplyTag;
     }
@@ -423,8 +423,8 @@ function createForum() {
     popUp("clientm-fail", "Loading", null);
 
     // Client Side Check
-    if (forumName.length > 20) {
-        popUp("clientm-fail", "Forum Name Must be Under 20 Characters", null);
+    if (forumName.length > 15) {
+        popUp("clientm-fail", "Forum Name Must be Under 15 Characters", null);
     }
     else if (forumName.length == 0) {
         popUp("clientm-fail", "Forum Name Must be More than 0 Characters", null);
@@ -440,6 +440,12 @@ function createForum() {
     }
     else if (forumIconURL.length > 150) {
         popUp("clientm-fail", "Forum Icon URL Must be Under 150 Characters", null);
+    }
+    else if (!forumName.replace(/\s/g, "").length) {
+        popUp("clientm-fail", "Invalid Forum Name", null);
+    }
+    else if (!forumDescription.replace(/\s/g, "").length) {
+        popUp("clientm-fail", "Invalid Forum Description", null);
     }
     else {
 

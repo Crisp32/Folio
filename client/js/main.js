@@ -36,13 +36,11 @@ window.onload = function() {
                     let index = 0;
 
                     for (let key in res) {
-                        if (res[key].type === "user") {
-                            if (index != res.length - 1) {
-                                html += '<div name="'+res[key].name+'" class="res-item underline" ><a><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' (user)</a></div><img class="res-img" src="' + res[key].profileImage + '" >';
-                            }
-                            else {
-                                html += '<div name="'+res[key].name+'" class="res-item last-item" ><a><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' (user)</a></div><img style="transform: translate(10px, -50px)" class="res-img res-img-undl" src="' + res[key].profileImage + '" >';
-                            }                       
+                        if (index != res.length - 1) {
+                            html += '<div data-type="'+res[key].type+'" name="'+res[key].name+'" class="res-item underline" ><a><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' ('+res[key].type+')</a></div><img class="res-img" src="' + res[key].profileImage + '" >';
+                        }
+                        else {
+                            html += '<div data-type="'+res[key].type+'" name="'+res[key].name+'" class="res-item last-item" ><a><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' ('+res[key].type+')</a></div><img style="transform: translate(10px, -50px)" class="res-img res-img-undl" src="' + res[key].profileImage + '" >';
                         }
                         index++;
                     }
@@ -67,8 +65,17 @@ window.onload = function() {
 
     // Search Item Click
     $(document).on("click", ".res-item", function (e) {
-        let uquery = $(this).attr("name");
-        location.replace("/profile.php?uquery=" + uquery);
+        let type = $(this).attr("data-type");
+
+        if (type === "forum") {
+            let fquery = $(this).attr("name");
+            location.replace("/forum.php?fquery=" + fquery);
+        }
+        else if (type === "user") {
+            let uquery = $(this).attr("name");
+            location.replace("/profile.php?uquery=" + uquery);
+        }
+
     });
 
     // Click Events
@@ -95,7 +102,8 @@ window.onload = function() {
     });
 
     // Run On Load from other Scripts
-    if (window.location.pathname == "/profile.php") {
+    let pathname = window.location.pathname;
+    if (pathname == "/profile.php" || pathname == "/forum.php") {
         triggerOnLoad();
     }
 }

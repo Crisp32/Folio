@@ -20,10 +20,10 @@ if (validateSession($_SESSION["user"])) {
     $forumDesc = escapeString($_REQUEST["description"]);
     $forumIcon = escapeString($_REQUEST["icon"]);
 
-    if (strlen($forumName) > 20) {
+    if (strlen($forumName) > 15) {
         echo json_encode([
             "success" => false,
-            "message" => "Forum Name Must be Under 20 Characters"
+            "message" => "Forum Name Must be Under 15 Characters"
         ]);
     }
     else if (empty($forumName) || strlen($forumName) == 0) {
