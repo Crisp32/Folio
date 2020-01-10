@@ -29,6 +29,6 @@ if (empty($profileImage)) {
         <a class="skip-reg" href="javascript:openSettings()" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Account</div></a><br />
         <a class="skip-reg" href="javascript: logout()" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Logout</div></a>
 
-        <br/><button class="standard-button close-options" onclick="toggleOptions()" >Close</button>
+        <br/><button class="close-options standard-button" onclick="toggleOptions()" >Close</button>
     </div>
 </div>

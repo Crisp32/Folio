@@ -28,7 +28,6 @@ if ($type == $TYPE_PROFILE) {
             $queryComments = $db->query("SELECT * FROM comments WHERE uid='$profileUID' AND type='profile' ORDER BY cid DESC LIMIT $min, $max");
             $comments = [];
             
-            $index = 0;
             while ($comment = $queryComments->fetchArray(SQLITE3_ASSOC)) {
 
                 // Get Replies
@@ -82,19 +81,15 @@ if ($type == $TYPE_PROFILE) {
 
                 // Push to Comments Array
                 array_push($comments, [
-                    $index => [
-                        "user" => getUserData($db, "username", "uid='".$comment["commenterId"]."'"),
-                        "content" => $comment["content"],
-                        "date" => $comment["postDate"],
-                        "likes" => $comment["likes"],
-                        "liked" => $liked,
-                        "replies" => $replies,
-                        "cid" => $comment["cid"],
-                        "delDisplay" => $delDisplayComment
-                    ]
+                    "user" => getUserData($db, "username", "uid='".$comment["commenterId"]."'"),
+                    "content" => $comment["content"],
+                    "date" => $comment["postDate"],
+                    "likes" => $comment["likes"],
+                    "liked" => $liked,
+                    "replies" => $replies,
+                    "cid" => $comment["cid"],
+                    "delDisplay" => $delDisplayComment
                 ]);
-
-                $index++;
             }
 
             // Send Comments to Client

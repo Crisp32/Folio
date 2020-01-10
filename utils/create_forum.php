@@ -10,6 +10,8 @@ session_start();
 // Init DB
 $db = new SQLite3("../db/folio.db");
 
+$illegalChars = "'&*()^%$#@!+:-";
+
 if (validateSession($_SESSION["user"])) {
     $userInstance = new User($db);
     $userInstance->getUserDataByUID($_SESSION["user"]);
@@ -60,6 +62,12 @@ if (validateSession($_SESSION["user"])) {
         echo json_encode([
             "success" => false,
             "message" => "A Forum with this Name Already Exists"
+        ]);
+    }
+    else if (strpbrk($forumName, $illegalChars)) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Forum Name Cannot Contain $illegalChars"
         ]);
     }
     else {

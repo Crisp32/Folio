@@ -1,7 +1,7 @@
 <?php
 /**
  * Folio Main PHP File
- * Connell Reffo 2019
+ * @author Connell Reffo
  */
 
 // Public Constants
@@ -86,11 +86,71 @@ class Forum {
                 $db = $this->database;
                 
                 // Get String of Members
-                $selectQuery = $db->query("SELECT members FROM forums WHERE fid='$forumId'");
-                $members = $selectQuery->fetchArray()["members"];
+                $members = $this->getMembers();
 
                 // Return Boolean
-                return (strpos($members, ":$uid") !== false);
+                return in_array($uid, $members);
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function delete() {
+        $forumId = $this->FID;
+
+        if (isset($forumId)) {
+            $db = $this->database;
+            $deleteQuery = $db->query("DELETE FROM forums WHERE fid='$forumId'");
+
+            return $deleteQuery;
+        }
+        else {
+            throw new Exception("Property FID is not Assigned");
+        }
+    }
+
+    public function removeMember($uid) {
+        $forumId = $this->FID;
+
+        if (isset($forumId)) {
+            $db = $this->database;
+                
+            // Get String of Members
+            $selectQuery = $db->query("SELECT members, mods FROM forums WHERE fid='$forumId'");
+            $array = $selectQuery->fetchArray();
+            
+            $members = $array["members"];
+            $mods = $array["mods"];
+
+            // Remove UID from String
+            $newMembers = str_replace(":$uid", "", $members);
+            $newMods = str_replace(":$uid", "", $mods);
+            $updateQuery = $db->query("UPDATE forums SET members='$newMembers', mods='$newMods' WHERE fid='$forumId'");
+
+            if ($updateQuery) {
+
+                // Remove Forum from User's list of Joined Forums
+                $userInstance = new User($db);
+                $userInstance->getUserDataByUID($uid);
+                $joinedForums = str_replace(":$forumId", "", $userInstance->user["joinedForums"]);
+                $userInstance->update("joinedForums", $joinedForums);
+
+                // Select new Owner if Owner is Leaving
+                if ($uid == $this->ownerUID) {
+                    $this->selectRandomOwner();
+                }
+
+                // Delete Forum if no Users are Left
+                if (count($this->getMembers()) == 1) {
+                    $this->delete();
+                }
+
+                return true;
             }
             else {
                 return false;
@@ -113,10 +173,39 @@ class Forum {
             $members = $selectQuery->fetchArray()["members"];
 
             // Return Array of Members' UID
-            return explode(":", $members);
+            if (!empty($members)) {
+                return explode(":", $members);
+            }
+            else {
+                return [];
+            }
         }
         else {
             throw new Exception("Property FID is not Assigned");
+        }
+    }
+
+    public function getModerators() {
+        $forumId = $this->FID;
+
+        // Check if Forum ID is Assigned
+        if (isset($forumId)) {
+            $db = $this->database;
+
+            // Get String of Moderators
+            $selectQuery = $db->query("SELECT mods FROM forums WHERE fid='$forumId'");
+            $mods = $selectQuery->fetchArray()["mods"];
+
+            // Return Array of Moderators' UID
+            if (!empty($mods)) {
+                return explode(":", $mods);
+            }
+            else {
+                return [];
+            }
+        }
+        else {
+            return false;
         }
     }
 
@@ -140,7 +229,40 @@ class Forum {
             }
         }
         else {
-            throw new Exception("Property FID is not Assigned");
+            return false;
+        }
+    }
+
+    public function selectRandomOwner() {
+        $forumId = $this->FID;
+
+        if (isset($forumId)) {
+            $mods = $this->getModerators();
+            $modsLen = count($mods);
+            $db = $this->database;
+            $newOwner;
+
+            if ($modsLen >= 2) {
+                // Select Random Moderator
+                $newOwner = $mods[mt_rand(0, $modsLen - 1)];
+            }
+            else {
+                // Select Random Member
+                $members = $this->getMembers();
+                $newOwner = $members[mt_rand(0, count($members) - 1)];
+            }
+
+            // Update Forum in DB
+            if ($newOwner !== "" && $newOwner !== null) {
+                $updateQuery = $db->query("UPDATE forums SET owner='$newOwner' WHERE fid='$forumId'");
+                return $updateQuery;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
         }
     }
 }
@@ -174,11 +296,10 @@ class User {
     public function update($column, $value) {
         $db = $this->database;
         $UID = $this->user["uid"];
-        $query = $db->query("UPDATE users SET $column = '$value' WHERE uid='$UID'");
+        $query = $db->query("UPDATE users SET $column='$value' WHERE uid='$UID'");
         
         return $query;
     }
-    
 }
 
 // List of Possible Countries

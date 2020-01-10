@@ -3,6 +3,9 @@
  * Connell Reffo 2019
  */
 
+// Global Variables
+let saved = false;
+
 // Display loading until page loads
 window.onload = function() {
     $("#content").css("display", "block");
@@ -400,6 +403,7 @@ function voteUser() {
 function openSettings() {
     $("#settings-bg").css("display", "block");
     hideOptions();
+    saved = false;
 
     // Get User Settings
     $.ajax({
@@ -439,7 +443,12 @@ function openSettings() {
 }
 
 function closeSettings() {
-    location.reload();
+    if (saved) {
+        location.reload();
+    }
+    else {
+        $("#settings-bg").css("display", "none");
+    }
 }
 
 function saveSettings() {
@@ -486,7 +495,9 @@ function saveSettings() {
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
-                } 
+                }
+
+                saved = true;
             },
             error: function(err) {
                 popUp("clientm-fail", "Failed to Save your Settings", null);

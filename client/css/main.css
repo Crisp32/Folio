@@ -23,6 +23,20 @@ body {
 }
 
 /* IDs */
+#leave-forum-btns {
+  margin-top: -15px;
+  margin-bottom: 15px;
+}
+
+#leave-forum-msg {
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 16px;
+  margin-bottom: 15px;
+  margin-left: 12px;
+  margin-right: 12px;
+  margin-top: -15px;
+}
+
 #joined-forums-container {
   display: none;
 }
@@ -90,7 +104,7 @@ body {
   width: 230px;
 }
 
-#profile-location, #join-date, #creation-date, #forum-owner {
+#profile-location, #join-date, #creation-date, #forum-members {
   display: inline-block;
   font-weight: bold;
   letter-spacing: 1px;
@@ -196,6 +210,55 @@ div#top-bar {
 }
 
 /* Classes */
+button.edit-forum-btn {
+  background-color: white;
+  border: none;
+  border-radius: 3px;
+  color: black;
+  display: none;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 18px;
+  transition: 0.3s;
+  padding: 5px;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+}
+
+button.edit-forum-btn:hover {
+  background-color: #a3a3a3;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.join-forum-btn {
+  background-color: #2abf59;
+  border: none;
+  border-radius: 3px;
+  color: white;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 20px;
+  margin-top: 8px;
+  padding: 5px;
+  width: 428px;
+}
+
+.join-forum-btn:hover {
+  background-color: #1f9143;
+  color: lightgrey;
+  cursor: pointer;
+}
+
+.joined-forum-btn {
+  color: white;
+  background-color: #f53643;
+}
+
+.joined-forum-btn:hover {
+  color: lightgrey;
+  background-color: #b62731;
+}
+
 .view-members {
   background-color: #1e1e24;
   border: 3px solid #3c3c42;
@@ -750,13 +813,6 @@ button.clientm-fail:hover {
   text-align: left;
   padding: 8px;
   margin-left: 6px;
-}
-
-.close-options {
-  margin-bottom: -6px;
-  margin-left: 9px;
-  transform: translateY(-15px);
-  width: 180px;
 }
 
 .page-footer-container {
@@ -1468,6 +1524,10 @@ button.close-btn:active {
     margin-right: 8px;
   }
 
+  .join-forum-btn {
+    width: calc(90% + 19px);
+  }
+
   #bio-textarea, #prof-img-url {
     max-width: 240px;
   }
@@ -1609,8 +1669,8 @@ select.input-field {
     font-size: 30px;
     position: absolute;
     margin-top: 750px;
-    margin-left: -250px; }
-  
+    margin-left: -250px;
+  }
 }
 
 .inner-info {
@@ -1623,6 +1683,22 @@ select.input-field {
 }
 
 /* Override Styling */
+button.close-options {
+  background-color: white;
+  color: black;
+  font-size: 18px;
+  margin-bottom: -6px;
+  margin-left: 9px;
+  padding: 5px;
+  transform: translateY(-15px);
+  width: 180px;
+}
+
+button.close-options:hover {
+  background-color: #a3a3a3;
+  color: black;
+}
+
 .votes-container {
   transform: translate(73%, -50px);
   margin-left: -10px;

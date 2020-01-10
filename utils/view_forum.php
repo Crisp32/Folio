@@ -11,7 +11,7 @@ session_start();
 $db = new SQLite3("../db/folio.db");
 
 // Null Check Query
-if (isset($_REQUEST["fquery"]) && !empty($_REQUEST["fquery"])) {
+if (isset($_REQUEST["fquery"]) && !empty($_REQUEST["fquery"]) && forumExists($db, $_REQUEST["fquery"])) {
 
     // Grab Forum Data
     $user = $_SESSION["user"];
@@ -32,7 +32,7 @@ if (isset($_REQUEST["fquery"]) && !empty($_REQUEST["fquery"])) {
             "success" => true,
             "forum" => [
                 "joined" => $joinedForum,
-                "owner" => getUserData($db, "username", "uid='$forum->ownerUID'"),
+                "members" => count($forum->getMembers()) - 1,
                 "name" => $forum->name,
                 "description" => $forum->description,
                 "icon" => $forum->iconURL,
@@ -48,10 +48,9 @@ if (isset($_REQUEST["fquery"]) && !empty($_REQUEST["fquery"])) {
         ]);
     }
 }
-else {
+else {  
     echo json_encode([
-        "success" => false,
-        "message" => "Invalid Forum Query"
+        "redirect" => true
     ]);
 }
 
