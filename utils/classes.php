@@ -389,7 +389,6 @@ class Forum {
                 // Modify DB
                 unset($mods[array_search(strval($uid), $mods)]);
                 $modsStr = implode(":", $mods);
-                Debug::log_array_to_file($modsStr, "../output.txt");
                 
                 $this->update("mods", $modsStr);
 
@@ -437,6 +436,179 @@ class User {
         $userData = $db->query($query)->fetchArray();
 
         $this->user = $userData;
+    }
+
+    public function getVotes() {
+        $user = $this->user;
+        $votes = [
+            "upvotes" => [],
+            "downvotes" => []
+        ];
+
+        $votesStr = substr($user["votes"], 1);
+        $votesArray = explode(":", $votesStr);
+
+        if (!empty($votesArray)) {
+            // Process Each Vote
+            foreach ($votesArray as $vote) {
+                if (strpos($vote, "+") !== false) { // Upvote
+                    $uid = str_replace("+", "", $vote);
+                    array_push($votes["upvotes"], strval($uid));
+                }
+                else if (strpos($vote, "-") !== false) { // Downvote
+                    $uid = str_replace("-", "", $vote);
+                    array_push($votes["downvotes"], strval($uid));
+                }
+            }
+        }
+
+        // Return Final Array
+        return $votes;
+    }
+
+    public function hasVoted($uid) {
+        $user = $this->user;
+        $votes = $this->getVotes();
+
+        if (in_array(strval($uid), $votes["upvotes"]) || in_array(strval($uid), $votes["downvotes"])) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function upvotedBy($uid) {
+        $user = $this->user;
+        $votes = $this->getVotes();
+
+        return in_array(strval($uid), $votes["upvotes"]);
+    }
+
+    public function downvotedBy($uid) {
+        $user = $this->user;
+        $votes = $this->getVotes();
+
+        return in_array(strval($uid), $votes["downvotes"]);
+    }
+    
+    public function getVoteCountFromArray($votesArray) {
+        $votes = $votesArray;
+        $count = 0;
+        
+        foreach ($votes["upvotes"] as $upvote) {
+            if ($upvote !== null && $upvote !== "") {
+                $count++;
+            }
+        }
+
+        foreach ($votes["downvotes"] as $downvote) {
+            if ($downvote !== null && $downvote !== "") {
+                $count--;
+            }
+        }
+
+        return $count;
+    }
+
+    public function getVoteCountFromDB() {
+        $votes = $this->getVotes();
+        return $this->getVoteCountFromArray($votes);
+    }
+
+    public function voteArrayToStr($votesArray) {
+        $upvotes = $votesArray["upvotes"];
+        $downvotes = $votesArray["downvotes"];
+        $finalStr = "";
+
+        // Process Upvotes
+        foreach ($upvotes as $vote) {
+            if ($vote !== null && $vote !== "") {
+                $finalStr .= ":+$vote";
+            }
+        }
+
+        // Process Downvotes
+        foreach ($downvotes as $vote) {
+            if ($vote !== null && $vote !== "") {
+                $finalStr .= ":-$vote";
+            }
+        }
+
+        return $finalStr;
+    }
+
+    public function upvote($voterId) {
+        if (!$this->upvotedBy($voterId)) {
+            $votes = $this->getVotes();
+            $votes["downvotes"][array_search(strval($voterId), $votes["downvotes"])] = null;
+            array_push($votes["upvotes"], $voterId);
+            $votesStr = $this->voteArrayToStr($votes);
+
+            // Return Array
+            $count = $this->getVoteCountFromArray($votes);
+            $dbSuccess = ($this->update("votes", $votesStr) && $this->update("voteCount", $count));
+            return [
+                "success" => $dbSuccess,
+                "count" => $count
+            ];
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function downvote($voterId) {
+        if (!$this->downvotedBy($voterId)) {
+            $user = $this->user;
+            $votesStr = $user["votes"];
+            $count = intval($this->getVoteCountFromDB()) - 1;
+
+            if ($this->upvotedBy($voterId)) {
+                $votesStr = str_replace(":+$voterId", ":-$voterId", $votesStr);
+                $count--;
+            }
+            else {
+                $votesStr .= ":-$voterId";
+            }
+
+            // Return Array
+            $dbSuccess = ($this->update("votes", $votesStr) && $this->update("voteCount", $count));
+            return [
+                "success" => $dbSuccess,
+                "count" => $count
+            ];
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function removeVote($voterId) {
+        if ($this->hasVoted($voterId)) {
+            $user = $this->user;
+            $votesStr = $user["votes"];
+            $count = intval($this->getVoteCountFromDB());
+
+            if ($this->upvotedBy($voterId)) {
+                $votesStr = str_replace(":+$voterId", "", $votesStr);
+                $count--;
+            }
+            else if ($this->downvotedBy($voterId)) {
+                $votesStr = str_replace(":-$voterId", "", $votesStr);
+                $count++;
+            }
+
+            // Return Array
+            $dbSuccess = ($this->update("votes", $votesStr) && $this->update("voteCount", $count));
+            return [
+                "success" => $dbSuccess,
+                "count" => $count
+            ];
+        }
+        else {
+            return true;
+        }
     }
 
     public function update($column, $value) {

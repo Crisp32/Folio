@@ -303,6 +303,37 @@ function loadErrorProfile() {
     $("#profile-img").attr("src", "/images/avatars/01.png");
 }
 
+// Profile User Voting
+function voteUser() {
+
+    // Get State of Buttons
+    let upvote = $(".upvote").hasClass("upvote-selected");
+    let downvote = $(".downvote").hasClass("downvote-selected");
+
+    // Send Request to Server
+    $.ajax({
+        type: "POST",
+        url: "../../utils/vote_user.php",
+        dataType: "json",
+        data: {
+            upvote: upvote,
+            downvote: downvote,
+            target: profile
+        },
+        success: function(res) {
+            if (res.success) {
+                $(".votes").text(res.votes);
+            }
+            else {
+                popUp("clientm-fail", res.message, null);
+            }
+        },
+        error: function(err) {
+            popUp("clientm-fail", "Failed to Contact Server", null);
+        }
+    });
+}
+
 // Appends a JSON Object containing an account's comment section to the markup
 function loadComments(commentsJSON, method) {
 

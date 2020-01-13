@@ -370,41 +370,6 @@ function downVoteClick(sendReq) {
     if (sendReq) { voteUser(); } 
 }
 
-function voteUser() {
-
-    // Get State of Buttons
-    let upvote = $(".upvote").hasClass("upvote-selected");
-    let downvote = $(".downvote").hasClass("downvote-selected");
-
-    // Send Request to Server
-    $.ajax({
-        type: "POST",
-        url: "../../utils/vote_user.php",
-        dataType: "json",
-        data: {
-            upvote: upvote,
-            downvote: downvote,
-            target: $("#profile-name").text()
-        },
-        success: function(res) {
-            if (res.error != null) {
-                popUp("clientm-fail", res.error, null);
-
-                $(".upvote").removeClass("upvote-selected");
-                $(".downvote").removeClass("downvote-selected");
-
-                $(".votes").css("color", "lightgrey");
-            }
-            else {
-                $(".votes").text(res.votes);
-            }
-        },
-        error: function(err) {
-            popUp("clientm-fail", "Failed to Contact Server", null);
-        }
-    });
-}
-
 // Settings Functions
 function openSettings() {
     $("#settings-bg").css("display", "block");

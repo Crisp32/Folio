@@ -211,4 +211,9 @@ function validateSession($session) {
     }
 }
 
+// Remove Key From Array
+function removeFromArray($array, $key) {
+    unset($array[array_search(strval($key), $array)]);
+}
+
 ?>

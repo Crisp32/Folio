@@ -13,17 +13,19 @@ $db = new SQLite3("../db/folio.db");
 // Retrieve User Info from SQLite
 if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
 
-    $usearch = $_REQUEST["query"];
-    $uid = getUserData($db, "uid", "username='$usearch'");
+    $usearch = escapeString($_REQUEST["query"]);
+    $user = new User($db);
+    $user->getUserDataByName($usearch);
 
-    $profileImage = getUserData($db, "profileImagePath", "uid='$uid'");
-    $profileName = getUserData($db, "username", "uid='$uid'");
-    $profileBio = getUserData($db, "profileBio", "uid='$uid'");
-    $profileLocation = getUserData($db, "accountLocation", "uid='$uid'");
-    $allowComments = getUserData($db, "allowComments", "uid='$uid'");
-    $date = getUserData($db, "date", "uid='$uid'");
-    $votes = getUserData($db, "votes", "uid='$uid'");
-    $voteCount = calcVotes($votes);
+    // Collect User Data
+    $uid = $user->user["uid"];
+    $profileImage = $user->user["profileImagePath"];
+    $profileName = $user->user["username"];
+    $profileBio = $user->user["profileBio"];
+    $profileLocation = $user->user["accountLocation"];
+    $allowComments = $user->user["allowComments"];
+    $date = $user->user["date"];
+    $voteCount = $user->user["voteCount"];
 
     // Null Check DB Response
     if (!empty($profileName) && !empty($uid)) {
@@ -49,10 +51,10 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
                 $isActiveUser = true;
             }
 
-            if (strpos($votes, ":$activeUser+") !== false) {
+            if ($user->upvotedBy($activeUser)) {
                 $upvoted = true;
             }
-            else if (strpos($votes, ":$activeUser-") !== false) {
+            else if ($user->downvotedBy($activeUser)) {
                 $downvoted = true;
             }
         }
