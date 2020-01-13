@@ -24,35 +24,45 @@ if (validateSession($_SESSION["user"])) {
     if (!empty($forum) || !forumExists($db, $forum)) {
         $forumInstance = getForumDataById($db, getForumIdByName($db, $forum));
 
-        // Check if User is already in Forum
-        if ($forumInstance->hasMember($user)) {
-            if ($forumInstance->removeMember($user)) {
-                echo json_encode([
-                    "success" => true,
-                    "joined" => false,
-                    "reload" => (count($forumInstance->getMembers()) == 1)
-                ]);
+        // Check if Banned from Forum
+        if (!$forumInstance->isBanned($user)) {
+            
+            // Check if User is already in Forum
+            if ($forumInstance->hasMember($user)) {
+                if ($forumInstance->removeMember($user)) {
+                    echo json_encode([
+                        "success" => true,
+                        "joined" => false,
+                        "reload" => (count($forumInstance->getMembers()) == 1)
+                    ]);
+                }
+                else {
+                    echo json_encode([
+                        "success" => false,
+                        "message" => "Database Error"
+                    ]);
+                }
             }
             else {
-                echo json_encode([
-                    "success" => false,
-                    "message" => "Database Error"
-                ]);
+                if ($forumInstance->addMember($user)) {
+                    echo json_encode([
+                        "success" => true,
+                        "joined" => true
+                    ]);
+                }
+                else {
+                    echo json_encode([
+                        "success" => false,
+                        "message" => "Database Error"
+                    ]);
+                }
             }
         }
         else {
-            if ($forumInstance->addMember($user)) {
-                echo json_encode([
-                    "success" => true,
-                    "joined" => true
-                ]);
-            }
-            else {
-                echo json_encode([
-                    "success" => false,
-                    "message" => "Database Error"
-                ]);
-            }
+            echo json_encode([
+                "success" => false,
+                "message" => "You are Banned from this Forum"
+            ]);
         }
     }
     else {

@@ -252,6 +252,12 @@ function login() {
                 // Display Success/Error to user
                 if (res.success) {
                     popUp("clientm-success", res.message + ". Click Here to go to Home Page", "../../index.php");
+
+                    // Change Button
+                    $(".reg-button").addClass("login-success");
+                    $(".reg-button").removeClass("reg-button");
+                    $(".login-success").removeAttr("onclick");
+                    $(".login-success").text("Logged In");
                 }
                 else {
                     popUp("clientm-fail", res.message, null);

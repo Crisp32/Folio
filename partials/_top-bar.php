@@ -1,4 +1,7 @@
-<?php include_once "utils/app_main.php"; ?>
+<?php
+include_once "utils/app_main.php";
+session_start();
+?>
 
 <!--User Settings Menu-->
 <div id="settings-bg" >
@@ -38,12 +41,11 @@
 
 	<div style="float: left" >
 		<?php
-			session_start();
-			$extraCSS = " searchbar-short";
+		$extraCSS = " searchbar-short";
 
-			if (isset($_SESSION["user"])) {
-				$extraCSS = " searchbar-long";
-			}
+		if (isset($_SESSION["user"])) {
+			$extraCSS = " searchbar-long";
+		}
 		?>
 		<input type="text" class="input-field<?php echo $extraCSS; ?>" id="user-search" placeholder="Search Folio" />
 
@@ -54,7 +56,7 @@
 	<div id="top-buttons" >
 		<?php
 
-		if (isset($_SESSION["user"])) {
+		if (validateSession($_SESSION["user"])) {
 			require("_user-info-bar.php");
 		}
 		else {

@@ -43,15 +43,13 @@ if (isset($_SESSION["user"])) {
                             "success" => true,
                             "comment" => [
                                 "0" => [
-                                    "0" => [
-                                        "user" => getUserData($db, "username", "uid='".$activeUser."'"),
-                                        "content" => $commentContent,
-                                        "date" => $postDate,
-                                        "replies" => null,
-                                        "likes" => 0,
-                                        "cid" => getCID($db),
-                                        "delDisplay" => "block"
-                                    ]
+                                    "user" => getUserData($db, "username", "uid='".$activeUser."'"),
+                                    "content" => $commentContent,
+                                    "date" => $postDate,
+                                    "replies" => null,
+                                    "likes" => 0,
+                                    "cid" => getCID($db),
+                                    "delDisplay" => "block"
                                 ]
                             ]
                         ]);

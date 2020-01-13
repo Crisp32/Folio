@@ -27,6 +27,9 @@ if (isset($_REQUEST["fquery"]) && !empty($_REQUEST["fquery"]) && forumExists($db
         // Check if Moderator of Forum
         $moderator = $forum->isModerator($user);
 
+        // Check if Banned
+        $banned = $forum->isBanned($user);
+
         // Send Response to Client
         echo json_encode([
             "success" => true,
@@ -37,7 +40,8 @@ if (isset($_REQUEST["fquery"]) && !empty($_REQUEST["fquery"]) && forumExists($db
                 "description" => $forum->description,
                 "icon" => $forum->iconURL,
                 "date" => $forum->date,
-                "moderator" => $moderator
+                "moderator" => $moderator,
+                "banned" => $banned
             ]
         ]);
     }

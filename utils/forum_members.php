@@ -65,7 +65,6 @@ if (forumExists($db, $forumName)) {
             $memberDataJSON = [
                 "username" => $memberData->user["username"],
                 "image" => $memberData->user["profileImagePath"],
-                "votes" => $memberData->user["voteCount"],
                 "moderator" => $moderator,
                 "owner" => $owner,
                 "removable" => $removable,

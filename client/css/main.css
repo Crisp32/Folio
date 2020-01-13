@@ -22,13 +22,12 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* IDs */
-#leave-forum-btns {
+.leave-forum-btns {
   margin-top: -15px;
   margin-bottom: 15px;
 }
 
-#leave-forum-msg {
+.leave-forum-msg {
   font-family: 'Ubuntu Mono', monospace;
   font-size: 16px;
   margin-bottom: 15px;
@@ -37,6 +36,7 @@ body {
   margin-top: -15px;
 }
 
+/* IDs */
 #joined-forums-container {
   display: none;
 }
@@ -296,7 +296,7 @@ button.edit-forum-btn:hover {
 }
 
 .res-empty {
-  color: #ff5f33;
+  color: #ffb53d;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 20px;
   font-style: italic;
@@ -664,7 +664,7 @@ button.reg-button {
 	color: grey;
   background-color: #1a1a1a;
   background-position: center;
-	border-color: #1a1a1a;
+	border: none;
   margin-top: 30px;
   margin-bottom: 5px;
   transition: 0.3s;
@@ -675,8 +675,19 @@ button.reg-button:hover {
 	color: white;
 	cursor: pointer;
   background: #1a1a1a radial-gradient(circle, transparent 1%, #1a1a1a 1%) center/15000%;
-	border-color: rgba(0, 0, 0, 0);
+	border: none;
   transition: 0.75s;
+}
+
+button.login-success, button.login-success:hover {
+	color: white;
+  background-color: orange;
+  background-position: center;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
+  margin-top: 30px;
+  margin-bottom: 5px;
+  transition: 0.3s;
+  width: calc(100% + 23px);
 }
 
 button.reg-button:active {
@@ -757,6 +768,24 @@ button.clientm-fail:hover {
 	background-color: #111114;
 	border-color: #c4001a;
 	transition: 0.3s;
+}
+
+.banned-members-container {
+  text-align: left;
+  margin-bottom: 10px;
+  margin-top: 12px;
+  margin-left: -12px;
+  min-height: 60px;
+  max-height: 150px;
+  width: calc(100% + 46px);
+}
+
+.banned-members-container .profile-forum {
+  height: 65px;
+}
+
+.banned-members-container .member-options {
+  transform: translate(68px, -31px);
 }
 
 .profile-image-bar {
@@ -1041,22 +1070,21 @@ div.login-form-container {
   padding-right: 6px;
 }
 
-.member-default-option:hover, .close-members-modal:hover {
+.member-default-option:hover, button.close-members-modal:hover {
   background-color: #a3a3a3;
   cursor: pointer;
   transition: 0.3s;
 }
 
-.close-members-modal {
+button.close-members-modal {
   background-color: white;
   border: none;
   border-radius: 2px;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 20px;
   transition: 0.3s;
-  transform: translateX(-34px);
   margin-bottom: 15px;
-  margin-top: 5px;
+  margin-top: -10px;
   padding: 6px;
   width: 60%;
 }
@@ -1093,7 +1121,7 @@ div.login-form-container {
 }
 
 #joined-forums-container {
-  max-height: 220px;
+  max-height: 230px;
   overflow-y: auto;
 }
 
@@ -1288,11 +1316,28 @@ img.forum-editor-folio {
   margin-top: 17px;
 }
 
+.forum-icon-sel {
+  border-radius: 3px;
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
+  float: left;
+  margin-bottom: 25px;
+  margin-top: 18px;
+  margin-left: 18px;
+  margin-right: 100%;
+  width: 11vw;
+  height: 11vw;
+  max-width: 120px;
+  max-height: 120px;
+  min-width: 70px;
+  min-height: 70px;
+}
+
 #members-container {
   text-align: left;
   margin-top: -10px;
   margin-bottom: 8px;
-  max-height: 530px;
+  max-height: 275px;
+  overflow-y: scroll;
   height: auto;
   width: auto;
 }
@@ -1333,7 +1378,6 @@ img.forum-editor-folio {
   right: 0;
   position: absolute;
   margin-right: 20px;
-  margin-top: 3px;
 }
 
 #profile-img-select {
@@ -1341,7 +1385,7 @@ img.forum-editor-folio {
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
   float: left;
   margin-bottom: 25px;
-  margin-top: 22px;
+  margin-top: 18px;
   margin-left: 22px;
   margin-right: 100%;
   width: 11vw;
@@ -1682,7 +1726,20 @@ select.input-field {
   width: 400px;
 }
 
+.bans-empty {
+  background-color: #242429;
+  border: 3px solid #3c3c42;
+  border-radius: 3px;
+  margin-left: 12px;
+  padding: 7px;
+  width: calc(100% - 34px);
+}
+
 /* Override Styling */
+#confirm-member-action-modal > .modal-content {
+  margin-top: 20vh;
+}
+
 button.close-options {
   background-color: white;
   color: black;

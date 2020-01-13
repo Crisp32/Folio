@@ -16,6 +16,7 @@ if (isset($_SESSION["user"])) {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" type="text/css" href="/client/css/main.css">
+    <?php require "partials/_html-head.php"; ?>
     <title>Folio - Register</title>
   </head>
   <body>

@@ -229,7 +229,7 @@ function loadProfile(username) {
                 // Display Comments
                 let accountComments = getProfileComments(0, loadAmounts, username);
                 if (accountComments == null || accountComments == "") {
-                    $("#comments-container").append('<div style="font-size: 25px" class="res-empty">No Comments to Display</div>');
+                    $("#comments-container").append('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
                 }
                 else {
                     loadedComments += loadAmounts;
