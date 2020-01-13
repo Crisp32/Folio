@@ -540,13 +540,19 @@ class User {
 
     public function upvote($voterId) {
         if (!$this->upvotedBy($voterId)) {
-            $votes = $this->getVotes();
-            $votes["downvotes"][array_search(strval($voterId), $votes["downvotes"])] = null;
-            array_push($votes["upvotes"], $voterId);
-            $votesStr = $this->voteArrayToStr($votes);
+            $user = $this->user;
+            $votesStr = $user["votes"];
+            $count = intval($this->getVoteCountFromDB()) + 1;
+
+            if ($this->downvotedBy($voterId)) {
+                $votesStr = str_replace(":-$voterId", ":+$voterId", $votesStr);
+                $count++;
+            }
+            else {
+                $votesStr .= ":+$voterId";
+            }
 
             // Return Array
-            $count = $this->getVoteCountFromArray($votes);
             $dbSuccess = ($this->update("votes", $votesStr) && $this->update("voteCount", $count));
             return [
                 "success" => $dbSuccess,

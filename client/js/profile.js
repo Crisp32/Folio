@@ -219,6 +219,7 @@ function loadProfile(username) {
                 }
                 else {
                     $(".new-forum").remove();
+                    $(".edit-forum-btn").remove();
                 }
 
                 // Hide Disabled Label

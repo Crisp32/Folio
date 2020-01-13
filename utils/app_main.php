@@ -18,6 +18,10 @@ $ACTION_PROMOTE = "promote";
 $ACTION_DEMOTE = "demote";
 $ACTION_UNBAN = "unban";
 
+$FILTER_USERS = "users";
+$FILTER_FORUMS = "forums";
+$FILTER_ALL = "all";
+
 // List of Possible Countries
 $countries = [
     "Canada",
@@ -214,6 +218,13 @@ function validateSession($session) {
 // Remove Key From Array
 function removeFromArray($array, $key) {
     unset($array[array_search(strval($key), $array)]);
+}
+
+function htmlFormat($string) {
+    $str = html_entity_decode(htmlspecialchars_decode($string));
+    $str = str_replace("&#039;", "'", $str);
+
+    return $str;
 }
 
 ?>

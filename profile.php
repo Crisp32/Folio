@@ -54,6 +54,7 @@
         <div class="center-container" >
             <div id="profile-name-container" >
                 <img id="profile-img" src="" />
+                <button class="edit-forum-btn" onclick="openSettings()" style="display: block;" >Edit</button>
                 
                 <div id="profile-media-container" >
                     <h2 id="profile-name" >404 Error</h2><br />

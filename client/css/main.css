@@ -210,6 +210,10 @@ div#top-bar {
 }
 
 /* Classes */
+#post-forum-section {
+  margin-bottom: 20px;
+}
+
 button.edit-forum-btn {
   background-color: white;
   border: none;
@@ -221,14 +225,48 @@ button.edit-forum-btn {
   transition: 0.3s;
   padding: 5px;
   position: absolute;
-  right: 14px;
-  top: 14px;
+  right: 12px;
+  top: 12px;
 }
 
 button.edit-forum-btn:hover {
   background-color: #a3a3a3;
   cursor: pointer;
   transition: 0.3s;
+}
+
+button.post-forum-btn {
+  margin-bottom: 12px;
+  margin-left: 12px;
+  margin-top: 10px;
+  width: 100px;
+}
+
+.forum-post-title {
+  background-color: #242429;
+  border: 3px solid #3c3c42;
+  border-radius: 3px;
+  color: white;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 20px;
+  margin-bottom: 15px;
+  margin-left: 12px;
+  padding: 8px;
+  width: calc(100% - 47px);
+}
+
+.forum-post-textarea {
+  background-color: #242429;
+  border: 3px solid #3c3c42;
+  border-radius: 3px;
+  color: white;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 20px;
+  margin-left: 12px;
+  padding: 8px;
+  resize: none;
+  height: 70px;
+  width: calc(100% - 47px);
 }
 
 .join-forum-btn {
@@ -269,10 +307,8 @@ button.edit-forum-btn:hover {
   font-size: 20px;
   transition: 0.3s;
   margin-top: 20px;
-  margin-bottom: 15px;
-  margin-left: 3px;
   padding: 9px;
-  width: 468px;
+  width: 466px;
 }
 
 .view-members:hover {
@@ -679,7 +715,7 @@ button.reg-button:hover {
   transition: 0.75s;
 }
 
-button.login-success, button.login-success:hover {
+button.login-success, button.login-success:hover, button.login-success:active {
 	color: white;
   background-color: rgb(211, 145, 22);
   background-position: center;
@@ -687,7 +723,6 @@ button.login-success, button.login-success:hover {
   margin-top: 30px;
   margin-bottom: 5px;
   transition: 0.3s;
-  width: calc(100% + 23px);
 }
 
 button.reg-button:active {
@@ -1491,6 +1526,10 @@ button.close-btn:active {
   width: calc(100% + 22px);
 }
 
+.post-forum {
+  width: 466px;
+}
+
 /* Mobile Compatibility */
 @media (min-width: 800px) {
 
@@ -1570,6 +1609,10 @@ button.close-btn:active {
 
   .join-forum-btn {
     width: calc(90% + 19px);
+  }
+
+  .post-forum {
+    width: calc(90vw + 14px);
   }
 
   #bio-textarea, #prof-img-url {
@@ -1736,8 +1779,18 @@ select.input-field {
 }
 
 /* Override Styling */
+button.advanced-search-btn {
+  margin-left: 15px;
+  padding-bottom: 13px;
+  padding-top: 13px;
+}
+
 #confirm-member-action-modal > .modal-content {
   margin-top: 20vh;
+}
+
+#leave-forum-modal > .modal-content {
+  margin-top: 15vh;
 }
 
 button.close-options {

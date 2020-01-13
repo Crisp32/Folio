@@ -21,7 +21,7 @@ if (isset($_SESSION["user"])) {
         echo json_encode([
             "success" => true,
             "image" => $profileImage,
-            "bio" => getUserData($db, "profileBio", "uid='$uid'"),
+            "bio" => htmlFormat(getUserData($db, "profileBio", "uid='$uid'")),
             "location" => getUserData($db, "accountLocation", "uid='$uid'"),
             "comments" => getUserData($db, "allowComments", "uid='$uid'")
         ]);

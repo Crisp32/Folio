@@ -104,7 +104,19 @@
             <div>
         </div>
     </div><br />
-    <button onclick="showMembers()" class="view-members" >View All Members</button>
+
+    <button onclick="showMembers()" class="view-members" >View All Members</button><br />
+
+    <div id="post-forum-section" class="profile-section post-forum" >
+      <div class="profile-section-container" >
+        <h2 class="section-title" >New Forum Post</h2>
+
+        <input class="forum-post-title" placeholder="Title" />
+        <textarea class="forum-post-textarea" placeholder="Sample Text" ></textarea>
+        <button class="add-comment-btn post-forum-btn" onclick="" >Post</button>
+      </div>
+    </div>
+
     <?php require "partials/_client-msg.php"; ?>
   </body>
 </html>

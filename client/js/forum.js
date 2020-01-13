@@ -81,9 +81,11 @@ function loadForum(fquery) {
                     joined = forum.joined;
                     if (!forum.banned) {
                         if (joined) {
+                            $("#post-forum-section").css("display", "inline-block");
                             displayLeaveForumBtn();
                         }
                         else {
+                            $("#post-forum-section").css("display", "none");
                             displayJoinForumBtn();
                         }
                     }
@@ -222,10 +224,13 @@ function joinForum() {
 
                 if (joined) {
                     $("#forum-members").text(parseInt($("#forum-members").text()) + 1);
+                    $("#post-forum-section").css("display", "inline-block");
                     displayLeaveForumBtn();
                 }
                 else {
                     $("#forum-members").text(parseInt($("#forum-members").text()) - 1);
+                    $("#post-forum-section").css("display", "none");
+                    $(".edit-forum-btn").remove();
                     displayJoinForumBtn();
                 }
 
