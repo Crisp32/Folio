@@ -112,8 +112,8 @@
         <h2 class="section-title" >New Forum Post</h2>
 
         <input class="forum-post-title" placeholder="Title" />
-        <textarea class="forum-post-textarea" placeholder="Sample Text" ></textarea>
-        <button class="add-comment-btn post-forum-btn" onclick="" >Post</button>
+        <textarea class="forum-post-textarea" placeholder="Body" ></textarea>
+        <button class="add-comment-btn post-forum-btn" onclick="addForumPost()" >Post</button>
       </div>
     </div>
 

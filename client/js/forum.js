@@ -439,3 +439,51 @@ function memberAction(user, action) {
     // Close Confirmation Page
     closeMemberActionConfirmation();
 }
+
+// Forum Posting
+function addForumPost() {
+    let title = $(".forum-post-title").val();
+    let body = $(".forum-post-textarea").val();
+
+    // Client Side Validation
+    if (title.length > 20) {
+        popUp("clientm-fail", "Title Must not Exceed 20 Characters", null);
+    }
+    else if (title.length == 0) {
+        popUp("clientm-fail", "Title Must be Greater than 0 Characters", null);
+    }
+    else if (body.length > 300) {
+        popUp("clientm-fail", "Body Must not Exceed 300 Characters", null);
+    }
+    else if (body.length == 0) {
+        popUp("clientm-fail", "Body Must be Greater than 0 Characters", null);
+    }
+    else {
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/add_forum_post.php",
+            dataType: "json",
+            data: {
+                forum: forum,
+                title: title,
+                body: body
+            },
+            success: function(res) {
+                if (res.success) {
+                    popUp("clientm-success", "Posted!", null);
+
+                    // Clear Input
+                    $(".forum-post-title").val("");
+                    $(".forum-post-textarea").val("");
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+            }
+        });
+    }
+}

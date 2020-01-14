@@ -403,6 +403,14 @@ class Forum {
         }
     }
 
+    public function addPost($title, $body, $userId, $forumId) {
+        $db = $this->database;
+        $date = date("j-n-Y");
+        $insertStatement = "INSERT INTO forumPosts (fid, uid, title, body, voteCount, date) VALUES ('$forumId', '$userId', '$title', '$body', '0', '$date')";
+
+        return $db->query($insertStatement);
+    }
+
     public function update($column, $value) {
         $db = $this->database;
         $forumId = $this->FID;

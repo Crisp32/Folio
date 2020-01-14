@@ -723,6 +723,7 @@ button.login-success, button.login-success:hover, button.login-success:active {
   margin-top: 30px;
   margin-bottom: 5px;
   transition: 0.3s;
+  width: calc(100% + 23px);
 }
 
 button.reg-button:active {
@@ -1710,6 +1711,10 @@ button.close-btn:active {
 
   .profile-username-bar {
     display: none;
+  }
+
+  button.login-success, button.login-success:hover, button.login-success:active {
+    width: 100%;
   }
 
 }
