@@ -113,7 +113,12 @@ function loadForum(fquery) {
             error: function(err) {
                 popUp("clientm-fail", "Failed to Contact Server", null);
             }
-        });
+        }).done(function() {
+            $("#content").css("display", "block");
+            $("#loading-info").css("display", "none");
+    
+            console.log("Finished Loading Forum");
+        });;
     }
     else {
         popUp("clientm-fail", "Invalid Forum Query", null);
@@ -328,7 +333,6 @@ function loadBannedMembers(bans) {
             $(container).append('<div class="profile-forum" data-profile="'+bannedMember.username+'" ><img class="member-img" src="'+bannedMember.image+'" ><div class="forum-member-name" >'+bannedMember.username+'</div><br /><div class="member-options" ><button class="view-member member-default-option" >View</button><button class="member-action member-default-option member-option-green" data-action="unban" >Unban</button></div></div>');
         }
     }
-
 }
 
 function closeForumSettings() {
@@ -473,6 +477,9 @@ function addForumPost() {
                 if (res.success) {
                     popUp("clientm-success", "Posted!", null);
 
+                    // Add Post on Client End
+                    loadForumPosts(res.post);
+
                     // Clear Input
                     $(".forum-post-title").val("");
                     $(".forum-post-textarea").val("");
@@ -485,5 +492,14 @@ function addForumPost() {
                 popUp("clientm-fail", "Failed to Contact Server", null);
             }
         });
+    }
+}
+
+function loadForumPosts(posts) {
+    let container = $("#forum-posts-container");
+
+    for (let post in posts) {
+        let postObject = posts[post];
+        $(container).append('<div class="profile-section forum-post-container" ><h2 class="section-title" >'+postObject.title+'</h2></div>');
     }
 }

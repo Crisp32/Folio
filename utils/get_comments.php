@@ -1,14 +1,14 @@
 <?php
 /**
  * Folio Comment Grabber
- * Connell Reffo 2019
+ * @author Connell Reffo
  */
 
 include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Fetch Comments
 $type = escapeString($_REQUEST["type"]);
@@ -21,27 +21,30 @@ if ($type == $TYPE_PROFILE) {
 
     // Null Check User
     if (!empty($profile)) {
-        $profileUID = getUserData($db, "uid", "username='$profile'");
+        $profileUID = getUserData("uid", "username='$profile'");
 
         // Check Permissions
-        if (getUserData($db, "allowComments", "uid='$profileUID'") == 1) {
+        if (getUserData("allowComments", "uid='$profileUID'") == 1) {
             $queryComments = $db->query("SELECT * FROM comments WHERE uid='$profileUID' AND type='profile' ORDER BY cid DESC LIMIT $min, $max");
             $comments = [];
             
-            while ($comment = $queryComments->fetchArray(SQLITE3_ASSOC)) {
+            while ($comment = $queryComments->fetch_array(MYSQLI_ASSOC)) {
 
                 // Get Replies
-                $unformattedReplies = $comment["usersReplied"];
-                $repliesArray = explode("<|n|>", $unformattedReplies);
+                $repliesObject = json_decode($comment["usersReplied"]);
                 $replies = [];
 
-                foreach ($repliesArray as $reply) {
+                foreach ($repliesObject as $reply) {
                     if (!empty($reply)) {
-                        $replyPieces = explode("<|s|>", $reply);
-                        $delDisplay = "";
+                        $replyData = [
+                            "rid" => $reply[0],
+                            "uid" => $reply[1],
+                            "content" => $reply[2],
+                            "date" => $reply[3]
+                        ];
 
                         // Check if Active user can Delete the Comment
-                        if (strval($_SESSION["user"]) == strval($replyPieces[0]) || strval($_SESSION["user"]) == strval($profileUID)) {
+                        if (strval($_SESSION["user"]) == strval($replyData["uid"]) || strval($_SESSION["user"]) == strval($profileUID)) {
                             $delDisplay = "block";
                         }
                         else {
@@ -49,10 +52,10 @@ if ($type == $TYPE_PROFILE) {
                         }
 
                         $replyJSON = [
-                            "user" => getUserData($db, "username", "uid='".$replyPieces[0]."'"),
-                            "content" => $replyPieces[1],
-                            "date" => $replyPieces[2],
-                            "rid" => $replyPieces[3],
+                            "user" => getUserData("username", "uid='".$replyData["uid"]."'"),
+                            "content" => $replyData["content"],
+                            "date" => $replyData["date"],
+                            "rid" => $replyData["rid"],
                             "delDisplay" => $delDisplay
                         ];
 
@@ -74,14 +77,14 @@ if ($type == $TYPE_PROFILE) {
 
                 // Check if Liked by Active User
                 $liked = false;
-                $currentUser = $_SESSION["user"];
-                if (strpos($comment["usersLiked"], ":$currentUser") !== false && !empty($currentUser)) {
+                $currentUser = intval($_SESSION["user"]);
+                if (in_array($currentUser, json_decode($comment["usersLiked"]))) {
                     $liked = true;
                 }
 
                 // Push to Comments Array
                 array_push($comments, [
-                    "user" => getUserData($db, "username", "uid='".$comment["commenterId"]."'"),
+                    "user" => getUserData("username", "uid='".$comment["commenterId"]."'"),
                     "content" => $comment["content"],
                     "date" => $comment["postDate"],
                     "likes" => $comment["likes"],
@@ -118,8 +121,3 @@ else {
         "success" => false
     ]);
 }
-
-
-
-
-?>

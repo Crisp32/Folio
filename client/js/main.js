@@ -8,77 +8,12 @@ let saved = false;
 
 // Display loading until page loads
 window.onload = function() {
-    $("#content").css("display", "block");
-    $("#loading-info").css("display", "none");
 
     // Login on Enter Clicked
     $("#login-pass").keypress(function(e) {
         if(e.which == 13) {
             login();
         }
-    });
-
-    // Search bar Functionality
-    $("#user-search").keyup(function(e) {
-
-        let term = $("#user-search").val();
-
-        // Get Search Result from Server
-        $.ajax({
-            type: "POST",
-            url: "../../utils/search.php",
-            dataType: "json",
-            data: {
-                term: term
-            },
-            success: function(res) {
-                // Display Results
-                if (term != "" && term != null) {
-                    let html = "";
-                    let htmlEmpty = '<div class="res-empty" >Nothing to see Here</div>';
-                    let index = 0;
-
-                    for (let key in res) {
-                        if (index != res.length - 1) {
-                            html += '<div data-type="'+res[key].type+'" name="'+res[key].name+'" class="res-item underline" ><a><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' ('+res[key].type+')</a></div><img class="res-img" src="' + res[key].profileImage + '" >';
-                        }
-                        else {
-                            html += '<div data-type="'+res[key].type+'" name="'+res[key].name+'" class="res-item last-item" ><a><div class="bullet-point" >-&gt;</div> ' + res[key].name + ' ('+res[key].type+')</a></div><img style="transform: translate(10px, -50px)" class="res-img res-img-undl" src="' + res[key].profileImage + '" >';
-                        }
-                        index++;
-                    }
-
-                    if (html != null && html != "") {
-                        $("#search-res").html(html);
-                    }
-                    else {
-                        $("#search-res").html(htmlEmpty);
-                    }
-                }
-                else {
-                    $("#search-res").empty();
-                }
-            },
-            error: function(err) {
-                popUp("clientm-fail", "Failed to Contact Server", null);
-            }
-        });
-
-    });
-
-    // Search Item Click
-    $(document).on("click", ".res-item", function (e) {
-        let type = $(this).attr("data-type");
-
-        if (type === "forum") {
-            let fquery = $(this).attr("name");
-            location.replace("/forum.php?fquery=" + fquery);
-        }
-        else if (type === "user") {
-            let uquery = $(this).attr("name");
-            location.replace("/profile.php?uquery=" + uquery);
-        }
-
     });
 
     // Click Events
@@ -92,22 +27,19 @@ window.onload = function() {
                 }
             }
         }
-
-        // Search Bar
-        if (document.getElementById("search-res") != null) {
-            if (!document.getElementById("search-res").contains(e.target) && !document.getElementById("user-search").contains(e.target)) {
-                $("#search-res").css("display", "none");
-            }
-            else {
-                $("#search-res").css("display", "block");
-            }
-        }
     });
 
     // Run On Load from other Scripts
     let pathname = window.location.pathname;
     if (pathname == "/profile.php" || pathname == "/forum.php") {
         triggerOnLoad();
+    }
+
+    initSearch();
+
+    if (pathname !== "/profile.php" && pathname !== "/forum.php") {
+        $("#content").css("display", "block");
+        $("#loading-info").css("display", "none");
     }
 }
 
@@ -157,6 +89,9 @@ function resendVerification() {
     // Get User Input
     let user = $("#resend-to").val();
 
+    // Display Loading Popup
+    popUp("clientm-fail", "Loading...", null);
+
     // Send Request
     $.ajax({
         type: "POST",
@@ -186,6 +121,9 @@ function verifyAccount() {
     // Get User Input
     let user = $("#resend-to").val();
     let code = $("#vcode").val();
+
+    // Display Loading Popup
+    popUp("clientm-fail", "Loading...", null);
 
     // Send Request
     $.ajax({
@@ -229,6 +167,9 @@ function login() {
     // Get User Input
     let username = $("#username").val();
     let password = $("#login-pass").val();
+
+    // Display Loading Popup
+    popUp("clientm-fail", "Loading...", null);
 
     // Client Side Validation
     if (username.length > 20 || username.length == 0) {
@@ -402,6 +343,10 @@ function openSettings() {
                 $("#bio-textarea").text(res.bio);
                 $(".account-loc-setting").val(loc);
                 $("#allowComments").val(res.comments);
+
+                // Hide Loading Screen
+                $("#settings-load").css("display", "block");
+                $("#settings-load-screen").css("display", "none");
             }
             else {
                 popUp("clientm-fail", res.message, null);
@@ -425,7 +370,7 @@ function closeSettings() {
 function saveSettings() {
     let imgURL = $("#prof-img-url").val();
     let bio = $("#bio-textarea").val();
-    let location = $("#location").val();
+    let location = $("#location-setting").val();
     let allowComments = $("#allowComments").val();
 
     // Display Loading Popup

@@ -1,7 +1,7 @@
 <?php
 /**
  * Folio Logout Functionality
- * Connell Reffo 2019
+ * @author Connell Reffo
  */
 
 session_start();

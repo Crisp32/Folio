@@ -1,23 +1,23 @@
 <?php
 /**
  * Folio Forum Members Grabber
- * Connell Reffo 2020
+ * @author Connell Reffo
  */
 
 include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Check if Forum Exists
-$forumName = $_REQUEST["forum"];
+$forumName = escapeString($_REQUEST["forum"]);
 
-if (forumExists($db, $forumName)) {
+if (forumExists($forumName)) {
 
     // Get List of Members' UID
-    $forumId = getForumIdByName($db, $forumName);
-    $forum = getForumDataById($db, $forumId);
+    $forumId = getForumIdByName($forumName);
+    $forum = getForumDataById($forumId);
 
     $members = $forum->getMembers();
     $membersJSON = [];
@@ -25,9 +25,11 @@ if (forumExists($db, $forumName)) {
     // Process each Member and Push to JSON Array
     foreach ($members as $member) {
         if ($member !== null && $member !== "") {
-            $memberData = new User($db);
-            $memberData->getUserDataByUID($member);
             $user = $_SESSION["user"];
+
+            // Get Member Data
+            $memberData = new User();
+            $memberData->getUserDataByUID($member);
 
             // Check if Member is also a Moderator
             $moderator = $forum->isModerator($member);

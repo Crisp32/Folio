@@ -1,23 +1,23 @@
 <?php
 /**
  * Folio Forum Grabber
- * Connell Reffo 2019
+ * @author Connell Reffo
  */
 
 include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Null Check Query
-if (isset($_REQUEST["fquery"]) && !empty($_REQUEST["fquery"]) && forumExists($db, $_REQUEST["fquery"])) {
+if (isset($_REQUEST["fquery"]) && !empty($_REQUEST["fquery"]) && forumExists($_REQUEST["fquery"])) {
 
     // Grab Forum Data
     $user = $_SESSION["user"];
-    $fquery = $_REQUEST["fquery"];
-    $forumId = getForumIdByName($db, $fquery);
-    $forum = getForumDataById($db, $forumId);
+    $fquery = escapeString($_REQUEST["fquery"]);
+    $forumId = getForumIdByName($fquery);
+    $forum = getForumDataById($forumId);
 
     if (!empty($forum)) {
 
@@ -35,7 +35,7 @@ if (isset($_REQUEST["fquery"]) && !empty($_REQUEST["fquery"]) && forumExists($db
             "success" => true,
             "forum" => [
                 "joined" => $joinedForum,
-                "members" => count($forum->getMembers()) - 1,
+                "members" => count($forum->getMembers()),
                 "name" => $forum->name,
                 "description" => htmlFormat($forum->description),
                 "icon" => $forum->iconURL,

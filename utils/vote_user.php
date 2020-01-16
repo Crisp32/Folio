@@ -8,7 +8,7 @@ include "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Check if User is Logged in
 if (validateSession($_SESSION["user"])) {
@@ -16,7 +16,7 @@ if (validateSession($_SESSION["user"])) {
     $target = escapeString($_REQUEST["target"]);
 
     // Get Target User Data
-    $targetUser = new User($db);
+    $targetUser = new User();
     $targetUser->getUserDataByName($target);
 
     // Check Target User

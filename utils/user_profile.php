@@ -8,13 +8,13 @@ include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Retrieve User Info from SQLite
 if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
 
     $usearch = escapeString($_REQUEST["query"]);
-    $user = new User($db);
+    $user = new User();
     $user->getUserDataByName($usearch);
 
     // Collect User Data
@@ -30,11 +30,7 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
     // Null Check DB Response
     if (!empty($profileName) && !empty($uid)) {
         
-        // Null Check Image
-        if (empty($profileImage)) {
-            $profileImage = "https://ui-avatars.com/api/?background=c9c9c9&color=131313&size=224&bold=true&font-size=0.35&length=3&name=$profileName";
-        }
-
+        // Null Check Date
         if (empty($date)) {
             $date = "00-00-0000";
         }

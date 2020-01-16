@@ -1,8 +1,10 @@
 <?php
 
-$accountUsername = $_REQUEST["uname"];
-
 include_once "app_main.php";
+$accountUsername = escapeString($_REQUEST["uname"]);
+
+// Init DB
+$db = db();
 
 // Init PHPMailer
 use PHPMailer\PHPMailer\PHPMailer;
@@ -11,18 +13,15 @@ require_once("../PHPMailer/PHPMailer.php");
 require_once("../PHPMailer/SMTP.php");
 require_once("../PHPMailer/Exception.php");
 
-// Init DB
-$db = new SQLite3("../db/folio.db");
-
-$email = getUserData($db, "email", "username='$accountUsername'");
-$code = getUserData($db, "verificationCode", "username='$accountUsername'");
-$isVerified = getUserData($db, "verified", "username='$accountUsername'");
-
-$accountUsername = substr($accountUsername, 0, 20);
+$isVerified = getUserData("verified", "username='$accountUsername'");
 $newCode = generateVerificationCode();
 
 if ($isVerified == 0) {
     if (!empty($accountUsername)) {
+
+        $email = getUserData("email", "username='$accountUsername'");
+        $code = getUserData("verificationCode", "username='$accountUsername'");
+
         if (!empty($email)) {
             $mail = new PHPMailer();
 
@@ -30,7 +29,7 @@ if ($isVerified == 0) {
             initPHPMailer($mail, $email);
 
             // Update User
-            updateUser($db, "verificationCode", $newCode, "username='$accountUsername'");
+            updateUser("verificationCode", $newCode, "username='$accountUsername'");
 
             $mail->Subject = "Resent Folio Verification Code";
             $mail->Body = "

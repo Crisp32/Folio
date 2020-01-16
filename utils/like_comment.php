@@ -1,48 +1,51 @@
 <?php
 /**
  * Folio Comment Liking
- * Connell Reffo 2019
+ * @author Connell Reffo
  */
 
 include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Check Session
-if (isset($_SESSION["user"])) {
+if (validateSession($_SESSION["user"])) {
     $user = $_SESSION["user"];
 
     $CID = escapeString($_REQUEST["cid"]);
-    $commentQuery = $db->query("SELECT * FROM comments WHERE cid='$CID'");
+    $commentQuery = $db->query("SELECT usersLiked, uid, likes FROM comments WHERE cid='$CID'");
 
     // Fetch Comment Data
     if ($commentQuery) {
-        $commentData = $commentQuery->fetchArray();
-
+        $commentData = $commentQuery->fetch_array(MYSQLI_ASSOC);
+        
         // Validate Permissions
         $profileId = $commentData["uid"];
-        if (getUserData($db, "allowComments", "uid='$profileId'") == 1) {
-
+        if (getUserData("allowComments", "uid='$profileId'") == 1) {
+            
             // Check if User has Already Liked Comment
-            if (strpos($commentData["usersLiked"], ":$user") !== false) {
+            $likesArray = json_decode($commentData["usersLiked"]);
+            $likesArrayEncoded = $commentData["usersLiked"];
+            if (in_array($user, $likesArray)) {
 
                 // Has Liked
-                $usersLiked = str_replace(":$user", "", $commentData["usersLiked"]);
+                $likeIndex = array_search($user, $likesArray);
                 $likes = $commentData["likes"] - 1; // Remove Like
                 $liked = false;
+                $likeQuery = "UPDATE comments SET likes=$likes, usersLiked=JSON_REMOVE('$likesArrayEncoded', '$[$likeIndex]') WHERE cid='$CID'";
             }
             else {
 
                 // Has Not Liked
-                $usersLiked = ":$user" . $commentData["usersLiked"];
                 $likes = $commentData["likes"] + 1; // Add Like
                 $liked = true;
+                $likeQuery = "UPDATE comments SET likes=$likes, usersLiked=JSON_ARRAY_INSERT('$likesArrayEncoded', '$[0]', $user) WHERE cid='$CID'";
             }
 
             // Update DB
-            $updateQuery = $db->query("UPDATE comments SET usersLiked='$usersLiked', likes='$likes' WHERE cid='$CID'");
+            $updateQuery = $db->query($likeQuery);
             if ($updateQuery) {
 
                 // Send Successful Response to Client
@@ -55,7 +58,7 @@ if (isset($_SESSION["user"])) {
             else {
                 echo json_encode([
                     "success" => false,
-                    "message" => "SQLite Error"
+                    "message" => $db->error
                 ]);
             }
         }
@@ -69,7 +72,7 @@ if (isset($_SESSION["user"])) {
     else {
         echo json_encode([
             "success" => false,
-            "message" => "SQLite Error"
+            "message" => $db->error
         ]);
     }
 }

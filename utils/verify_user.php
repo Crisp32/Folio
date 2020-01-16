@@ -7,29 +7,32 @@
 include_once "app_main.php";
 
 // Get User Input
-$username = $_REQUEST["uname"];
-$code = str_replace(" ", "", $_REQUEST["code"]);
+$username = escapeString($_REQUEST["uname"]);
+$code = escapeString($_REQUEST["code"]);
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
-$userExists = getUserData($db, "username", "username='$username'");
-$dbCode = getUserData($db, "verificationCode", "username='$username'");
-$isVerified = getUserData($db, "verified", "username='$username'");
+// Get User Data
+$user = new User();
+$user->getUserDataByName($username);
+
+$dbCode = $user->user["verificationCode"];
+$isVerified = $user->user["verified"];
 
 // Validate
 if ($isVerified == 0) {
-    if (!empty($username)) {
+    if (!empty($user->user["username"])) {
 
         // Check User Information
-        if (!empty($userExists)) {
+        if (userExists($user->user["uid"])) {
 
             // Check Verification Code
             if (!empty($code)) {
 
                 // Validate code with SQLite and make Changes to DB
                 if (strtoupper($code) == strtoupper($dbCode)) {
-                    if (updateUser($db, "verified", "1", "username='$username'")) {
+                    if ($user->update("verified", "1")) {
                         echo json_encode(array(
                             "success" => true,
                             "redirect" => true,
@@ -39,7 +42,7 @@ if ($isVerified == 0) {
                     else  {
                         echo json_encode(array(
                             "success" => false,
-                            "message" => "Database Error"
+                            "message" => $db->error
                         ));
                     }
                 }

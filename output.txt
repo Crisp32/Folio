@@ -3,8 +3,6 @@ Array
     [upvotes] => Array
         (
             [0] => 3
-            [1] => 2
-            [2] => 
         )
 
     [downvotes] => Array

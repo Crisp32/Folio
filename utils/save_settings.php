@@ -1,7 +1,7 @@
 <?php
 /**
  * Folio Account Settings Save Functionality
- * Connell Reffo 2019
+ * @author Connell Reffo
  */
 
 include_once "app_main.php";
@@ -11,14 +11,14 @@ $maxChars = 150;
 $maxBioChars = 300;
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Null Check User Session
 if (isset($_SESSION["user"])) {
     $user = $_SESSION["user"];
 
-    $image = strip_tags(escapeString($_REQUEST["image"]));
-    $bio = strip_tags(escapeString($_REQUEST["bio"]));
+    $image = escapeString($_REQUEST["image"]);
+    $bio = escapeString($_REQUEST["bio"]);
     $loc = escapeString($_REQUEST["location"]);
     $comments = escapeString($_REQUEST["comments"]);
 

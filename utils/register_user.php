@@ -13,15 +13,13 @@ require_once("../PHPMailer/PHPMailer.php");
 require_once("../PHPMailer/SMTP.php");
 require_once("../PHPMailer/Exception.php");
 
-// Init DB
-$db = new SQLite3("../db/folio.db");
-
 // Authenticate Input
-$email = $_REQUEST["email"];
-$location = $_REQUEST["location"];
-$username = $_REQUEST["username"];
-$password = $_REQUEST["password"];
-$confPass = $_REQUEST["confPass"];
+$email = escapeString($_REQUEST["email"]);
+$location = escapeString($_REQUEST["location"]);
+$username = escapeString($_REQUEST["username"]);
+$password = escapeString($_REQUEST["password"]);
+$confPass = escapeString($_REQUEST["confPass"]);
+$votesJSON = '{"upvotes": [], "downvotes": []}';
 
 $maxChars = 20;
 $minPass = 6;
@@ -38,8 +36,8 @@ $passHash = password_hash($password, PASSWORD_BCRYPT, array("cost" => 11));
 $profImg = randomProfileImage();
 $date = date("j-n-Y");
 $query = "INSERT INTO
-    users(username, email, accountLocation, password, verificationCode, verified, profileBio, voteCount, date, allowComments, profileImagePath) 
-    VALUES('$username', '$email', '$location', '$passHash', '$code', '0', 'Sample Bio', '0', '$date', '1', '$profImg')
+    users (username, email, accountLocation, password, verificationCode, verified, profileBio, voteCount, date, allowComments, profileImagePath, votes, joinedForums) 
+    VALUES('$username', '$email', '$location', '$passHash', '$code', '0', 'Sample Bio', '0', '$date', '1', '$profImg', '$votesJSON', '[]')
 ";
 
 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -96,6 +94,20 @@ else if (strlen($password) < $minPass) {
         "message" => "Password is too Short\n (Minimum $minPass Characters)"
     ));
 }
+else if (!empty(getUserData("username", "username='$username'"))) {
+    // Check for duplicate usernames
+    echo json_encode(array(
+        "success" => false,
+        "message" => "An Account with that Username already exists"
+    ));
+}
+else if (!empty(getUserData("email", "email='$email'"))) {
+    // Check for duplicate emails
+    echo json_encode(array(
+        "success" => false,
+        "message" => "An Account with that Email already exists"
+    ));
+}
 else {
     // Create Account and Send Auth info
     $mail = new PHPMailer();
@@ -115,24 +127,10 @@ else {
     if ($mail->send()) {
 
         // Create User
-        if (!empty(getUserData($db, "username", "username='$username'"))) {
-            // Check for duplicate usernames
+        if (!insertUser($query)) { // Execute Query
             echo json_encode(array(
                 "success" => false,
-                "message" => "An Account with that Username already exists"
-            ));
-        }
-        else if (!empty(getUserData($db, "email", "email='$email'"))) {
-            // Check for duplicate emails
-            echo json_encode(array(
-                "success" => false,
-                "message" => "An Account with that Email already exists"
-            ));
-        }
-        else if (!insertUser($db, $query)) { // Execute Query
-            echo json_encode(array(
-                "success" => false,
-                "message" => "Database Error"
+                "message" => $db->error
             ));
         }
         else {
@@ -152,7 +150,9 @@ else {
     }
 }
 
-function insertUser($db, $query) { 
+function insertUser($query) {
+    $db = $GLOBALS["db"];
+
     $result = $db->query($query);
     return $result;
 }

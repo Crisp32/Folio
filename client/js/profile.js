@@ -229,7 +229,7 @@ function loadProfile(username) {
 
                 // Display Comments
                 let accountComments = getProfileComments(0, loadAmounts, username);
-                if (accountComments == null || accountComments == "") {
+                if (accountComments == null || accountComments == "" || accountComments == []) {
                     $("#comments-container").append('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
                 }
                 else {
@@ -243,18 +243,24 @@ function loadProfile(username) {
                     $(".forums-empty").css("display", "block");
                 }
                 else {
-                    loadJoinedForums(profileForums);
+                    loadJoinedForums(profileForums, true);
                 }
             }
             else {
                 popUp("clientm-fail", res.message, null);
+                $("#comments-container").append('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
                 loadErrorProfile();
             } 
         },
         error: function(err) {
             popUp("clientm-fail", "Failed to Contact Server", null);
             loadErrorProfile();
-        }
+        },
+    }).done(function() {
+        $("#content").css("display", "block");
+        $("#loading-info").css("display", "none");
+
+        console.log("Finished Loading Profile");
     });
 
     // Comment Liking
@@ -326,6 +332,10 @@ function voteUser() {
                 $(".votes").text(res.votes);
             }
             else {
+                $(".upvote").removeClass("upvote-selected");
+                $(".downvote").removeClass("downvote-selected");
+                $(".votes").removeAttr("style");
+
                 popUp("clientm-fail", res.message, null);
             }
         },
@@ -396,6 +406,9 @@ function getProfileComments(min, max, username) {
             username: username,
             min: min,
             max: max
+        },
+        error: function() {
+            $("#comments-container").append('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
         }
     });
 
@@ -430,7 +443,7 @@ function closeForumMenu() {
 }
 
 // Render Joined Forums JSON as HTML
-function loadJoinedForums(forums) {
+function loadJoinedForums(forums, append) {
     let container = $("#joined-forums-container");
 
     $(container).css("display", "block");
@@ -438,7 +451,10 @@ function loadJoinedForums(forums) {
 
     for (let forum in forums) {
         let html = '<div class="profile-forum" ><img class="profile-forum-icon" src="'+forums[forum].icon+'" ><div class="profile-forum-title" title="Owned By '+forums[forum].owner+'" ><a href="/forum.php?fquery='+forums[forum].name+'" >'+forums[forum].name+'</a><div class="profile-forum-date" >'+forums[forum].date+'</div></div><div class="profile-forum-desc" >'+forums[forum].description+'</div></div>';
-        $(container).prepend(html);
+        switch (append) {
+            case true: $(container).append(html); break;
+            default: $(container).prepend(html); break;
+        }
     }
 }
 
@@ -491,7 +507,7 @@ function createForum() {
             success: function(res) {
                 if (res.success) {
                     popUp("clientm-success", "Created Forum!", null);
-                    loadJoinedForums(res.forum);
+                    loadJoinedForums(res.forum, false);
                     closeForumMenu();
                 }
                 else {

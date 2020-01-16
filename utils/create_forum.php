@@ -1,14 +1,14 @@
 <?php
 /**
  * Folio Forum Creator
- * Connell Reffo 2019
+ * @author Connell Reffo
  */
 
 include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 $illegalChars = "'&*()^%$#@!+:-";
 
@@ -58,7 +58,7 @@ if (validateSession($_SESSION["user"])) {
             "message" => "The Specified Icon dosen't Exist"
         ]);
     }
-    else if (forumExists($db, $forumName)) {
+    else if (forumExists($forumName)) {
         echo json_encode([
             "success" => false,
             "message" => "A Forum with this Name Already Exists"
@@ -77,18 +77,18 @@ if (validateSession($_SESSION["user"])) {
         }
 
         // Insert new Forum into DB
-        $forum = new Forum($db, $user, $forumName, $forumIcon, $forumDesc);
+        $forum = new Forum($user, $forumName, $forumIcon, $forumDesc);
         $createForum = $forum->create();
 
         if (empty($createForum)) {
             echo json_encode([
                 "success" => false,
-                "message" => "SQLite Error"
+                "message" => $db->error
             ]);
         }
         else {
             // Add Active User as Member
-            $forum->FID = getForumIdByName($db, $forumName);
+            $forum->FID = getForumIdByName($forumName);
             if ($forum->addMember($user)) {
                 echo json_encode([
                     "success" => true,
@@ -106,7 +106,7 @@ if (validateSession($_SESSION["user"])) {
             else {
                 echo json_encode([
                     "success" => false,
-                    "message" => "SQLite Error"
+                    "message" => $db->error
                 ]);
             }
             

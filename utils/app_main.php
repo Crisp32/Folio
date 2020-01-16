@@ -5,10 +5,14 @@
  */
 
 // Includes
+include_once "database.php";
 include_once "PHPDebugger/PHPDebugger.php";
 include_once "classes.php";
+
+// Init DB
+$db = db();
  
-// Public Constants
+// Global Constants
 $TYPE_PROFILE = "profile";
 $TYPE_FORUMPOST = "forumpost";
 
@@ -31,24 +35,26 @@ $countries = [
     "United States"
 ];
 
-// Get Forum Ids By Name
-function getForumIdByName($db, $forumName) {
+// Get Forum IDs By Name
+function getForumIdByName($forumName) {
+    $db = $GLOBALS["db"];
     $query = "SELECT fid FROM forums WHERE name='$forumName'";
-    $FID = $db->query($query)->fetchArray()["fid"];
+    $FID = $db->query($query)->fetch_array(MYSQLI_ASSOC)["fid"];
 
     return $FID;
 }
 
 // Get all Forum Data
-function getForumDataById($db, $forumId) {
+function getForumDataById($forumId) {
+    $db = $GLOBALS["db"];
     $query = "SELECT * FROM forums WHERE fid='$forumId'";
     $forumData = $db->query($query);
 
     if ($forumData) {
-        $forumArray = $forumData->fetchArray();
+        $forumArray = $forumData->fetch_array(MYSQLI_ASSOC);
 
         // Create Forum Instance
-        $forum = new Forum($db, $forumArray["owner"], $forumArray["name"], $forumArray["iconPath"], $forumArray["description"]);
+        $forum = new Forum($forumArray["owner"], $forumArray["name"], $forumArray["iconPath"], $forumArray["description"]);
         $forum->FID = $forumId;
         $forum->date = $forumArray["date"];
 
@@ -60,9 +66,10 @@ function getForumDataById($db, $forumId) {
 }
 
 // Check if a Forum Exists
-function forumExists($db, $forumName) {
+function forumExists($forumName) {
+    $db = $GLOBALS["db"];
     $query = "SELECT name FROM forums WHERE name='$forumName'";
-    $result = $db->query($query)->fetchArray()["name"];
+    $result = $db->query($query)->fetch_array(MYSQLI_ASSOC)["name"];
 
     if (!empty($result)) {
         return true;
@@ -73,9 +80,10 @@ function forumExists($db, $forumName) {
 }
 
 // Check if User Exists
-function userExists($db, $uid) {
+function userExists($uid) {
+    $db = $GLOBALS["db"];
     $query = "SELECT uid FROM users WHERE uid='$uid'";
-    $result = $db->query($query)->fetchArray()["uid"];
+    $result = $db->query($query)->fetch_array(MYSQLI_ASSOC)["uid"];
 
     if (!empty($result) && $uid !== null && $uid !== "") {
         return true;
@@ -119,15 +127,22 @@ function generateVerificationCode() {
 }
 
 // Returns User Information
-function getUserData(SQLite3 $db, $column, $condition) {
+function getUserData($column, $condition) {
+    $db = $GLOBALS["db"];
     $query = $db->query("SELECT $column FROM users WHERE $condition");
-    $array = $query->fetchArray();
 
-    return $array[$column];
+    if ($query) {
+        $row = $query->fetch_array(MYSQLI_ASSOC);
+        return $row[$column];
+    }
+    else {
+        return false;
+    }
 }
 
 // Change Users in DB
-function updateUser(SQLite3 $db, $column, $value, $condition) {
+function updateUser($column, $value, $condition) {
+    $db = $GLOBALS["db"];
     $query = $db->query("UPDATE users SET $column = '$value' WHERE $condition");
     
     return $query;
@@ -187,12 +202,14 @@ function validURL($url) {
 }
 
 // Retrieve Data from a Comment
-function getCommentData(SQLite3 $db, $column, $type, $condition) {
+function getCommentData($column, $type, $condition) {
+    $db = $GLOBALS["db"];
+
     $finalCondition = "AND type='$type'";
     if ($type == "*") { $finalCondition = ""; }
     
     $query = $db->query("SELECT $column FROM comments WHERE $condition $finalCondition");
-    $array = $query->fetchArray();
+    $array = $query->fetch_array(MYSQLI_ASSOC);
     
     return $array[$column];
 }

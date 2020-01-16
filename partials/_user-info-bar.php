@@ -4,16 +4,15 @@ session_start();
 include_once $_SERVER["DOCUMENT_ROOT"] . "/utils/app_main.php";
 
 // Init DB
-$db = new SQLite3($_SERVER["DOCUMENT_ROOT"] . "/db/folio.db");
+$db = db();
 $sess = $_SESSION["user"];
 
-$username = getUserData($db, "username", "uid='$sess'");
-$profileImage = getUserData($db, "profileImagePath", "uid='$sess'");
+// Get Active User Data
+$user = new User();
+$user->getUserDataByUID($sess);
 
-// Null Check Image
-if (empty($profileImage)) {
-    $profileImage = "https://ui-avatars.com/api/?background=c9c9c9&color=131313&size=256&bold=true&font-size=0.35&length=3&name=" . $username;
-}
+$username = $user->user["username"];
+$profileImage = $user->user["profileImagePath"];
 
 ?>
 

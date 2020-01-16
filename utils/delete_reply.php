@@ -1,37 +1,47 @@
 <?php
 /**
  * Folio Comment Reply Deletion
- * Connell Reffo 2019
+ * @author Connell Reffo
  */
 
 include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
-// Null Check Session
-if (isset($_SESSION["user"])) {
+// Check Session
+if (validateSession($_SESSION["user"])) {
     $user = $_SESSION["user"];
 
-    $RID = $_REQUEST["rid"];
-    $CID = $_REQUEST["cid"];
+    $RID = escapeString($_REQUEST["rid"]);
+    $CID = escapeString($_REQUEST["cid"]);
 
     // Validate User Permissions
-    $commentQuery = $db->query("SELECT * FROM comments WHERE cid='$CID'");
+    $commentQuery = $db->query("SELECT uid, JSON_EXTRACT(usersReplied, '$[*]') AS replies FROM comments WHERE cid='$CID'");
 
     if ($commentQuery) {
 
-        $comment = $commentQuery->fetchArray();
-        $replies = $comment["usersReplied"];
-        $reply = parseReply($replies, $RID);
-        
-        if ($reply["commenterId"] == $user || strval($comment["uid"]) == $user) {
-            $replyStr = findReplyStr($replies, $RID);
-            $final = str_replace($replyStr, "", $replies);
+        $comment = $commentQuery->fetch_array(MYSQLI_ASSOC);
 
-            // Update DB
-            $updateQuery = "UPDATE comments SET usersReplied='$final' WHERE cid='$CID'";
+        $repliesEncoded = $comment["replies"];
+        $replyData = findReply($RID, json_decode($repliesEncoded));
+
+        $reply = $replyData["reply"];
+        $replyIndex = $replyData["index"];
+
+        $replyAssoc = [
+            "rid" => $reply[0],
+            "uid" => $reply[1],
+            "content" => $reply[2],
+            "date" => $reply[3]
+        ];
+        
+        if ($replyAssoc["uid"] == $user || $comment["uid"] == $user) {
+            
+            // Update Database
+            $updateQuery = "UPDATE comments SET usersReplied=JSON_REMOVE('$repliesEncoded', '$[$replyIndex]'), repliesCount=repliesCount-1 WHERE cid='$CID'";
+
             if ($db->query($updateQuery)) {
                 echo json_encode([
                     "success" => true,
@@ -41,7 +51,7 @@ if (isset($_SESSION["user"])) {
             else {
                 echo json_encode([
                     "success" => false,
-                    "message" => "Error with Updating the Database"
+                    "message" => $db->error
                 ]);
             }
         }
@@ -55,7 +65,7 @@ if (isset($_SESSION["user"])) {
     else {
         echo json_encode([
             "success" => false,
-            "message" => "SQLite Error"
+            "message" => $db->error
         ]);
     }
 }
@@ -66,38 +76,21 @@ else {
     ]);
 }
 
-function findReplyStr($replies, $RID) {
-    $repliesArr = explode("<|n|>", $replies);
-    $returnStr = "";
-    
-    foreach ($repliesArr as $reply) {
-        $replyPieces = explode("<|s|>", $reply);
+function findReply($replyId, $replies) {
+    $index = 0;
 
-        // Index of Reply ID
-        if ($replyPieces[3] == $RID) {
-            $returnStr = "<|n|>" . implode("<|s|>", $replyPieces);
-            return $returnStr;
-        }
-    }
-}
-
-function parseReply($replies, $RID) {
-    $repliesArr = explode("<|n|>", $replies);
-    $returnJSON = [];
-    
-    foreach ($repliesArr as $reply) {
-        $replyPieces = explode("<|s|>", $reply);
-
-        // Index of Reply ID
-        if ($replyPieces[3] == $RID) {
-            $returnJSON = [
-                "rid" => $RID,
-                "content" => $replyPieces[1],
-                "commenterId" => $replyPieces[0]
+    foreach ($replies as $reply) {
+        if (intval($reply[0]) == intval($replyId)) {
+            return [
+                "index" => $index,
+                "reply" => $reply
             ];
-            return $returnJSON;
         }
+
+        $index++;
     }
+
+    return false;
 }
 
 ?>

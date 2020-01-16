@@ -8,23 +8,23 @@ include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
-
+$db = db();
 // Null Check Session
-if (isset($_SESSION["user"])) {
+if (validateSession($_SESSION["user"])) {
     $user = $_SESSION["user"];
     $cid = escapeString($_REQUEST["cid"]);
-    $profileCID = escapeString(getUserData($db, "uid", "username='".$_REQUEST["profile"]."'"));
+    $profileCID = escapeString(getUserData("uid", "username='".$_REQUEST["profile"]."'"));
 
     // Validate that Active User has Permission to Delete Comment
-    $commentOwner = getCommentData($db, "commenterId", "profile", "cid='$cid'");
-    $commentProfile = getCommentData($db, "uid", "profile", "cid='$cid'");
+    $commentOwner = getCommentData("commenterId", "profile", "cid='$cid'");
+    $commentProfile = getCommentData("uid", "profile", "cid='$cid'");
     $profileOwner = ($user == $profileCID && $commentProfile == $profileCID);
 
-    if ($user == strval($commentOwner) || $profileOwner) {
+    if ($user == $commentOwner || $profileOwner) {
 
-        $delQuery = "DELETE FROM comments WHERE cid='$cid' AND type='profile'";
-        if ($db->query($delQuery)) {
+        $delQuery = "DELETE FROM comments WHERE cid=$cid AND type='profile'";
+        $updateQuery = "UPDATE users SET commentCount=commentCount-1 WHERE uid=$profileCID";
+        if ($db->query($delQuery) && $db->query($updateQuery)) {
             echo json_encode([
                 "success" => true,
                 "message" => "Deleted Comment!"
@@ -33,7 +33,7 @@ if (isset($_SESSION["user"])) {
         else {
             echo json_encode([
                 "success" => false,
-                "message" => "SQLite Error"
+                "message" => $db->error
             ]);
         }
     }

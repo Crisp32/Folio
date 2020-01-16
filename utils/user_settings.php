@@ -12,18 +12,21 @@ if (isset($_SESSION["user"])) {
     $uid = $_SESSION["user"];
 
     // Init DB
-    $db = new SQLite3("../db/folio.db");
+    $db = db();
 
     // Send User Settings back to Client
     try {
-        $profileImage = getUserData($db, "profileImagePath", "uid='$uid'");
+
+        // Get User Data
+        $userInstance = new User();
+        $userInstance->getUserDataByUID($uid);
 
         echo json_encode([
             "success" => true,
-            "image" => $profileImage,
-            "bio" => htmlFormat(getUserData($db, "profileBio", "uid='$uid'")),
-            "location" => getUserData($db, "accountLocation", "uid='$uid'"),
-            "comments" => getUserData($db, "allowComments", "uid='$uid'")
+            "image" => $userInstance->user["profileImagePath"],
+            "bio" => $userInstance->user["profileBio"],
+            "location" => $userInstance->user["accountLocation"],
+            "comments" => $userInstance->user["allowComments"]
         ]);
     }
     catch (Exception $err) {

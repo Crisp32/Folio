@@ -115,7 +115,9 @@
         <textarea class="forum-post-textarea" placeholder="Body" ></textarea>
         <button class="add-comment-btn post-forum-btn" onclick="addForumPost()" >Post</button>
       </div>
-    </div>
+    </div><br />
+
+    <div id="forum-posts-container" ></div>
 
     <?php require "partials/_client-msg.php"; ?>
   </body>

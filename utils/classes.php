@@ -5,19 +5,21 @@
  */
 
 include_once "PHPDebugger/PHPDebugger.php";
+include_once "database.php";
+
+// Init DB
+$db = db();
 
 class Forum {
     public $ownerUID;
     public $name;
     public $iconURL;
     public $description;
-    public $database;
 
     public $FID; // Corresponds to the FID in DB
     public $date;
 
-    public function __construct(SQLite3 $database, $ownerUID, $name, $iconURL, $description) {
-        $this->database = &$database;
+    public function __construct($ownerUID, $name, $iconURL, $description) {
         $this->ownerUID = &$ownerUID;
         $this->name = &$name;
         $this->iconURL = &$iconURL;
@@ -25,14 +27,14 @@ class Forum {
     }
 
     public function create() {
-        $db = $this->database;
         $ownerUID = $this->ownerUID;
         $name = $this->name;
         $iconURL = $this->iconURL;
         $description = $this->description;
+        $db = $GLOBALS["db"];
 
         $date = date("j-n-Y");
-        $insertStatement = "INSERT INTO forums(owner, name, iconPath, description, date) VALUES ('$ownerUID', '$name', '$iconURL', '$description', '$date')";
+        $insertStatement = "INSERT INTO forums(owner, name, iconPath, description, date, members, mods, bans) VALUES ('$ownerUID', '$name', '$iconURL', '$description', '$date', '[]', '[]', '[]')";
 
         return $db->query($insertStatement);
     }
@@ -41,33 +43,17 @@ class Forum {
         $FID = $this->FID;
 
         if ($FID !== null && $FID !== "") {
+            $db = $GLOBALS["db"];
 
-            // Get Forum Data from DB
-            $db = $this->database;
-            $query = "SELECT members FROM forums WHERE fid='$FID'";
-            $membersQuery = $db->query($query);
+            $forumMembers = $db->query("SELECT members FROM forums WHERE fid='$FID'")->fetch_array(MYSQLI_ASSOC)["members"];
+            $joinedForums = $db->query("SELECT joinedForums FROM users WHERE uid='$uid'")->fetch_array(MYSQLI_ASSOC)["joinedForums"];
 
-            if ($membersQuery) {
-                $members = $membersQuery->fetchArray()["members"];
-                $members = ":$uid" . $members;
+            // Modify Values in Database
+            $updateForum = "UPDATE forums SET members=JSON_ARRAY_INSERT('$forumMembers', '$[0]', $uid) WHERE fid='$FID';";
+            $updateUser = "UPDATE users SET joinedForums=JSON_ARRAY_INSERT('$joinedForums', '$[0]', $FID) WHERE uid='$uid';";
+            $result = $db->multi_query($updateForum . $updateUser);
 
-                $insertStatement = "UPDATE forums SET members='$members' WHERE fid='$FID'";
-
-                if ($db->query($insertStatement)) {
-                    // Add Newly Created Forum to User's Joined Forums List
-                    $user = new User($db);
-                    $user->getUserDataByUID($uid);
-                    $joinedForums = ":$FID" . $user->user["joinedForums"];
-
-                    return $user->update("joinedForums", $joinedForums);
-                }
-                else {
-                    return false;
-                }
-            }
-            else {
-                return false;
-            }
+            return $result;
         }
         else {
             throw new Exception("Property FID is not Assigned");
@@ -80,13 +66,12 @@ class Forum {
         // Check if Forum ID is Assigned
         if (isset($forumId)) {
             if ($uid !== null && $uid !== "") {
-                $db = $this->database;
                 
-                // Get String of Members
+                // Get List of Members
                 $members = $this->getMembers();
 
                 // Return Boolean
-                return in_array(strval($uid), $members);
+                return in_array($uid, $members);
             }
             else {
                 return false;
@@ -101,7 +86,6 @@ class Forum {
         $forumId = $this->FID;
 
         if (isset($forumId)) {
-            $db = $this->database;
             $deleteQuery = $db->query("DELETE FROM forums WHERE fid='$forumId'");
 
             return $deleteQuery;
@@ -115,7 +99,6 @@ class Forum {
         $forumId = $this->FID;
 
         if (isset($forumId)) {
-            $db = $this->database;
                 
             // Get Array of Members
             $members = $this->getMembers();
@@ -133,7 +116,7 @@ class Forum {
             }
 
             // Remove Forum from User's list of Joined Forums
-            $userInstance = new User($db);
+            $userInstance = new User();
             $userInstance->getUserDataByUID($uid);
             $joinedForums = str_replace(":$forumId", "", $userInstance->user["joinedForums"]);
             $userInstance->update("joinedForums", $joinedForums);
@@ -159,7 +142,6 @@ class Forum {
         $forumId = $this->FID;
 
         if (isset($forumId)) {
-            $db = $this->database;
                 
             // Get Array of Banned Members
             $bans = $this->getBannedMembers();
@@ -181,15 +163,15 @@ class Forum {
 
         // Check if Forum ID is Assigned
         if (isset($forumId)) {
-            $db = $this->database;
+            $db = $GLOBALS["db"];
                 
             // Get String of Members    
             $selectQuery = $db->query("SELECT members FROM forums WHERE fid='$forumId'");
-            $members = $selectQuery->fetchArray()["members"];
+            $members = $selectQuery->fetch_array(MYSQLI_ASSOC)["members"];
 
             // Return Array of Members' UID
             if (!empty($members)) {
-                return explode(":", $members);
+                return json_decode($members);
             }
             else {
                 return [];
@@ -205,15 +187,15 @@ class Forum {
 
         // Check if Forum ID is Assigned
         if (isset($forumId)) {
-            $db = $this->database;
+            $db = $GLOBALS["db"];
 
             // Get String of Moderators
             $selectQuery = $db->query("SELECT mods FROM forums WHERE fid='$forumId'");
-            $mods = $selectQuery->fetchArray()["mods"];
+            $mods = $selectQuery->fetch_array(MYSQLI_ASSOC)["mods"];
 
             // Return Array of Moderators' UID
             if (!empty($mods)) {
-                $modsArr = explode(":", $mods);
+                $modsArr = json_decode($mods);
                 return $modsArr;
             }
             else {
@@ -236,7 +218,7 @@ class Forum {
                 $mods = $this->getModerators();
 
                 // Return Boolean
-                $bool = (in_array(strval($uid), $mods) || $uid == $this->ownerUID);
+                $bool = (in_array($uid, $mods) || $uid == $this->ownerUID);
                 return $bool;
             }
             else {
@@ -254,7 +236,6 @@ class Forum {
         if (isset($forumId)) {
             $mods = $this->getModerators();
             $modsLen = count($mods);
-            $db = $this->database;
             $newOwner;
 
             if ($modsLen >= 2) {
@@ -286,15 +267,15 @@ class Forum {
 
         // Check if Forum ID is Assigned
         if (isset($forumId)) {
-            $db = $this->database;
+            $db = $GLOBALS["db"];
 
             // Get String of Moderators
             $selectQuery = $db->query("SELECT bans FROM forums WHERE fid='$forumId'");
-            $bans = $selectQuery->fetchArray()["bans"];
+            $bans = $selectQuery->fetch_array(MYSQLI_ASSOC)["bans"];
 
             // Return Array of Banned Members' UID
             if (!empty($bans)) {
-                return explode(":", $bans);
+                return json_decode($bans);
             }
             else {
                 return [];
@@ -308,7 +289,7 @@ class Forum {
     public function isBanned($uid) {
         if ($uid !== null && $uid !== "") {
             $bans = $this->getBannedMembers();
-            return in_array(strval($uid), $bans);
+            return in_array($uid, $bans);
         }
         else {
             return false;
@@ -320,12 +301,11 @@ class Forum {
 
         // Check if Forum ID is Assigned
         if (isset($forumId)) {
-            $db = $this->database;
 
             // Check if User is Already Banned
             if (!$this->isBanned($uid)) {
                 $selectQuery = $db->query("SELECT bans FROM forums WHERE fid='$forumId'");
-                $bans = $selectQuery->fetchArray()["bans"];
+                $bans = $selectQuery->fetch_array(MYSQLI_ASSOC)["bans"];
 
                 // Update DB
                 $bans .= ":$uid";
@@ -348,7 +328,6 @@ class Forum {
 
         // Check if Forum ID is Assigned
         if (isset($forumId)) {
-            $db = $this->database;
 
             // Check Current Rank
             if ($uid !== $this->ownerUID && !$this->isModerator($uid)) {
@@ -378,7 +357,6 @@ class Forum {
 
         // Check if Forum ID is Assigned
         if (isset($forumId)) {
-            $db = $this->database;
 
             // Check Current Rank
             if ($uid !== $this->ownerUID && $this->isModerator($uid)) {
@@ -404,7 +382,6 @@ class Forum {
     }
 
     public function addPost($title, $body, $userId, $forumId) {
-        $db = $this->database;
         $date = date("j-n-Y");
         $insertStatement = "INSERT INTO forumPosts (fid, uid, title, body, voteCount, date) VALUES ('$forumId', '$userId', '$title', '$body', '0', '$date')";
 
@@ -412,7 +389,6 @@ class Forum {
     }
 
     public function update($column, $value) {
-        $db = $this->database;
         $forumId = $this->FID;
         $query = $db->query("UPDATE forums SET $column='$value' WHERE fid='$forumId'");
         
@@ -422,64 +398,33 @@ class Forum {
 
 class User {
     public $user;
-    private $database;
-
-    public function __construct(SQLite3 $database) {
-        $this->database = &$database;
-    }
     
     public function getUserDataByName($username) {
-        $db = $this->database;
-
+        $db = $GLOBALS["db"];
         $query = "SELECT * FROM users WHERE username='$username'";
-        $userData = $db->query($query)->fetchArray();
+        $userData = $db->query($query)->fetch_array(MYSQLI_ASSOC);
 
         $this->user = $userData;
     }
 
     public function getUserDataByUID($UID) {
-        $db = $this->database;
-
+        $db = $GLOBALS["db"];
         $query = "SELECT * FROM users WHERE uid='$UID'";
-        $userData = $db->query($query)->fetchArray();
+        $userData = $db->query($query)->fetch_array(MYSQLI_ASSOC);
 
         $this->user = $userData;
     }
 
     public function getVotes() {
-        $user = $this->user;
-        $votes = [
-            "upvotes" => [],
-            "downvotes" => []
-        ];
+        $uid = $this->user["uid"];
+        $db = $GLOBALS["db"];
 
-        $votesStr = substr($user["votes"], 1);
-        $votesArray = explode(":", $votesStr);
+        $selectQuery = "SELECT votes FROM users WHERE uid='$uid'";
+        $selectResult = $db->query($selectQuery);
 
-        if (!empty($votesArray)) {
-            // Process Each Vote
-            foreach ($votesArray as $vote) {
-                if (strpos($vote, "+") !== false) { // Upvote
-                    $uid = str_replace("+", "", $vote);
-                    array_push($votes["upvotes"], strval($uid));
-                }
-                else if (strpos($vote, "-") !== false) { // Downvote
-                    $uid = str_replace("-", "", $vote);
-                    array_push($votes["downvotes"], strval($uid));
-                }
-            }
-        }
-
-        // Return Final Array
-        return $votes;
-    }
-
-    public function hasVoted($uid) {
-        $user = $this->user;
-        $votes = $this->getVotes();
-
-        if (in_array(strval($uid), $votes["upvotes"]) || in_array(strval($uid), $votes["downvotes"])) {
-            return true;
+        if ($selectResult) {
+            $encodedArr = $selectResult->fetch_array(MYSQLI_ASSOC)["votes"];
+            return json_decode($encodedArr, true);
         }
         else {
             return false;
@@ -487,153 +432,116 @@ class User {
     }
 
     public function upvotedBy($uid) {
-        $user = $this->user;
         $votes = $this->getVotes();
 
-        return in_array(strval($uid), $votes["upvotes"]);
+        return in_array($uid, $votes["upvotes"]);
     }
 
     public function downvotedBy($uid) {
-        $user = $this->user;
         $votes = $this->getVotes();
 
-        return in_array(strval($uid), $votes["downvotes"]);
-    }
-    
-    public function getVoteCountFromArray($votesArray) {
-        $votes = $votesArray;
-        $count = 0;
-        
-        foreach ($votes["upvotes"] as $upvote) {
-            if ($upvote !== null && $upvote !== "") {
-                $count++;
-            }
-        }
-
-        foreach ($votes["downvotes"] as $downvote) {
-            if ($downvote !== null && $downvote !== "") {
-                $count--;
-            }
-        }
-
-        return $count;
-    }
-
-    public function getVoteCountFromDB() {
-        $votes = $this->getVotes();
-        return $this->getVoteCountFromArray($votes);
-    }
-
-    public function voteArrayToStr($votesArray) {
-        $upvotes = $votesArray["upvotes"];
-        $downvotes = $votesArray["downvotes"];
-        $finalStr = "";
-
-        // Process Upvotes
-        foreach ($upvotes as $vote) {
-            if ($vote !== null && $vote !== "") {
-                $finalStr .= ":+$vote";
-            }
-        }
-
-        // Process Downvotes
-        foreach ($downvotes as $vote) {
-            if ($vote !== null && $vote !== "") {
-                $finalStr .= ":-$vote";
-            }
-        }
-
-        return $finalStr;
+        return in_array($uid, $votes["downvotes"]);
     }
 
     public function upvote($voterId) {
-        if (!$this->upvotedBy($voterId)) {
-            $user = $this->user;
-            $votesStr = $user["votes"];
-            $count = intval($this->getVoteCountFromDB()) + 1;
+        $votes = $this->getVotes();
+        $uid = $this->user["uid"];
+        $db = $GLOBALS["db"];
 
-            if ($this->downvotedBy($voterId)) {
-                $votesStr = str_replace(":-$voterId", ":+$voterId", $votesStr);
-                $count++;
-            }
-            else {
-                $votesStr .= ":+$voterId";
-            }
+        // Remove Downvote
+        if (in_array($voterId, $votes["downvotes"])) {
+            $voteIndex = array_search($voterId, $votes["downvotes"]);
+            unset($votes["downvotes"][$voteIndex]);
+        }
 
-            // Return Array
-            $dbSuccess = ($this->update("votes", $votesStr) && $this->update("voteCount", $count));
+        // Add Upvote
+        if (!in_array($voterId, $votes["upvotes"])) {
+            array_push($votes["upvotes"], intval($voterId));
+        }
+
+        $count = count($votes["upvotes"]) - count($votes["downvotes"]);
+        $encodedVotes = json_encode($votes);
+        $updateQuery = "UPDATE users SET voteCount=$count, votes='$encodedVotes' WHERE uid='$uid'";
+
+        if ($db->query($updateQuery)) {
             return [
-                "success" => $dbSuccess,
+                "success" => true,
                 "count" => $count
             ];
         }
-        else {
-            return false;
-        }
+        else return [
+            "success" => false
+        ];
     }
 
     public function downvote($voterId) {
-        if (!$this->downvotedBy($voterId)) {
-            $user = $this->user;
-            $votesStr = $user["votes"];
-            $count = intval($this->getVoteCountFromDB()) - 1;
+        $votes = $this->getVotes();
+        $uid = $this->user["uid"];
+        $db = $GLOBALS["db"];
 
-            if ($this->upvotedBy($voterId)) {
-                $votesStr = str_replace(":+$voterId", ":-$voterId", $votesStr);
-                $count--;
-            }
-            else {
-                $votesStr .= ":-$voterId";
-            }
+        // Remove Upvote
+        if (in_array($voterId, $votes["upvotes"])) {
+            $voteIndex = array_search($voterId, $votes["upvotes"]);
+            unset($votes["upvotes"][$voteIndex]);
+        }
 
-            // Return Array
-            $dbSuccess = ($this->update("votes", $votesStr) && $this->update("voteCount", $count));
+        // Add Downvote
+        if (!in_array($voterId, $votes["downvotes"])) {
+            array_push($votes["downvotes"], intval($voterId));
+        }
+
+        $count = count($votes["upvotes"]) - count($votes["downvotes"]);
+        $encodedVotes = json_encode($votes);
+        $updateQuery = "UPDATE users SET voteCount=$count, votes='$encodedVotes' WHERE uid='$uid'";
+
+        if ($db->query($updateQuery)) {
             return [
-                "success" => $dbSuccess,
+                "success" => true,
                 "count" => $count
             ];
         }
-        else {
-            return false;
-        }
+        else return [
+            "success" => false
+        ];
     }
 
     public function removeVote($voterId) {
-        if ($this->hasVoted($voterId)) {
-            $user = $this->user;
-            $votesStr = $user["votes"];
-            $count = intval($this->getVoteCountFromDB());
+        $votes = $this->getVotes();
+        $uid = $this->user["uid"];
+        $db = $GLOBALS["db"];
 
-            if ($this->upvotedBy($voterId)) {
-                $votesStr = str_replace(":+$voterId", "", $votesStr);
-                $count--;
-            }
-            else if ($this->downvotedBy($voterId)) {
-                $votesStr = str_replace(":-$voterId", "", $votesStr);
-                $count++;
-            }
+        // Remove Downvote
+        if (in_array($voterId, $votes["downvotes"])) {
+            $voteIndex = array_search($voterId, $votes["downvotes"]);
+            unset($votes["downvotes"][$voteIndex]);
+        }
 
-            // Return Array
-            $dbSuccess = ($this->update("votes", $votesStr) && $this->update("voteCount", $count));
+        // Remove Upvote
+        if (in_array($voterId, $votes["upvotes"])) {
+            $voteIndex = array_search($voterId, $votes["upvotes"]);
+            unset($votes["upvotes"][$voteIndex]);
+        }
+
+        $count = count($votes["upvotes"]) - count($votes["downvotes"]);
+        $encodedVotes = json_encode($votes);
+        $updateQuery = "UPDATE users SET voteCount=$count, votes='$encodedVotes' WHERE uid='$uid'";
+
+        if ($db->query($updateQuery)) {
             return [
-                "success" => $dbSuccess,
+                "success" => true,
                 "count" => $count
             ];
         }
-        else {
-            return true;
-        }
+        else return [
+            "success" => false
+        ];
     }
 
     public function update($column, $value) {
-        $db = $this->database;
+        $db = $GLOBALS["db"];
         $UID = $this->user["uid"];
         $query = $db->query("UPDATE users SET $column='$value' WHERE uid='$UID'");
         
         return $query;
     }
-}
-
-class Database extends SQLite3 {
-    
 }

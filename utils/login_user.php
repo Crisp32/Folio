@@ -8,24 +8,29 @@ session_start();
 include_once "app_main.php";
 
 // Get Input
-$username = $_REQUEST["username"];
-$password = $_REQUEST["password"];
+$username = escapeString($_REQUEST["username"]);
+$password = escapeString($_REQUEST["password"]);
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
-$userExists = getUserData($db, "username", "username='$username' OR email='$username'");
-$userPass = getUserData($db, "password", "username='$username' OR email='$username'");
-$userVerified = getUserData($db, "verified", "username='$username' OR email='$username'");
-$usernameDB = getUserData($db, "username", "username='$username' OR email='$username'");
+// Get User Data
+$username = getUserData("username", "username='$username' OR email='$username'");
+
+$user = new User();
+$user->getUserDataByName($username);
+
+$userPass = $user->user["password"];
+$userVerified = $user->user["verified"];
 
 // Validate Input
 if (!empty($username)) {
+
     // Check Password
     if (!empty($password)) {
 
         // Validate Credentials with DB
-        if (!empty($userExists)) {
+        if (userExists($user->user["uid"])) {
 
             // Check if Verified
             if ($userVerified == 0) {
@@ -40,10 +45,11 @@ if (!empty($username)) {
                 if (password_verify($password, $userPass)) {
                     echo json_encode(array(
                         "success" => true,
-                        "message" => "Successfully logged in as $usernameDB"
+                        "message" => "Successfully logged in as " . $user->user["username"]
                     ));
 
-                    $_SESSION["user"] = getUserData($db, "uid", "username='$usernameDB'");
+                    // Create Session
+                    $_SESSION["user"] = $user->user["uid"];
                 }
                 else {
                     echo json_encode(array(
