@@ -6,7 +6,7 @@
 function initSearch() {
 
     // View Member Button
-    $(document).on("click", ".view-member", function (e) {
+    $(document).on("click", "#search-menu .view-member", function (e) {
         let search = $(this).parent().parent().attr("data-search");
         let type = $(this).parent().parent().attr("data-type");
         let URL;

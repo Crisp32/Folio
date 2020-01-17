@@ -1,12 +1,1 @@
-Array
-(
-    [upvotes] => Array
-        (
-            [0] => 3
-        )
-
-    [downvotes] => Array
-        (
-        )
-
-)
+Commands out of sync; you can't run this command now

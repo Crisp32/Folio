@@ -19,9 +19,12 @@
     <!--View Members Modal-->
     <div id="members-modal" class="modal-bg" >
       <div class="modal-content" >
-        <h2 class="modal-title" >Forum Members</h2>
-        <div id="members-container" ></div><br />
-        <button onclick="closeMembers()" class="close-members-modal" >Close</button>
+        <div id="members-load-screen" class="load-scrn" >Loading Members...<br /><img src="../images/other/folioLogoWhite.svg" ></div>
+        <div id="view-members-content" >
+          <h2 class="modal-title" >Forum Members</h2>
+          <div id="members-container" ></div><br />
+          <button onclick="closeMembers()" class="close-members-modal" >Close</button>
+        </div>
       </div>
     </div>
 
@@ -73,7 +76,7 @@
         <div class="leave-forum-msg" >Sample Text</div>
         <div class="leave-forum-btns" >
           <button class="standard-button close-btn" onclick="closeMemberActionConfirmation()" >Cancel</button>
-          <button id="confirm-member-action" class="standard-button save-btn" onclick="" >Confirm</button>
+          <button id="confirm-member-action" class="standard-button save-btn" >Confirm</button>
         </div>
       </div>
     </div>

@@ -9,12 +9,23 @@ let savedForum = false;
 let hasShowed = false;
 let loadedBannedUsers = false;
 
+let loadedPosts = 0; // Tracks how many Posts currently Loaded
+let loadAmounts = 6; // How many Posts to Request and Load when Needed
+let loadedAllPosts = false;
+
+let confirm = {
+    action: "",
+    profile: "",
+    delElement: false,
+    element: null
+};
+
 // On Load
 function triggerOnLoad() {
     loadForum(forum);
 
     // View Member Button
-    $(document).on("click", ".view-member", function (e) {
+    $(document).on("click", "#members-modal .view-member, .banned-members-container .view-member", function (e) {
         let profile = $(this).parent().parent().attr("data-profile");
         let URL = "/profile.php?uquery=" + profile;
 
@@ -42,20 +53,41 @@ function triggerOnLoad() {
         $("#confirm-member-action-modal").css("display", "block");
         $("#confirm-member-action-modal .leave-forum-msg").text(warning);
 
-        // On Confirm Button Clicked
-        $(document).on("click", "button#confirm-member-action", function (e) {
-            if (delElement) {
-                $(element).remove();
-
-                if ($(".banned-members-container").length == 1) {
-                    $(".bans-empty").remove();
-                    $(".banned-members-container").append('<div class="bans-empty res-empty" style="font-size: 25px; display: block;">No Banned Members</div>');
-                }
-            }
-
-            memberAction(profile, action);
-        });
+        // Set Values for Confirmation
+        confirm.action = action;
+        confirm.profile = profile;
+        confirm.delElement = delElement;
+        confirm.element = element;
     });
+
+    // On Confirm Button Clicked
+    $(document).on("click", "#confirm-member-action", function (e) {
+        if (confirm.delElement) {
+            $(confirm.element).remove();
+
+            if ($(".banned-members-container").length == 1) {
+                $(".bans-empty").remove();
+                $(".banned-members-container").append('<div class="bans-empty res-empty" style="font-size: 25px; display: block;">No Banned Members</div>');
+            }
+        }
+
+        memberAction(confirm.profile, confirm.action);
+    });
+
+    // Load Forum Posts as Client Scrolls
+    $(window).scroll(function() {
+        if($(window).scrollTop() + $(window).height() == $(document).height()) {
+            if (!loadedAllPosts) {
+                let requestedPosts = getForumPosts(loadedPosts, loadAmounts);
+    
+                if (!requestedPosts) {
+                    loadedAllPosts = true;
+                }
+
+                loadedPosts += loadAmounts;
+            }
+        }
+     });
 }
 
 function loadForum(fquery) {
@@ -105,6 +137,10 @@ function loadForum(fquery) {
                     $("#profile-name").text(forum.name);
                     $("#forum-members").text(forum.members);
                     $("#creation-date").text(forum.date);
+
+                    // Load Posts
+                    getForumPosts(0, loadAmounts);
+                    loadedPosts += loadAmounts;
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
@@ -128,7 +164,11 @@ function loadForum(fquery) {
 // Show Members of Forum in Modal
 function showMembers() {
     $("#members-modal").css("display", "block");
+
     if (!hasShowed) {
+        $("#view-members-content").css("display", "none");
+        $("#members-load-screen").css("display", "block");
+
         $.ajax({
             type: "POST",
             url: "../../utils/forum_members.php",
@@ -151,6 +191,9 @@ function showMembers() {
             error: function(err) {
                 popUp("clientm-fail", "Failed to Contact Server", null);
             }
+        }).done(function() {
+            $("#view-members-content").css("display", "block");
+            $("#members-load-screen").css("display", "none");
         });
     }
 }
@@ -293,6 +336,8 @@ function openForumSettings() {
 
     // Get Banned Users
     if (!loadedBannedUsers) {
+        $(".bans-empty").text("Loading Bans...");
+
         $.ajax({
             type: "POST",
             url: "../../utils/get_bans.php",
@@ -314,6 +359,8 @@ function openForumSettings() {
             error: function(err) {
                 popUp("clientm-fail", "Failed to Contact Server", null);
             }
+        }).done(function() {
+            $(".bans-empty").text("No Banned Members");
         });
     }
 
@@ -426,6 +473,8 @@ function memberAction(user, action) {
                             hasShowed = false;
                             break;
                     }
+
+                    $(".bans-empty").text("No Banned Members");
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
@@ -478,7 +527,7 @@ function addForumPost() {
                     popUp("clientm-success", "Posted!", null);
 
                     // Add Post on Client End
-                    loadForumPosts(res.post);
+                    loadForumPosts(res.post, false);
 
                     // Clear Input
                     $(".forum-post-title").val("");
@@ -495,11 +544,69 @@ function addForumPost() {
     }
 }
 
-function loadForumPosts(posts) {
+function getForumPosts(min, max) {
+    let retValue;
+
+    $.ajax({
+        type: "POST",
+        url: "../../utils/get_forum_posts.php",
+        dataType: "json",
+        async: false,
+        data: {
+            forum: forum,
+            min: min,
+            max: max
+        },
+        success: function(res) {
+            if (res.success) {
+                loadForumPosts(res.posts, true);
+                
+                if (res.posts == null || res.posts == "") {
+                    retValue = false;
+                }
+                else {
+                    retValue = true;
+                }
+            }
+            else {
+                popUp("clientm-fail", res.message, null);
+                retValue = false;
+            }
+        },
+        error: function(err) {
+            popUp("clientm-fail", "Failed to Contact Server", null);
+            retValue = false;
+        }
+    });
+
+    return retValue;
+}
+
+function loadForumPosts(posts, append) {
     let container = $("#forum-posts-container");
 
     for (let post in posts) {
         let postObject = posts[post];
-        $(container).append('<div class="profile-section forum-post-container" ><h2 class="section-title" >'+postObject.title+'</h2></div>');
+        let posterNameColour = "lightgrey";
+
+        switch (postObject.rank) {
+            case "owner":
+                posterNameColour = "violet";
+                break;
+            case "mod":
+                posterNameColour = "orange";
+                break;
+        }
+
+        let html = '<div class="profile-section forum-post-container" ><h2 class="section-title" >'+postObject.title+'</h2><br /><div class="forum-post-info" >Posted '+postObject.date+' by <a style="color: '+posterNameColour+'" href="/profile.php?uquery='+postObject.posterName+'" >'+postObject.posterName+'</a></div><div class="forum-post-body" >'+postObject.body+'</div><div class="forum-post-voting" ><div class="forum-post-votes" >0</div><button class="upvote vote" ><img src="/images/other/voteIcon.svg" ></button><button class="downvote vote" ><img src="/images/other/voteIcon.svg" ></button></div></div><br />';
+
+        switch (append) {
+            case true:
+                $(container).append(html);
+                break;
+            default:
+                $(container).prepend(html);
+                break;
+        } 
     }
 }

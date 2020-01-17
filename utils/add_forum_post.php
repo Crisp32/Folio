@@ -8,14 +8,14 @@ include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Check Session
 if (validateSession($_SESSION["user"])) {
     $user = $_SESSION["user"];
     $forumName = escapeString($_REQUEST["forum"]);
-    $forumId = getForumIdByName($db, $forumName);
-    $forum = getForumDataById($db, $forumId);
+    $forumId = getForumIdByName($forumName);
+    $forum = getForumDataById($forumId);
 
     // Check if User is in Forum
     if ($forum->hasMember($user)) {
@@ -50,22 +50,37 @@ if (validateSession($_SESSION["user"])) {
         else {
             // Add to Database
             if ($forum->addPost(escapeString($title), escapeString($body), $user, $forumId)) {
+
+                // Get Rank
+                $rank = "member";
+
+                if ($forum->ownerUID == $user) {
+                    $rank = "owner";
+                }
+                else if ($forum->isModerator($user)) {
+                    $rank = "mod";
+                }
+
+                // Send Successful Response
                 echo json_encode([
                     "success" => true,
                     "post" => [
-                        "title" => $title,
-                        "body" => $body,
-                        "posterName" => getUserData($db, "username", "uid='$user'"),
-                        "date" => date("j-n-Y"),
-                        "upvoted" => false,
-                        "downvoted" => false
+                        "0" => [
+                            "title" => $title,
+                            "body" => $body,
+                            "posterName" => getUserData("username", "uid='$user'"),
+                            "date" => date("j-n-Y"),
+                            "rank" => $rank,
+                            "upvoted" => false,
+                            "downvoted" => false
+                        ]
                     ]
                 ]);
             }
             else {
                 echo json_encode([
                     "success" => false,
-                    "message" => "Database Error"
+                    "message" => $db->error
                 ]);
             }
         }

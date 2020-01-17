@@ -8,7 +8,7 @@ include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Check Session
 if (validateSession($_SESSION["user"])) {
@@ -20,8 +20,8 @@ if (validateSession($_SESSION["user"])) {
     $targetAction = $_REQUEST["action"];
 
     // Get Forum and User Data
-    $forumInstance = getForumDataById($db, getForumIdByName($db, $targetForumName));
-    $userInstance = new User($db);
+    $forumInstance = getForumDataById(getForumIdByName($targetForumName));
+    $userInstance = new User();
     $userInstance->getUserDataByName($targetUsername);
 
     $targetUserId = $userInstance->user["uid"];

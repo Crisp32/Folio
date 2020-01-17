@@ -37,11 +37,21 @@ body {
 }
 
 /* IDs */
+#post-forum-section {
+  margin-bottom: 20px;
+  width: 460px;
+}
+
+#forum-posts-container {
+  margin-bottom: 20px;
+  margin-top: -20px;
+}
+
 #search-menu {
   display: none;
 }
 
-#settings-load-screen {
+#settings-load-screen, .load-scrn {
   color: lightgrey;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 27px;
@@ -49,7 +59,7 @@ body {
   margin-top: 60px;
 }
 
-#settings-load-screen > img {
+#settings-load-screen > img, .load-scrn > img {
   width: 150px;
   text-align: center;
   margin-top: 40px;
@@ -57,6 +67,11 @@ body {
 
 #settings-load {
   display: none;
+}
+
+#members-load-screen {
+  margin-bottom: 15px;
+  margin-top: 20px;
 }
 
 #joined-forums-container {
@@ -269,10 +284,6 @@ div#top-bar {
   margin-left: 15px;
   margin-top: -22px;
   position: absolute;
-}
-
-#post-forum-section {
-  margin-bottom: 20px;
 }
 
 /* Classes */
@@ -900,7 +911,8 @@ button.clientm-fail:hover {
   border-radius: 3px;
   box-shadow: 0 10px 8px 0 rgba(0, 0, 0, 0.3), 0 3px 20px 0 rgba(0, 0, 0, 0.3);
   display: none;
-  transform: translate(-60px, 100px);
+  transform: translate(-15px, 100px);
+  right: 0;
   padding-top: 7px;
   position: absolute;
   height: auto;
@@ -1146,23 +1158,31 @@ div.login-form-container {
   padding-right: 6px;
 }
 
-.member-default-option:hover, button.close-members-modal:hover {
+.member-default-option:hover {
   background-color: #a3a3a3;
   cursor: pointer;
   transition: 0.3s;
 }
 
+button.close-members-modal:hover {
+  background-color: #8a2323;
+  color: lightgrey;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
 button.close-members-modal {
-  background-color: white;
+  background-color: #c23434;
   border: none;
   border-radius: 2px;
+  color: white;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 20px;
   transition: 0.3s;
   margin-bottom: 15px;
   margin-top: -10px;
   padding: 6px;
-  width: 60%;
+  width: calc(100% - 24px);
 }
 
 .member-option-red {
@@ -1188,7 +1208,6 @@ button.close-members-modal {
 .member-options {
   float: left;
   transform: translate(68px, -25px);
-  overflow-x: hidden;
   height: auto;
 }
 
@@ -1413,7 +1432,7 @@ img.forum-editor-folio {
   margin-top: -10px;
   margin-bottom: 8px;
   max-height: 275px;
-  overflow-y: scroll;
+  overflow-y: auto;
   height: auto;
   width: auto;
 }
@@ -1572,6 +1591,46 @@ button.close-btn:active {
   width: 466px;
 }
 
+/* Forum Posts */
+.forum-post-info {
+  color: grey;
+  text-align: left;
+  margin: auto;
+  margin-bottom: 13px;
+  margin-top: -23px;
+  margin-left: 13px;
+}
+
+.forum-post-container {
+  width: 460px;
+}
+
+.forum-post-container a {
+  color: lightgrey;
+  text-decoration: none;
+}
+
+.forum-post-container a:hover {
+  text-decoration: underline;
+}
+
+.forum-post-container > .section-title {
+  text-align: left;
+  margin-bottom: 13px;
+  margin-left: 13px;
+}
+
+.forum-post-body {
+  font-size: 17px;
+  text-align: left;
+  margin-bottom: 16px;
+  margin-left: 13px;
+  max-height: 150px;
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  width: calc(100% - 21px);
+}
+
 /* Mobile Compatibility */
 @media (max-width: 450px) {
 
@@ -1621,8 +1680,7 @@ button.close-btn:active {
     width: calc(90vw + 20px);
   }
 
-  .profile-section {
-    margin-left: 5px;
+  .profile-section, #post-forum-section {
     position: static;
     width: calc(90vw + 15px);
   }
@@ -1724,7 +1782,7 @@ button.close-btn:active {
 
   /* Shrink User Info */
   .account-options {
-    transform: translate(-140px, 105px);
+    transform: translate(-10px, 105px);
   }
 
   .options-container-bubble {
@@ -1889,6 +1947,20 @@ button.close-options:hover {
   transform: translate(-80px, 3px);
   text-align: right;
   padding-right: 5px;
+}
+
+.forum-post-votes {
+  display: inline-block;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 37px;
+  transform: translate(13px, 2px);
+  margin-right: -4px;
+}
+
+.forum-post-voting {
+  float: left;
+  transform: translateY(-8px) scale(0.85);
+  margin-bottom: 1px;
 }
 
 /* Webkit */

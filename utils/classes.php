@@ -86,6 +86,7 @@ class Forum {
         $forumId = $this->FID;
 
         if (isset($forumId)) {
+            $db = $GLOBALS["db"];
             $deleteQuery = $db->query("DELETE FROM forums WHERE fid='$forumId'");
 
             return $deleteQuery;
@@ -99,39 +100,42 @@ class Forum {
         $forumId = $this->FID;
 
         if (isset($forumId)) {
-                
+            $db = $GLOBALS["db"];
+
             // Get Array of Members
             $members = $this->getMembers();
-            unset($members[array_search(strval($uid), $members)]);
-            
-            // Generate new String
-            $membersStr = implode(":", $members);
+            $memberIndex = array_search($uid, $members);
+            unset($members[$memberIndex]);
 
-            // Update DB
-            $this->update("members", $membersStr);
+            // Remove From Joined Forums
+            $joinedForumsEncoded = $db->query("SELECT joinedForums FROM users WHERE uid='$uid'")->fetch_array(MYSQLI_ASSOC)["joinedForums"];
+            $joinedForums = json_decode($joinedForumsEncoded, true);
+            $forumIndex = array_search($forumId, $joinedForums);
 
-            // Demote User
-            if ($this->isModerator($uid)) {
-                $this->demote($uid);
+            $removeJoinedForumQuery = "UPDATE users SET joinedForums=JSON_REMOVE('$joinedForumsEncoded', '$[$forumIndex]') WHERE uid='$uid'";
+
+            if (count($members) == 0) {
+
+                // Delete Database
+                return [
+                    "success" => $db->query($removeJoinedForumQuery) && $this->delete(),
+                    "doReload" => true
+                ];
             }
+            else {
 
-            // Remove Forum from User's list of Joined Forums
-            $userInstance = new User();
-            $userInstance->getUserDataByUID($uid);
-            $joinedForums = str_replace(":$forumId", "", $userInstance->user["joinedForums"]);
-            $userInstance->update("joinedForums", $joinedForums);
+                // Demote
+                if ($this->isModerator($uid)) {
+                    $this->demote($uid);
+                }
 
-            // Select new Owner if Owner is Leaving
-            if ($uid == $this->ownerUID) {
-                $this->selectRandomOwner();
+                // Update Database
+                $membersStr = $db->query("SELECT members FROM forums WHERE fid='$forumId'")->fetch_array(MYSQLI_ASSOC)["members"];
+                return [
+                    "success" => $db->multi_query("UPDATE forums SET members=JSON_REMOVE('$membersStr', '$[$memberIndex]') WHERE fid='$forumId';" . $removeJoinedForumQuery),
+                    "doReload" => false
+                ];
             }
-
-            // Delete Forum if no Users are Left
-            if (count($this->getMembers()) == 1) {
-                $this->delete();
-            }
-
-            return true;
         }
         else {
             throw new Exception("Property FID is not Assigned");
@@ -142,16 +146,17 @@ class Forum {
         $forumId = $this->FID;
 
         if (isset($forumId)) {
-                
+            $db = $GLOBALS["db"];    
+
             // Get Array of Banned Members
             $bans = $this->getBannedMembers();
-            unset($bans[array_search(strval($uid), $bans)]);
+            $banIndex = array_search($uid, $bans);
             
-            // Generate new String
-            $bansStr = implode(":", $bans);
+            // Update Database
+            $bansEncoded = json_encode($bans);
+            $unbanQuery = "UPDATE forums SET bans=JSON_REMOVE('$bansEncoded', '$[$banIndex]') WHERE fid='$forumId'";
 
-            // Update DB
-            return $this->update("bans", $bansStr);
+            return $db->query($unbanQuery);
         }
         else {
             throw new Exception("Property FID is not Assigned");
@@ -171,7 +176,7 @@ class Forum {
 
             // Return Array of Members' UID
             if (!empty($members)) {
-                return json_decode($members);
+                return json_decode($members, true);
             }
             else {
                 return [];
@@ -195,7 +200,7 @@ class Forum {
 
             // Return Array of Moderators' UID
             if (!empty($mods)) {
-                $modsArr = json_decode($mods);
+                $modsArr = json_decode($mods, true);
                 return $modsArr;
             }
             else {
@@ -275,7 +280,7 @@ class Forum {
 
             // Return Array of Banned Members' UID
             if (!empty($bans)) {
-                return json_decode($bans);
+                return json_decode($bans, true);
             }
             else {
                 return [];
@@ -301,6 +306,7 @@ class Forum {
 
         // Check if Forum ID is Assigned
         if (isset($forumId)) {
+            $db = $GLOBALS["db"];
 
             // Check if User is Already Banned
             if (!$this->isBanned($uid)) {
@@ -308,11 +314,7 @@ class Forum {
                 $bans = $selectQuery->fetch_array(MYSQLI_ASSOC)["bans"];
 
                 // Update DB
-                $bans .= ":$uid";
-                $this->update("bans", $bans);
-                $this->removeMember($uid);
-
-                return true;
+                return $db->query("UPDATE forums SET bans=JSON_ARRAY_INSERT('$bans', '$[0]', $uid) WHERE fid='$forumId'") && $this->removeMember($uid)["success"];
             }
             else {
                 return true;
@@ -331,17 +333,14 @@ class Forum {
 
             // Check Current Rank
             if ($uid !== $this->ownerUID && !$this->isModerator($uid)) {
+                $db = $GLOBALS["db"];
 
                 // Get Array of Mods
                 $mods = $this->getModerators();
+                $modsEncoded = json_encode($mods);
 
-                // Modify DB
-                array_push($mods, strval($uid));
-                $modsStr = implode(":", $mods);
-                
-                $this->update("mods", $modsStr);
-
-                return true;
+                $addModQuery = "UPDATE forums SET mods=JSON_ARRAY_INSERT('$modsEncoded', '$[0]', $uid) WHERE fid='$forumId'";
+                return $db->query($addModQuery);
             }
             else {
                 return false;
@@ -360,17 +359,15 @@ class Forum {
 
             // Check Current Rank
             if ($uid !== $this->ownerUID && $this->isModerator($uid)) {
+                $db = $GLOBALS["db"];
 
                 // Get Array of Mods
                 $mods = $this->getModerators();
+                $modIndex = array_search($uid, $mods);
+                $modsEncoded = json_encode($mods);
 
-                // Modify DB
-                unset($mods[array_search(strval($uid), $mods)]);
-                $modsStr = implode(":", $mods);
-                
-                $this->update("mods", $modsStr);
-
-                return true;
+                $addModQuery = "UPDATE forums SET mods=JSON_REMOVE('$modsEncoded', '$[$modIndex]') WHERE fid='$forumId'";
+                return $db->query($addModQuery);
             }
             else {
                 return false;
@@ -382,13 +379,31 @@ class Forum {
     }
 
     public function addPost($title, $body, $userId, $forumId) {
+        $db = $GLOBALS["db"];
         $date = date("j-n-Y");
-        $insertStatement = "INSERT INTO forumPosts (fid, uid, title, body, voteCount, date) VALUES ('$forumId', '$userId', '$title', '$body', '0', '$date')";
+        $votes = json_encode([
+            "upvotes" => [],
+            "downvotes" => []
+        ]);
+        $insertStatement = "INSERT INTO forumPosts (fid, uid, title, body, voteCount, date, votes) VALUES ('$forumId', '$userId', '$title', '$body', '0', '$date', '$votes')";
 
         return $db->query($insertStatement);
     }
 
+    public function getMemberCount() {
+        $db = $GLOBALS["db"];
+        $forumId = $this->FID;
+
+        $membersQuery = $db->query("SELECT members FROM forums WHERE fid='$forumId");
+        Debug::log_array_to_file($db->error, "../output.txt");
+        $members = json_decode($membersQuery->fetch_array(MYSQLI_ASSOC)["members"], true);
+
+        $count = count($members);
+        return $count;
+    }
+
     public function update($column, $value) {
+        $db = $GLOBALS["db"];
         $forumId = $this->FID;
         $query = $db->query("UPDATE forums SET $column='$value' WHERE fid='$forumId'");
         

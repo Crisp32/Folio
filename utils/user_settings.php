@@ -24,7 +24,7 @@ if (isset($_SESSION["user"])) {
         echo json_encode([
             "success" => true,
             "image" => $userInstance->user["profileImagePath"],
-            "bio" => $userInstance->user["profileBio"],
+            "bio" => htmlFormat($userInstance->user["profileBio"]),
             "location" => $userInstance->user["accountLocation"],
             "comments" => $userInstance->user["allowComments"]
         ]);

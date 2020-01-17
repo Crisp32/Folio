@@ -8,38 +8,40 @@ include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Check Session
 if (validateSession($_SESSION["user"])) {
 
     // Get Active User
     $user = $_SESSION["user"];
-    $userInstance = new User($db);
+    $userInstance = new User();
     $userInstance->getUserDataByUID($user);
 
     // Get Requested Forum
-    $forum = $_REQUEST["forum"];
+    $forum = escapeString($_REQUEST["forum"]);
 
-    if (!empty($forum) || !forumExists($db, $forum)) {
-        $forumInstance = getForumDataById($db, getForumIdByName($db, $forum));
+    if (!empty($forum) || !forumExists($forum)) {
+        $forumInstance = getForumDataById(getForumIdByName($forum));
 
         // Check if Banned from Forum
         if (!$forumInstance->isBanned($user)) {
             
             // Check if User is already in Forum
             if ($forumInstance->hasMember($user)) {
-                if ($forumInstance->removeMember($user)) {
+                $removeMemberQry = $forumInstance->removeMember($user);
+                if ($removeMemberQry["success"]) {
+
                     echo json_encode([
                         "success" => true,
                         "joined" => false,
-                        "reload" => (count($forumInstance->getMembers()) == 1)
+                        "reload" => $removeMemberQry["doReload"]
                     ]);
                 }
                 else {
                     echo json_encode([
                         "success" => false,
-                        "message" => "Database Error"
+                        "message" => $db->error
                     ]);
                 }
             }
@@ -53,7 +55,7 @@ if (validateSession($_SESSION["user"])) {
                 else {
                     echo json_encode([
                         "success" => false,
-                        "message" => "Database Error"
+                        "message" => $db->error
                     ]);
                 }
             }

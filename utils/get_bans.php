@@ -10,16 +10,16 @@ session_start();
 $user = $_SESSION["user"];
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Check if Forum Exists
-$forumName = $_REQUEST["forum"];
+$forumName = escapeString($_REQUEST["forum"]);
 
-if (forumExists($db, $forumName)) {
+if (forumExists($forumName)) {
 
     // Get Forum Data
-    $forumId = getForumIdByName($db, $forumName);
-    $forum = getForumDataById($db, $forumId);
+    $forumId = getForumIdByName($forumName);
+    $forum = getForumDataById($forumId);
 
     // Check if Forum has Current User as Member
     if ($forum->isModerator($user)) {
@@ -31,7 +31,7 @@ if (forumExists($db, $forumName)) {
         // Process each Member and Push to JSON Array
         foreach ($members as $member) {
             if ($member !== null && $member !== "") {
-                $memberData = new User($db);
+                $memberData = new User();
                 $memberData->getUserDataByUID($member);
 
                 // Create Array
