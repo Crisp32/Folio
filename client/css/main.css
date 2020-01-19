@@ -38,7 +38,7 @@ body {
 
 /* IDs */
 #post-forum-section {
-  margin-bottom: 20px;
+  margin-bottom: 35px;
   width: 460px;
 }
 
@@ -287,6 +287,26 @@ div#top-bar {
 }
 
 /* Classes */
+.forum-post-comments-container {
+  overflow-y: auto;
+  text-align: left;
+  margin-top: 15px;
+  max-height: 290px;
+  height: auto;
+}
+
+div.add-post-comment-div {
+  border-bottom: 3px solid #3c3c42;
+  text-align: left;
+  margin-top: -5px;
+}
+
+.forum-post-actions {
+  float: right;
+  transform: translate(-18px, 3px) scale(1.07);
+  overflow: visible;
+}
+
 button.edit-forum-btn {
   background-color: white;
   border: none;
@@ -405,7 +425,7 @@ button.post-forum-btn {
 }
 
 .res-empty {
-  color: #ffb53d;
+  color: #64ff79;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 20px;
   font-style: italic;
@@ -487,7 +507,6 @@ button.post-forum-btn {
 
 .downvote-selected {
   filter: sepia(200%) saturate(1500%) brightness(70%) hue-rotate(200deg);
-  transform: translate(60px, 5px) rotate(180deg);
   transition: 0.2s ease;
 }
 
@@ -497,7 +516,6 @@ button.post-forum-btn {
 
 .upvote-selected {
   filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(150deg);
-  transform: translate(26px, -5px);
   transition: 0.2s ease;
 }
 
@@ -1602,6 +1620,18 @@ button.close-btn:active {
 }
 
 .forum-post-container {
+  margin-top: 18px;
+  width: 460px;
+}
+
+.forum-post-comments {
+  background-color: #18181c;
+  border: 3px solid #3c3c42;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.25);
+  display: none;
+  margin-bottom: 15px;
+  margin-top: 13px;
   width: 460px;
 }
 
@@ -1869,6 +1899,12 @@ select.input-field {
 }
 
 /* Override Styling */
+.post-comments-empty {
+  font-size: 22px;
+  margin-bottom: -16px;
+  padding: 15px;
+}
+
 select.search-filter {
   cursor: pointer;
   margin-bottom: 20px;
@@ -1914,7 +1950,7 @@ button.advanced-search-btn {
   padding-top: 13px;
 }
 
-#confirm-member-action-modal > .modal-content {
+.small-modal > .modal-content {
   margin-top: 20vh;
 }
 
@@ -1952,14 +1988,17 @@ button.close-options:hover {
 .forum-post-votes {
   display: inline-block;
   font-family: 'Ubuntu Mono', monospace;
-  font-size: 37px;
-  transform: translate(13px, 2px);
+  font-size: 34px;
+  text-align: left;
+  transform: translate(100px, 3px);
   margin-right: -4px;
+  overflow-x: hidden;
+  width: 150px;
 }
 
 .forum-post-voting {
   float: left;
-  transform: translateY(-8px) scale(0.85);
+  transform: translate(-23px, -8px) scale(0.85);
   margin-bottom: 1px;
 }
 

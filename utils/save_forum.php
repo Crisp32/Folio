@@ -8,7 +8,7 @@ include_once "app_main.php";
 session_start();
 
 // Init DB
-$db = new SQLite3("../db/folio.db");
+$db = db();
 
 // Check Session
 if (validateSession($_SESSION["user"])) {
@@ -16,7 +16,7 @@ if (validateSession($_SESSION["user"])) {
     // Get Requested Changes
     $icon = escapeString($_REQUEST["icon"]);
     $desc = escapeString($_REQUEST["desc"]);
-    $forumName = $_REQUEST["forum"];
+    $forumName = escapeString($_REQUEST["forum"]);
     $user = $_SESSION["user"];
 
     // Validate Input
@@ -38,7 +38,7 @@ if (validateSession($_SESSION["user"])) {
             "message" => "Forum Description Must be Greater than 0 Characters"
         ]);
     }
-    else if (!forumExists($db, $forumName)) {
+    else if (!forumExists($forumName)) {
         echo json_encode([
             "success" => false,
             "message" => "Unknown Forum"
@@ -57,7 +57,7 @@ if (validateSession($_SESSION["user"])) {
         }
 
         // Get Forum Data
-        $forum = getForumDataById($db, getForumIdByName($db, $forumName));
+        $forum = getForumDataById(getForumIdByName($forumName));
 
         // Check User Permissions
         if ($forum->isModerator($user)) {

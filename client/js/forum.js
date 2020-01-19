@@ -13,12 +13,19 @@ let loadedPosts = 0; // Tracks how many Posts currently Loaded
 let loadAmounts = 6; // How many Posts to Request and Load when Needed
 let loadedAllPosts = false;
 
+let loadedPostComments = []; // List of Post IDs of Comments Loaded
+
 let confirm = {
     action: "",
     profile: "",
     delElement: false,
     element: null
 };
+
+let deletePost = {
+    pid: 0,
+    element: null
+}
 
 // On Load
 function triggerOnLoad() {
@@ -87,7 +94,276 @@ function triggerOnLoad() {
                 loadedPosts += loadAmounts;
             }
         }
-     });
+    });
+
+    // Forum Post Upvote Button
+    $(document).on("click", ".forum-post-container .upvote", function (e) {
+        let element = $(this);
+        let postId = $(element).parent().attr("data-pid");
+        let voteCountElement = $(element).siblings(".forum-post-votes");
+
+        let upvote = true;
+        let downvote = false;
+
+        let hasSelected = $(element).hasClass("upvote-selected");
+
+        if (hasSelected) {
+            $(element).removeClass("upvote-selected");
+            $(voteCountElement).css("color", "lightgrey");
+        }
+        else {
+            $(element).addClass("upvote-selected");
+            $(voteCountElement).css("color", "rgb(106, 154, 186)");
+        }
+
+        $(element).siblings(".downvote").removeClass("downvote-selected");
+
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/vote_forum_post.php",
+            dataType: "json",
+            data: {
+                pid: postId,
+                upvote: upvote,
+                downvote: downvote
+            },
+            success: function(res) {
+                if (res.success) {
+                    $(voteCountElement).text(res.votes);
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+
+                    // Revert Class
+                    if (!res.upvoted) {
+                        $(element).removeClass("upvote-selected");
+                        $(voteCountElement).css("color", "lightgrey");
+                    }
+                    else {
+                        $(element).addClass("upvote-selected");
+                        $(voteCountElement).css("color", "rgb(106, 154, 186)");
+                    } 
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+
+                // Revert Class
+                if (hasSelected) {
+                    $(element).removeClass("upvote-selected");
+                    $(voteCountElement).css("color", "lightgrey");
+                }
+                else {
+                    $(element).addClass("upvote-selected");
+                    $(voteCountElement).css("color", "rgb(106, 154, 186)");
+                }
+            }
+        });
+    });
+
+    // Forum Post Downvote Button
+    $(document).on("click", ".forum-post-container .downvote", function (e) {
+        let element = $(this);
+        let postId = $(element).parent().attr("data-pid");
+        let voteCountElement = $(element).siblings(".forum-post-votes");
+
+        let upvote = false;
+        let downvote = true;
+
+        let hasSelected = $(element).hasClass("downvote-selected");
+
+        if (hasSelected) {
+            $(element).removeClass("downvote-selected");
+            $(voteCountElement).css("color", "lightgrey");
+        }
+        else {
+            $(element).addClass("downvote-selected");
+            $(voteCountElement).css("color", "rgb(194, 116, 194)");
+        }
+
+        $(element).siblings(".upvote").removeClass("upvote-selected");
+
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/vote_forum_post.php",
+            dataType: "json",
+            data: {
+                pid: postId,
+                upvote: upvote,
+                downvote: downvote
+            },
+            success: function(res) {
+                if (res.success) {
+                    $(voteCountElement).text(res.votes);
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+
+                    // Revert Class
+                    if (!res.downvoted) {
+                        $(element).removeClass("downvote-selected");
+                        $(voteCountElement).css("color", "lightgrey");
+                    }
+                    else {
+                        $(element).addClass("downvote-selected");
+                        $(voteCountElement).css("color", "rgb(194, 116, 194)");
+                    }
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+
+                // Revert Class
+                if (hasSelected) {
+                    $(element).removeClass("downvote-selected");
+                    $(voteCountElement).css("color", "lightgrey");
+                }
+                else {
+                    $(element).addClass("downvote-selected");
+                    $(voteCountElement).css("color", "rgb(194, 116, 194)");
+                }
+            }
+        });
+    });
+
+    // Forum Post Delete Button
+    $(document).on("click", ".forum-post-container .delete-post", function (e) {
+        deletePost.element = $(this);
+        deletePost.pid = $(deletePost.element).parent().siblings(".forum-post-voting").attr("data-pid");
+        
+        // Open Confirmation Modal
+        $("#confirm-post-delete-modal").css("display", "block");
+    });
+
+    // Confirm Forum Deletion
+    $(document).on("click", "#confirm-post-delete", function (e) {
+        closeModal();
+
+        $.ajax({
+            type: "POST",
+            url: "../../utils/delete_forum_post.php",
+            dataType: "json",
+            data: {
+                pid: deletePost.pid
+            },
+            success: function(res) {
+                if (res.success) {
+                    popUp("clientm-success", "Deleted Post!", null);
+
+                    // Modify DOM
+                    let postElement = $(deletePost.element).parent().parent().parent();
+                    $(postElement).remove();
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+            }
+        });
+    });
+
+    // View Forum Comments Button
+    $(document).on("click", ".show-post-comments", function (e) {
+        let element = $(this);
+        let postId = $(element).parent().siblings(".forum-post-voting").attr("data-pid");
+        let hasLoaded = loadedPostComments.includes(postId);
+        let commentsElement = $(element).parent().parent().siblings(".forum-post-comments");
+
+        if ($(commentsElement).css("display") == "none") {
+            $(element).text("Hide Comments");
+            $(commentsElement).css("display", "inline-block");
+        }
+        else {
+            $(element).text("View Comments");
+            $(commentsElement).css("display", "none");
+        }
+
+        if (!hasLoaded) {
+            $(commentsElement).find(".res-empty").text("Loading Comments...");
+
+            $.ajax({
+                type: "POST",
+                url: "../../utils/get_comments.php",
+                dataType: "json",
+                data: {
+                    type: "forumpost",
+                    pid: postId,
+                    min: 0,
+                    max: 5
+                },
+                success: function(res) {
+                    if (res.success) {
+                        loadedPostComments.push(postId);
+
+                        // Modify DOM
+                        let emptyElement = $(commentsElement).find(".res-empty");
+
+                        if (res.comments == "" || res.comments == null || res.comments == []) {
+                            $(emptyElement).text("No Comments to Display");
+                        }
+                        else {
+                            $(emptyElement).css("display", "none");
+                            loadPostComments(res.comments, true, $(commentsElement).find(".forum-post-comments-container"));
+                        }
+                    }
+                    else {
+                        popUp("clientm-fail", res.message, null);
+                    }
+                },
+                error: function(err) {
+                    popUp("clientm-fail", "Failed to Contact Server", null);
+                }
+            });
+        }
+    });
+
+    // Add Forum Post Comment Button
+    $(document).on("click", ".add-comment-btn", function (e) {
+        let element = $(this);
+        let postContainer = $(element).parent().parent().siblings(".forum-post-container");
+        let postId = $(postContainer).find(".forum-post-voting").attr("data-pid");
+        let comment = $(element).siblings(".add-comment").val();
+        let commentsEmptyElement = $(this).parent().siblings(".res-empty");
+
+        // Client Side Validation
+        if (comment.length > 120) {
+            popUp("clientm-fail", "Comment Must be Less than 120 Characters", null);
+        }
+        else if (comment.length == 0) {
+            popUp("clientm-fail", "Comment Must be Greater than 0 Characters", null);
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "../../utils/add_comment.php",
+                dataType: "json",
+                data: {
+                    type: "forumpost",
+                    content: comment,
+                    profile: postId
+                },
+                success: function(res) {
+                    if (res.success) {
+                        popUp("clientm-success", "Posted!", null);
+
+                        // Load Comments into DOM
+                        $(commentsEmptyElement).css("display", "none");
+                        loadPostComments(res.comment, false, $(element).parent().siblings(".forum-post-comments-container"));
+                    }
+                    else {
+                        popUp("clientm-fail", res.message, null);
+                    }
+                },
+                error: function(err) {
+                    popUp("clientm-fail", "Failed to Contact Server", null);
+                }
+            });
+        }
+    });
 }
 
 function loadForum(fquery) {
@@ -154,7 +430,7 @@ function loadForum(fquery) {
             $("#loading-info").css("display", "none");
     
             console.log("Finished Loading Forum");
-        });;
+        });
     }
     else {
         popUp("clientm-fail", "Invalid Forum Query", null);
@@ -206,8 +482,8 @@ function closeLeaveForum() {
     $("#leave-forum-modal").css("display", "none");
 }
 
-function closeMemberActionConfirmation() {
-    $("#confirm-member-action-modal").css("display", "none");
+function closeModal() {
+    $(".modal-bg").css("display", "none");
 }
 
 // Render Forum Members JSON as HTML
@@ -588,6 +864,23 @@ function loadForumPosts(posts, append) {
     for (let post in posts) {
         let postObject = posts[post];
         let posterNameColour = "lightgrey";
+        let upvoteClasses = "";
+        let downvoteClasses = "";
+        let actionButtons = '<button class="show-post-comments forum-post-action member-default-option" >View Comments</button>';
+        let voteCountColour = "lightgrey";
+
+        if (postObject.upvoted) {
+            upvoteClasses = " upvote-selected";
+            voteCountColour = "rgb(106, 154, 186)";
+        }
+        else if (postObject.downvoted) {
+            downvoteClasses = " downvote-selected";
+            voteCountColour = "rgb(194, 116, 194)";
+        }
+
+        if (postObject.canEdit) {
+            actionButtons += '<button class="delete-post forum-post-action member-default-option member-option-red" >Delete</button>';
+        }
 
         switch (postObject.rank) {
             case "owner":
@@ -598,7 +891,7 @@ function loadForumPosts(posts, append) {
                 break;
         }
 
-        let html = '<div class="profile-section forum-post-container" ><h2 class="section-title" >'+postObject.title+'</h2><br /><div class="forum-post-info" >Posted '+postObject.date+' by <a style="color: '+posterNameColour+'" href="/profile.php?uquery='+postObject.posterName+'" >'+postObject.posterName+'</a></div><div class="forum-post-body" >'+postObject.body+'</div><div class="forum-post-voting" ><div class="forum-post-votes" >0</div><button class="upvote vote" ><img src="/images/other/voteIcon.svg" ></button><button class="downvote vote" ><img src="/images/other/voteIcon.svg" ></button></div></div><br />';
+        let html = '<div class="forum-post-wrapper" ><div class="profile-section forum-post-container" ><h2 class="section-title" >'+postObject.title+'</h2><br /><div class="forum-post-info" >Posted '+postObject.date+' by <a style="color: '+posterNameColour+'" href="/profile.php?uquery='+postObject.posterName+'" >'+postObject.posterName+'</a></div><div class="forum-post-body" >'+postObject.body+'</div><div class="forum-post-voting" data-pid="'+postObject.pid+'" ><button title="Upvote" class="upvote vote'+upvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><button title="Downvote" class="downvote vote'+downvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><div class="forum-post-votes" style="color: '+voteCountColour+'" >'+postObject.voteCount+'</div></div><div class="forum-post-actions" >'+actionButtons+'</div></div><br /><div class="profile-section forum-post-comments" ><div class="add-post-comment-div" ><input class="add-comment" placeholder="Comment" /><button class="add-comment-btn" >Post</button></div><div class="res-empty post-comments-empty" >No Comments to Display</div><div class="forum-post-comments-container" ></div></div></div><br /></div>';
 
         switch (append) {
             case true:
@@ -608,5 +901,29 @@ function loadForumPosts(posts, append) {
                 $(container).prepend(html);
                 break;
         } 
+    }
+}
+
+// Load Comment JSON into DOM
+function loadPostComments(commentsJSON, append, element) {
+    for (let comment in commentsJSON) {
+
+        // Load Replies
+        let replyHTML = loadReplies(true, commentsJSON[comment].replies);
+
+        // Load Comments
+        let likedClass = "";
+        if (commentsJSON[comment].liked) {
+            likedClass = " liked";
+        }
+
+        let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a href="../../profile.php?uquery='+commentsJSON[comment].user+'" >'+commentsJSON[comment].user+'</a> <div class="comment-post-date" >'+commentsJSON[comment].date+'</div></div><div class="likes-container" ><a class="likes-icon" ><img title="I Like this Comment" src="/images/other/like-icon.png" ></a><div class="likes-count'+likedClass+'" >'+commentsJSON[comment].likes+'</div><br /><div name="'+commentsJSON[comment].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentsJSON[comment].content+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
+        
+        if (append) {
+            $(element).append(commentHTML);
+        }
+        else {
+            $(element).prepend(commentHTML);
+        }
     }
 }

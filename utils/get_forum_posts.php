@@ -51,16 +51,25 @@ if (!empty($forum)) {
                 $rank = "mod";
             }
 
+            // Get Delete Permissions
+            $canEdit = false;
+
+            if ($post["uid"] == $user || $forumInstance->isModerator($user)) {
+                $canEdit = true;
+            }
+
             // Push to Posts Array
             array_push($posts, [
                 "title" => htmlFormat($post["title"]),
                 "posterName" => getUserData("username", "uid=" . $post["uid"]),
                 "body" => htmlFormat($post["body"]),
-                "voteCount" => $post["voteCount"],
+                "voteCount" => intval($post["voteCount"]),
                 "date" => $post["date"],
+                "pid" => $post["pid"],
                 "rank" => $rank,
                 "upvoted" => $upvoted,
-                "downvoted" => $downvoted
+                "downvoted" => $downvoted,
+                "canEdit" => $canEdit
             ]);
         }
 

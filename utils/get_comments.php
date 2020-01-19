@@ -12,12 +12,12 @@ $db = db();
 
 // Fetch Comments
 $type = escapeString($_REQUEST["type"]);
-$profile = escapeString($_REQUEST["username"]);
 $min = escapeString(intval($_REQUEST["min"]));
 $max = escapeString(intval($_REQUEST["max"]));
 
 // Check Comment Type
 if ($type == $TYPE_PROFILE) {
+    $profile = escapeString($_REQUEST["username"]);
 
     // Null Check User
     if (!empty($profile)) {
@@ -114,7 +114,101 @@ if ($type == $TYPE_PROFILE) {
     }
 }
 else if ($type == $TYPE_FORUMPOST) {
-    // Nothing Yet
+    $postId = escapeString($_REQUEST["pid"]);
+
+    // Null Check PID
+    if ($postId !== null && $postId !== "") {
+
+        // Get Forum Post Data
+        $forumPost = new ForumPost();
+        $forumPost->getDataById($postId);
+
+        // Get Forum Data
+        $forumInstance = getForumDataById($forumPost->post["fid"]);
+
+        // Get Comments
+        $selectQuery = $db->query("SELECT * FROM comments WHERE uid=$postId AND type='forumpost'");
+        $comments = [];
+
+        while ($comment = $selectQuery->fetch_array(MYSQLI_ASSOC)) {
+
+            // Get Replies
+            $repliesObject = json_decode($comment["usersReplied"]);
+            $replies = [];
+
+            foreach ($repliesObject as $reply) {
+                if (!empty($reply)) {
+                    $replyData = [
+                        "rid" => $reply[0],
+                        "uid" => $reply[1],
+                        "content" => $reply[2],
+                        "date" => $reply[3]
+                    ];
+
+                    // Check if Active user can Delete the Comment
+                    if ($forumPost->post["uid"] == $_SESSION["user"] || $forumInstance->isModerator($_SESSION["user"])) {
+                        $delDisplay = "block";
+                    }
+                    else {
+                        $delDisplay = "none";
+                    }
+
+                    $replyJSON = [
+                        "user" => getUserData("username", "uid='".$replyData["uid"]."'"),
+                        "content" => $replyData["content"],
+                        "date" => $replyData["date"],
+                        "rid" => $replyData["rid"],
+                        "delDisplay" => $delDisplay
+                    ];
+
+                    // Finalize Reply
+                    array_push($replies, $replyJSON);
+                }
+            }
+
+            // Finalize Comment JSON
+            $delDisplayComment = "";
+
+            // Check if Active user can Delete the Comment
+            if ($forumPost->post["uid"] == $_SESSION["user"] || $forumInstance->isModerator($_SESSION["user"])) {
+                $delDisplayComment = "block";
+            }
+            else {
+                $delDisplayComment = "none";
+            }
+
+            // Check if Liked by Active User
+            $liked = false;
+            $currentUser = intval($_SESSION["user"]);
+            if (in_array($currentUser, json_decode($comment["usersLiked"]))) {
+                $liked = true;
+            }
+
+            // Push to Comments Array
+            array_push($comments, [
+                "user" => getUserData("username", "uid='".$comment["commenterId"]."'"),
+                "content" => $comment["content"],
+                "date" => $comment["postDate"],
+                "likes" => $comment["likes"],
+                "liked" => $liked,
+                "replies" => $replies,
+                "cid" => $comment["cid"],
+                "delDisplay" => $delDisplayComment
+            ]);
+        }
+
+        // Send Comments to Client
+        echo json_encode([
+            "success" => true,
+            "comments" => $comments
+        ]);
+    }
+    else {
+        echo json_encode([
+            "success" => false,
+            "message" => "Invalid Post ID"
+        ]);
+    }
 }
 else {
     echo json_encode([

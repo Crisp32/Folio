@@ -368,30 +368,6 @@ function loadComments(commentsJSON, method) {
             $("#comments-container").prepend(commentHTML);
         }
     }
-
-}
-
-// Set fullHTML to false if Only the singular Comment HTML is Required
-function loadReplies(fullHTML, repliesJSON) {
-    let replies = repliesJSON;
-    let replyHTML = '';
-    let endReplyTag = '';
-    let replyOptions = '';
-
-    // Generate HTML String
-    if (replies != null && replies != "") {
-        if (fullHTML) {
-            replyOptions = '<div class="reply-options" >Expand Replies</div><div class="replies" >';
-            endReplyTag = '<div class="end-replies" >Continue Comments</div></div>';
-        }
-        replyHTML += replyOptions;
-        for (let reply in replies) {
-            replyHTML += '<div class="comment reply" ><div class="reply-indent" ></div><div class="commenter-name" ><a href="/profile.php?uquery='+replies[reply].user+'" >'+replies[reply].user+'</a> <div class="comment-post-date" >'+replies[reply].date+'</div></div><div><div name="'+replies[reply].rid+'" class="delete-comment reply-del-comment noselect" style="display: '+replies[reply].delDisplay+'" >Delete</div></div><div class="comment-content" style="margin-bottom: 5px" >'+replies[reply].content+'</div></div>';
-        }
-        replyHTML += endReplyTag;
-    }
-
-    return replyHTML;
 }
 
 // Get Profile Comments From Server with Specified Range

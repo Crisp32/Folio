@@ -1,6 +1,7 @@
 <?php
-include_once "utils/app_main.php";
+
 session_start();
+include_once $_SERVER["DOCUMENT_ROOT"] . "/utils/app_main.php";
 
 if (validateSession($_SESSION["user"])) {
 	$user = $_SESSION["user"];

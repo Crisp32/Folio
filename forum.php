@@ -1,3 +1,4 @@
+<?php session_start(); ?>
 <!DOCTYPE html>
 
 <html lang="en" >
@@ -70,13 +71,25 @@
     </div>
 
     <!--Confirm Member Action Modal-->
-    <div id="confirm-member-action-modal" class="modal-bg" >
+    <div id="confirm-member-action-modal" class="modal-bg small-modal" >
       <div class="modal-content" >
         <h2 class="modal-title" >Perform this Action?</h2>
         <div class="leave-forum-msg" >Sample Text</div>
         <div class="leave-forum-btns" >
-          <button class="standard-button close-btn" onclick="closeMemberActionConfirmation()" >Cancel</button>
+          <button class="standard-button close-btn" onclick="closeModal()" >Cancel</button>
           <button id="confirm-member-action" class="standard-button save-btn" >Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!--Confirm Forum Post Action Modal-->
+    <div id="confirm-post-delete-modal" class="modal-bg small-modal" >
+      <div class="modal-content" >
+        <h2 class="modal-title" >Perform this Action?</h2>
+        <div class="leave-forum-msg" >Are you sure that you want to Delete this Post?</div>
+        <div class="leave-forum-btns" >
+          <button class="standard-button close-btn" onclick="closeModal()" >Cancel</button>
+          <button id="confirm-post-delete" class="standard-button save-btn" >Confirm</button>
         </div>
       </div>
     </div>

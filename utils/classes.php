@@ -385,9 +385,13 @@ class Forum {
             "upvotes" => [],
             "downvotes" => []
         ]);
-        $insertStatement = "INSERT INTO forumPosts (fid, uid, title, body, voteCount, date, votes) VALUES ('$forumId', '$userId', '$title', '$body', '0', '$date', '$votes')";
+        $insertStatement = "INSERT INTO forumPosts (fid, uid, title, body, voteCount, date, votes, commentCount) VALUES ('$forumId', '$userId', '$title', '$body', '0', '$date', '$votes', '0')";
+        $getPidQuery = "SELECT pid FROM forumPosts WHERE fid='$forumId' ORDER BY pid DESC LIMIT 1";
 
-        return $db->query($insertStatement);
+        return [
+            "success" => $db->query($insertStatement),
+            "pid" => $db->query($getPidQuery)->fetch_array(MYSQLI_ASSOC)["pid"]
+        ];
     }
 
     public function getMemberCount() {
@@ -558,5 +562,159 @@ class User {
         $query = $db->query("UPDATE users SET $column='$value' WHERE uid='$UID'");
         
         return $query;
+    }
+}
+
+class ForumPost {
+    public $post;
+
+    public function getDataById($postId) {
+        $db = $GLOBALS["db"];
+        $selectQuery = $db->query("SELECT * FROM forumPosts WHERE pid=$postId");
+
+        if ($selectQuery) {
+            $result = $selectQuery->fetch_array(MYSQLI_ASSOC);
+            $this->post = $result;
+
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function getVotes() {
+        $db = $GLOBALS["db"];
+        $pid = $this->post["pid"];
+
+        $selectQuery = $db->query("SELECT votes FROM forumPosts WHERE pid=$pid");
+
+        if ($selectQuery) {
+            $result = $selectQuery->fetch_array(MYSQLI_ASSOC)["votes"];
+            return json_decode($result, true);
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function getVoteCount() {
+        $votes = $this->getVotes();
+        return count($votes["upvotes"]) - count($votes["downvotes"]);
+    }
+
+    public function upvotedBy($uid) {
+        $db = $GLOBALS["db"];
+        $votes = $this->getVotes();
+
+        return in_array($uid, $votes["upvotes"]);
+    }
+
+    public function downvotedBy($uid) {
+        $db = $GLOBALS["db"];
+        $votes = $this->getVotes();
+
+        return in_array($uid, $votes["downvotes"]);
+    }
+
+    public function upvote($uid) {
+        $votes = $this->getVotes();
+        $db = $GLOBALS["db"];
+        $upvoted = false;
+
+        // Check if Already Upvoted
+        if ($this->upvotedBy($uid)) {
+            $voteIndex = array_search($uid, $votes["upvotes"]);
+            unset($votes["upvotes"][$voteIndex]);
+        }
+        else {
+            array_push($votes["upvotes"], intval($uid));
+            $upvoted = true;
+        }
+
+        // Check if Downvoted
+        if ($this->downvotedBy($uid)) {
+            $voteIndex = array_search($uid, $votes["downvotes"]);
+            unset($votes["downvotes"][$voteIndex]);
+        }
+
+        // Update Database
+        $count = count($votes["upvotes"]) - count($votes["downvotes"]);
+        $votesEncoded = json_encode($votes);
+
+        $pid = $this->post["pid"];
+        $updateQuery = $db->query("UPDATE forumPosts SET voteCount=$count, votes='$votesEncoded' WHERE pid=$pid");
+
+        return [
+            "success" => $updateQuery,
+            "count" => $count,
+            "upvoted" => $upvoted
+        ];
+    }
+
+    public function downvote($uid) {
+        $votes = $this->getVotes();
+        $db = $GLOBALS["db"];
+        $downvoted = false;
+
+        // Check if Already Downvoted
+        if ($this->downvotedBy($uid)) {
+            $voteIndex = array_search($uid, $votes["downvotes"]);
+            unset($votes["downvotes"][$voteIndex]);
+        }
+        else {
+            array_push($votes["downvotes"], intval($uid));
+            $downvoted = true;
+        }
+
+        // Check if Upvoted
+        if ($this->upvotedBy($uid)) {
+            $voteIndex = array_search($uid, $votes["upvotes"]);
+            unset($votes["upvotes"][$voteIndex]);
+        }
+
+        // Update Database
+        $count = count($votes["upvotes"]) - count($votes["downvotes"]);
+        $votesEncoded = json_encode($votes);
+
+        $pid = $this->post["pid"];
+        $updateQuery = $db->query("UPDATE forumPosts SET voteCount=$count, votes='$votesEncoded' WHERE pid=$pid");
+
+        return [
+            "success" => $updateQuery,
+            "count" => $count,
+            "downvoted" => $downvoted
+        ];
+    }
+
+    public function removeVotes($uid) {
+        $votes = $this->getVotes();
+        $db = $GLOBALS["db"];
+
+        // Remove Upvote
+        if ($this->upvotedBy($uid)) {
+            $voteIndex = array_search($uid, $votes["upvotes"]);
+            unset($votes["upvotes"][$voteIndex]);
+        }
+
+        // Remove Downvote
+        if ($this->downvotedBy($uid)) {
+            $voteIndex = array_search($uid, $votes["downvotes"]);
+            unset($votes["downvotes"][$voteIndex]);
+        }
+
+        // Update Database
+        $count = count($votes["upvotes"]) - count($votes["downvotes"]);
+        $votesEncoded = json_encode($votes);
+
+        $pid = $this->post["pid"];
+        $updateQuery = $db->query("UPDATE forumPosts SET voteCount=$count, votes='$votesEncoded' WHERE pid=$pid");
+
+        return [
+            "success" => $updateQuery,
+            "count" => $count,
+            "upvoted" => false,
+            "downvoted" => false
+        ];
     }
 }

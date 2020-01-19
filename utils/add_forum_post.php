@@ -49,7 +49,9 @@ if (validateSession($_SESSION["user"])) {
         }
         else {
             // Add to Database
-            if ($forum->addPost(escapeString($title), escapeString($body), $user, $forumId)) {
+            $addPostQuery = $forum->addPost(escapeString($title), escapeString($body), $user, $forumId);
+            
+            if ($addPostQuery["success"]) {
 
                 // Get Rank
                 $rank = "member";
@@ -71,8 +73,11 @@ if (validateSession($_SESSION["user"])) {
                             "posterName" => getUserData("username", "uid='$user'"),
                             "date" => date("j-n-Y"),
                             "rank" => $rank,
+                            "pid" => $addPostQuery["pid"],
+                            "voteCount" => 0,
                             "upvoted" => false,
-                            "downvoted" => false
+                            "downvoted" => false,
+                            "canEdit" => true
                         ]
                     ]
                 ]);

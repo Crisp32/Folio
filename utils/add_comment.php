@@ -24,89 +24,113 @@ if (validateSession($_SESSION["user"])) {
     $user = new User();
     $user->getUserDataByUID($activeUser);
 
-    // Check if posting Comment to Profile
-    if ($_REQUEST["type"] == $TYPE_PROFILE) {
+    $id = escapeString($_REQUEST["profile"]); // Can be Either Post ID or Username
+    $error = [
+        "success" => false,
+        "message" => "Invalid Comment Type"
+    ];
+
+    // Decide on Type
+    $type = escapeString($_REQUEST["type"]);
+    $commentContent = escapeString($_REQUEST["content"]);
+
+    $insertStatement;
+    $updateStatement;
+
+    $postDate = date("j-n-Y");
+
+    if ($type == $TYPE_PROFILE) {
         
-        $targetProfile = escapeString($_REQUEST["profile"]);
-        $commentContent = escapeString($_REQUEST["content"]);
-        $commentType = "profile";
+        // Get Profile Data
+        $profile = new User();
+        $profile->getUserDataByName($id);
+        $profileId = $profile->user["uid"];
 
-        // Get Target User Data
-        $targetUser = new User();
-        $targetUser->getUserDataByName($targetProfile);
-        $targetUserId = $targetUser->user["uid"];
-        $postDate = date("j-n-Y");
+        if ($profile->user["allowComments"] == 1) {
+            $error["success"] = true;
 
-        // Validate Request
-        $canComment = $targetUser->user["allowComments"];
-        if ($canComment == 1) {
+            $insertStatement = "INSERT INTO comments (uid, commenterId, type, content, postDate, usersLiked, likes, usersReplied, repliesCount) VALUES ('$profileId', '$activeUser', '$type', '$commentContent', '$postDate', '[]', '0', '[]', '0');";
+            $updateStatement = "UPDATE users SET commentCount=commentCount+1 WHERE uid=$profileId;";
+        }
+        else {
+            $error["message"] = "This User has Commenting Disabled";
+        }
+    }
+    else if ($type == $TYPE_FORUMPOST) {
 
-            // Check if Max Comment Limit is Reached
-            if ($targetUser->user["commentCount"] !== $maxComments) {
+        // Get Forum Post Data
+        $forumPost = new ForumPost();
+        $forumPost->getDataById($id);
 
-                if (!empty($commentContent)) {
-                    if (strlen($commentContent) > $maxCommentLength) {
+        // Get Forum Data
+        $forum = getForumDataById($forumPost->post["fid"]);
+
+        if ($forum->hasMember($activeUser)) {
+            $error["success"] = true;
+
+            $insertStatement = "INSERT INTO comments (uid, commenterId, type, content, postDate, usersLiked, likes, usersReplied, repliesCount) VALUES ('$id', '$activeUser', '$type', '$commentContent', '$postDate', '[]', '0', '[]', '0');";
+            $updateStatement = "UPDATE forumPosts SET commentCount=commentCount+1 WHERE pid=$id;";
+        }
+        else {
+            $error["message"] = "You Must be a Member of this Forum to Comment";
+        }
+    }
+
+    // Validate Comment
+    if ($error["success"]) {
+        if (!empty($commentContent)) {
+            if (strlen($commentContent) > $maxCommentLength) {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Comment Must be Less than $maxCommentLength Characters"
+                ]);
+            }
+            else {                
+                $cidQuery = $db->query("SELECT cid FROM comments ORDER BY cid DESC LIMIT 1");
+                if ($db->multi_query($insertStatement . $updateStatement)) {            
+                    if ($cidQuery) {
+                        $cid = $cidQuery->fetch_array(MYSQLI_ASSOC)["cid"] + 1;
+
+                        // Send Successful Response
                         echo json_encode([
-                            "success" => false,
-                            "message" => "Comment Must be Less than $maxCommentLength Characters"
+                            "success" => true,
+                            "comment" => [
+                                "0" => [
+                                    "user" => $user->user["username"],
+                                    "content" => $commentContent,
+                                    "date" => $postDate,
+                                    "replies" => null,
+                                    "likes" => 0,
+                                    "cid" => $cid,
+                                    "delDisplay" => "block"
+                                ]
+                            ]
                         ]);
                     }
                     else {
-                        $insertStatement = "INSERT INTO comments (uid, commenterId, type, content, postDate, usersLiked, likes, usersReplied, repliesCount) VALUES ('$targetUserId', '$activeUser', '$commentType', '$commentContent', '$postDate', '[]', '0', '[]', '0')";
-                        $updateStatement = "UPDATE users SET commentCount=commentCount+1 WHERE uid=$targetUserId";
-                        if ($db->query($insertStatement) && $db->query($updateStatement)) {
-                            echo json_encode([
-                                "success" => true,
-                                "comment" => [
-                                    "0" => [
-                                        "user" => $user->user["username"],
-                                        "content" => $commentContent,
-                                        "date" => $postDate,
-                                        "replies" => null,
-                                        "likes" => 0,
-                                        "cid" => getCID($db),
-                                        "delDisplay" => "block"
-                                    ]
-                                ]
-                            ]);
-                        }
-                        else {
-                            echo json_encode([
-                                "success" => false,
-                                "message" => $db->error
-                            ]);
-                        }
+                        echo json_encode([
+                            "success" => false,
+                            "message" => $db->error
+                        ]);
                     }
                 }
                 else {
                     echo json_encode([
                         "success" => false,
-                        "message" => "Comment Must be Greater than 0 Characters"
+                        "message" => $db->error
                     ]);
                 }
-            }
-            else {
-                echo json_encode([
-                    "success" => false,
-                    "message" => "The Maximum Comment Limit on this Profile has been Reached"
-                ]);
             }
         }
         else {
             echo json_encode([
                 "success" => false,
-                "message" => "This User has Commenting Disabled"
+                "message" => "Comment Must be Greater than 0 Characters"
             ]);
         }
     }
-    else if ($_REQUEST["type"] == $TYPE_FORUMPOST) {
-        $commentType = "blogpost";
-    }
     else {
-        echo json_encode([
-            "success" => false,
-            "message" => "Invalid URL: " . $_REQUEST["URL"]
-        ]);
+        echo json_encode($error);
     }
 }
 else {
@@ -115,12 +139,3 @@ else {
         "message" => "You must be logged in to Comment"
     ]);
 }
-
-function getCID($db) {
-    $query = $db->query("SELECT cid FROM comments ORDER BY cid DESC LIMIT 1");
-    while ($cid = $query->fetch_array(MYSQLI_ASSOC)) {
-        return intval($cid["cid"]);
-    }
-}
-
-?>
