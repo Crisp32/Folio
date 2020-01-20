@@ -20,9 +20,25 @@ if (!empty($forum)) {
     $forumInstance = getForumDataById(getForumIdByName($forum));
     $user = $_SESSION["user"];
 
+    // Select Sorting Method
+    $sortMethod = $_REQUEST["sort"];
+    $sort;
+    
+    switch ($sortMethod) {
+        case $SORT_OLD:
+            $sort = "ORDER BY pid ASC LIMIT $min, $max";
+            break;
+        case $SORT_POPULAR:
+            $sort = "ORDER BY voteCount DESC LIMIT $min, $max";
+            break;
+        default:
+            $sort = "ORDER BY pid DESC LIMIT $min, $max";
+            break;
+    }
+
     // Get Forum Posts from Database
     $forumId = $forumInstance->FID;
-    $postQuery = $db->query("SELECT * FROM forumPosts WHERE fid=$forumId ORDER BY pid DESC LIMIT $min, $max");
+    $postQuery = $db->query("SELECT * FROM forumPosts WHERE fid=$forumId $sort");
 
     if ($postQuery) {
         $posts = [];

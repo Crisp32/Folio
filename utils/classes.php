@@ -87,7 +87,7 @@ class Forum {
 
         if (isset($forumId)) {
             $db = $GLOBALS["db"];
-            $deleteQuery = $db->query("DELETE FROM forums WHERE fid='$forumId'");
+            $deleteQuery = $db->multi_query("DELETE FROM forums WHERE fid=$forumId; DELETE FROM comments WHERE type='forumpost' AND uid IN (SELECT pid FROM forumPosts WHERE fid=$forumId); DELETE FROM forumPosts WHERE fid=$forumId;");
 
             return $deleteQuery;
         }
@@ -398,7 +398,6 @@ class Forum {
         $forumId = $this->FID;
 
         $membersQuery = $db->query("SELECT members FROM forums WHERE fid='$forumId");
-        Debug::log_array_to_file($db->error, "../output.txt");
         $members = json_decode($membersQuery->fetch_array(MYSQLI_ASSOC)["members"], true);
 
         $count = count($members);

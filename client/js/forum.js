@@ -16,6 +16,8 @@ let loadedAllPosts = false;
 let loadedPostComments = []; // List of Post IDs of Comments Loaded
 let commentLoadAmounts = 5;
 
+let sort = "new"; // Sorting Method for Posts
+
 let confirm = {
     action: "",
     profile: "",
@@ -256,6 +258,10 @@ function triggerOnLoad() {
                     // Modify DOM
                     let postElement = $(deletePost.element).parent().parent().parent();
                     $(postElement).remove();
+
+                    if ($("#forum-posts-container").children().length == 0) {
+                        $("#forum-posts-container").append('<div class="res-empty posts-empty profile-section" >No Posts to Display</div>');
+                    }
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
@@ -778,6 +784,8 @@ function saveForum() {
         popUp("clientm-fail", "Forum Description Must be Greater than 0 Characters", null);
     }
     else {
+        popUp("clientm-fail", "Loading...", null);
+
         // Send Request
         $.ajax({
             type: "POST",
@@ -900,6 +908,7 @@ function addForumPost() {
 
                     // Add Post on Client End
                     loadForumPosts(res.post, false);
+                    $(".posts-empty").remove();
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
@@ -915,6 +924,7 @@ function addForumPost() {
 function getForumPosts(min, max) {
     let retValue;
 
+    // Send Request
     $.ajax({
         type: "POST",
         url: "../../utils/get_forum_posts.php",
@@ -923,7 +933,8 @@ function getForumPosts(min, max) {
         data: {
             forum: forum,
             min: min,
-            max: max
+            max: max,
+            sort: sort
         },
         success: function(res) {
             if (res.success) {
@@ -953,49 +964,56 @@ function getForumPosts(min, max) {
 function loadForumPosts(posts, append) {
     let container = $("#forum-posts-container");
 
-    for (let post in posts) {
-        let postObject = posts[post];
-        let posterNameColour = "lightgrey";
-        let upvoteClasses = "";
-        let downvoteClasses = "";
-        let actionButtons = '<button class="show-post-comments forum-post-action member-default-option" >View Comments</button>';
-        let voteCountColour = "lightgrey";
+    if (posts.length > 0) {
+        for (let post in posts) {
 
-        if (postObject.upvoted) {
-            upvoteClasses = " upvote-selected";
-            voteCountColour = "rgb(106, 154, 186)";
+            let postObject = posts[post];
+            let posterNameColour = "lightgrey";
+            let upvoteClasses = "";
+            let downvoteClasses = "";
+            let actionButtons = '<button class="show-post-comments forum-post-action member-default-option" >View Comments</button>';
+            let voteCountColour = "lightgrey";
+    
+            if (postObject.upvoted) {
+                upvoteClasses = " upvote-selected";
+                voteCountColour = "rgb(106, 154, 186)";
+            }
+            else if (postObject.downvoted) {
+                downvoteClasses = " downvote-selected";
+                voteCountColour = "rgb(194, 116, 194)";
+            }
+    
+            if (postObject.canEdit) {
+                actionButtons += '<button class="delete-post forum-post-action member-default-option member-option-red" >Delete</button>';
+            }
+    
+            switch (postObject.rank) {
+                case "owner":
+                    posterNameColour = "violet";
+                    break;
+                case "mod":
+                    posterNameColour = "orange";
+                    break;
+            }
+    
+            let postTitle = highlightHyperlinks(postObject.title, false);
+            let postBody = highlightHyperlinks(postObject.body, true);
+    
+            let html = '<div class="forum-post-wrapper" ><div class="profile-section forum-post-container" ><h2 class="section-title" >'+postTitle+'</h2><br /><div class="forum-post-info" >Posted '+postObject.date+' by <a style="color: '+posterNameColour+'" href="/profile.php?uquery='+postObject.posterName+'" >'+postObject.posterName+'</a></div><div class="forum-post-body" >'+postBody+'</div><div class="forum-post-voting" data-comments="'+postObject.comments+'" data-pid="'+postObject.pid+'" ><button title="Upvote" class="upvote vote'+upvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><button title="Downvote" class="downvote vote'+downvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><div class="forum-post-votes" style="color: '+voteCountColour+'" >'+postObject.voteCount+'</div></div><div class="forum-post-actions" >'+actionButtons+'</div></div><br /><div class="profile-section forum-post-comments" ><div class="add-post-comment-div" ><input class="add-comment post-forum-comment" placeholder="Comment" /><button class="post-forum-comment add-comment-btn" >Post</button></div><div class="res-empty post-comments-empty" >No Comments to Display</div><div class="forum-post-comments-container" ></div></div></div></div>';
+    
+            switch (append) {
+                case true:
+                    $(container).append(html);
+                    break;
+                default:
+                    $(container).prepend(html);
+                    break;
+            } 
         }
-        else if (postObject.downvoted) {
-            downvoteClasses = " downvote-selected";
-            voteCountColour = "rgb(194, 116, 194)";
-        }
-
-        if (postObject.canEdit) {
-            actionButtons += '<button class="delete-post forum-post-action member-default-option member-option-red" >Delete</button>';
-        }
-
-        switch (postObject.rank) {
-            case "owner":
-                posterNameColour = "violet";
-                break;
-            case "mod":
-                posterNameColour = "orange";
-                break;
-        }
-
-        let postTitle = highlightHyperlinks(postObject.title, false);
-        let postBody = highlightHyperlinks(postObject.body, true);
-
-        let html = '<div class="forum-post-wrapper" ><div class="profile-section forum-post-container" ><h2 class="section-title" >'+postTitle+'</h2><br /><div class="forum-post-info" >Posted '+postObject.date+' by <a style="color: '+posterNameColour+'" href="/profile.php?uquery='+postObject.posterName+'" >'+postObject.posterName+'</a></div><div class="forum-post-body" >'+postBody+'</div><div class="forum-post-voting" data-comments="'+postObject.comments+'" data-pid="'+postObject.pid+'" ><button title="Upvote" class="upvote vote'+upvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><button title="Downvote" class="downvote vote'+downvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><div class="forum-post-votes" style="color: '+voteCountColour+'" >'+postObject.voteCount+'</div></div><div class="forum-post-actions" >'+actionButtons+'</div></div><br /><div class="profile-section forum-post-comments" ><div class="add-post-comment-div" ><input class="add-comment post-forum-comment" placeholder="Comment" /><button class="post-forum-comment add-comment-btn" >Post</button></div><div class="res-empty post-comments-empty" >No Comments to Display</div><div class="forum-post-comments-container" ></div></div></div></div>';
-
-        switch (append) {
-            case true:
-                $(container).append(html);
-                break;
-            default:
-                $(container).prepend(html);
-                break;
-        } 
+    }
+    else {
+        $(container).append('<div class="res-empty posts-empty profile-section" >No Posts to Display</div>');
+        loadedAllPosts = true;
     }
 }
 
@@ -1040,5 +1058,45 @@ function loadPostComments(commentsJSON, append, element, showLoadCommentsButton)
 
     if (commentsJSON.length > commentLoadAmounts - 1 && showLoadCommentsButton) {
         $(element).parent().append('<div style="text-align: center" ><button class="load-more-comments" >Load More Comments</button></div>');
+    }
+}
+
+// Forum Post Sorting
+function applySort() {
+    let sortMethod = $(".sort-options").val();
+
+    // Send Request
+    if (sort !== sortMethod) {
+        sort = sortMethod;
+        popUp("clientm-fail", "Loading...", null);
+
+        $.ajax({
+            type: "POST",
+            url: "../../utils/get_forum_posts.php",
+            dataType: "json",
+            data: {
+                forum: forum,
+                min: 0,
+                max: loadAmounts,
+                sort: sort
+            },
+            success: function(res) {
+                if (res.success) {
+                    loadedAllPosts = false;
+                    loadedPosts = loadAmounts;
+
+                    $("#forum-posts-container").empty();
+                    loadForumPosts(res.posts, true);
+
+                    popDown();
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+            }
+        });
     }
 }

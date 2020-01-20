@@ -133,6 +133,21 @@
       </div>
     </div><br />
 
+    <div id="post-forum-sorting" class="profile-section post-forum" >
+      <div class="profile-section-container" >
+        <div class="sorting-options-container" >
+          <h2 class="section-title" >Sort Posts By</h2>
+
+          <select type="text" class="input-field sort-options">
+            <option default="" value="new">New</option>
+            <option default="" value="old">Old</option>
+            <option default="" value="popular">Popular</option>
+          </select>
+          <button class="standard-button save-btn" onclick="applySort()">Apply</button>
+        </div>
+      </div>
+    </div><br />
+
     <div id="forum-posts-container" ></div>
 
     <?php require "partials/_client-msg.php"; ?>

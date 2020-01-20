@@ -26,6 +26,10 @@ $FILTER_USERS = "users";
 $FILTER_FORUMS = "forums";
 $FILTER_ALL = "all";
 
+$SORT_NEW = "new";
+$SORT_OLD = "old";
+$SORT_POPULAR = "popular";
+
 // List of Possible Countries
 $countries = [
     "Canada",

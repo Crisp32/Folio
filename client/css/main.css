@@ -37,9 +37,19 @@ body {
 }
 
 /* IDs */
-#post-forum-section {
+#post-forum-section, #post-forum-sorting {
   margin-bottom: 35px;
   width: 460px;
+}
+
+#post-forum-sorting {
+  margin-bottom: 25px;
+  margin-top: -10px;
+}
+
+#post-forum-sorting h2.section-title {
+  transform: translateY(1px);
+  margin-bottom: 5px;
 }
 
 #forum-posts-container {
@@ -56,7 +66,7 @@ body {
   font-family: 'Ubuntu Mono', monospace;
   font-size: 27px;
   text-align: center;
-  margin-top: 60px;
+  margin-top: 23px;
 }
 
 #settings-load-screen > img, .load-scrn > img {
@@ -173,7 +183,7 @@ body {
   resize: none;
   padding: 12px;
   margin-top: 10px;
-  margin-right: 15px;
+  margin-right: 13px;
   margin-bottom: -3px;
   height: 80px;
   width: 400px;
@@ -296,6 +306,30 @@ div#top-bar {
 }
 
 /* Classes */
+.sorting-options-container {
+  margin-top: -5px;
+  margin-bottom: 12px;
+  overflow-wrap: break-word;
+}
+
+.sorting-options-container > * {
+  display: inline-block;
+}
+
+.sorting-options-container > h2 {
+  margin-right: 4px;
+}
+
+.sorting-options-container > .save-btn {
+  padding: 11px;
+}
+
+.sort-options {
+  cursor: pointer;
+  margin-left: 12px;
+  max-width: 150px;
+}
+
 .load-more-comments:disabled, .load-more-comments[disabled], .show-post-comments:disabled, .show-post-comments[disabled] {
   background-color: white;
   color: black;
@@ -1524,7 +1558,7 @@ img.forum-editor-folio {
   max-width: 400px;
   min-width: 300px;
   max-height: 540px;
-  min-height: 230px;
+  min-height: 165px;
   position: relative;
 }
 
@@ -1705,6 +1739,20 @@ button.close-btn:active {
   width: calc(100% - 21px);
 }
 
+.posts-empty {
+  background-color: #18181c;
+  border: 3px solid #3c3c42;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.25);
+  display: inline-block;
+  font-size: 25px;
+  margin-bottom: 15px;
+  margin-top: 25px;
+  padding-bottom: 13px;
+  padding-top: 13px;
+  width: 420px;
+}
+
 /* Mobile Compatibility */
 @media (max-width: 450px) {
 
@@ -1754,9 +1802,13 @@ button.close-btn:active {
     width: calc(90vw + 20px);
   }
 
-  .profile-section, #post-forum-section {
+  .profile-section, #post-forum-section, #post-forum-sorting {
     position: static;
     width: calc(90vw + 15px);
+  }
+
+  .posts-empty {
+    width: calc(90vw + -25px);
   }
 
   .profile-forum-date {
@@ -1768,7 +1820,7 @@ button.close-btn:active {
   }
 
   .join-forum-btn {
-    width: calc(90% + 19px);
+    width: calc(100% - 17px);
   }
 
   .post-forum {
@@ -1800,7 +1852,8 @@ button.close-btn:active {
   }
 
   #bio {
-    width: calc(90% - 10px);
+    margin-right: 0;
+    width: calc(100% - 46px);
   }
 
   #profile-img {
