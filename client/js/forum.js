@@ -12,6 +12,7 @@ let loadedBannedUsers = false;
 let loadedPosts = 0; // Tracks how many Posts currently Loaded
 let loadAmounts = 6; // How many Posts to Request and Load when Needed
 let loadedAllPosts = false;
+let showEmptyMsg = true;
 
 let loadedPostComments = []; // List of Post IDs of Comments Loaded
 let commentLoadAmounts = 5;
@@ -95,6 +96,7 @@ function triggerOnLoad() {
                 }
 
                 loadedPosts += loadAmounts;
+                showEmptyMsg = false;
             }
         }
     });
@@ -233,7 +235,8 @@ function triggerOnLoad() {
 
     // Forum Post Delete Button
     $(document).on("click", ".forum-post-container .delete-post", function (e) {
-        deletePost.element = $(this);
+        let element = $(this);
+        deletePost.element = $(element);
         deletePost.pid = $(deletePost.element).parent().siblings(".forum-post-voting").attr("data-pid");
         
         // Open Confirmation Modal
@@ -243,7 +246,10 @@ function triggerOnLoad() {
     // Confirm Forum Deletion
     $(document).on("click", "#confirm-post-delete", function (e) {
         closeModal();
+        
+        $(deletePost.element).attr("disabled", true);
 
+        // Send XHR
         $.ajax({
             type: "POST",
             url: "../../utils/delete_forum_post.php",
@@ -262,6 +268,8 @@ function triggerOnLoad() {
                     if ($("#forum-posts-container").children().length == 0) {
                         $("#forum-posts-container").append('<div class="res-empty posts-empty profile-section" >No Posts to Display</div>');
                     }
+
+                    $(deletePost.element).attr("disabled", false);
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
@@ -338,7 +346,7 @@ function triggerOnLoad() {
     });
 
     // Add Forum Post Comment Button
-    $(document).on("click", ".post-forum-comment", function (e) {
+    $(document).on("click", "button.post-forum-comment", function (e) {
         let element = $(this);
         let postContainer = $(element).parent().parent().siblings(".forum-post-container");
         let postId = $(postContainer).find(".forum-post-voting").attr("data-pid");
@@ -391,33 +399,39 @@ function triggerOnLoad() {
         let commentContainer = $(emptyElement).siblings(".forum-post-comments-container");
 
         // Send Request
-        $.ajax({
-            type: "POST",
-            url: "../../utils/delete_comment.php",
-            dataType: "json",
-            data: {
-                cid: $(element).attr("name"),
-                profile: $(element).parent().siblings(".forum-post-voting").attr("data-pid")
-            },
-            success: function(res) {
-                if (res.success) {
-                    popUp("clientm-success", res.message, null);
+        if (!$(element).attr("disabled")) {
+            $(element).attr("disabled", true);
 
-                    // Mofify DOM
-                    $(element).parent().parent().parent().remove();
-
-                    if ($(commentContainer).children().length == 0) {
-                        $(emptyElement).css("display", "block");
+            $.ajax({
+                type: "POST",
+                url: "../../utils/delete_comment.php",
+                dataType: "json",
+                data: {
+                    cid: $(element).attr("name"),
+                    profile: $(element).parent().siblings(".forum-post-voting").attr("data-pid")
+                },
+                success: function(res) {
+                    if (res.success) {
+                        popUp("clientm-success", res.message, null);
+    
+                        // Mofify DOM
+                        $(element).parent().parent().parent().remove();
+    
+                        if ($(commentContainer).children().length == 0) {
+                            $(emptyElement).css("display", "block");
+                        }
+    
+                        $(element).removeAttr("disabled");
                     }
+                    else {
+                        popUp("clientm-fail", res.message, null);
+                    }
+                },
+                error: function(err) {
+                    popUp("clientm-fail", "Failed to Contact Server", null);
                 }
-                else {
-                    popUp("clientm-fail", res.message, null);
-                }
-            },
-            error: function(err) {
-                popUp("clientm-fail", "Failed to Contact Server", null);
-            }
-        });
+            });
+        }
     });
 
     // Load More Comments Button
@@ -905,6 +919,7 @@ function addForumPost() {
             success: function(res) {
                 if (res.success) {
                     popUp("clientm-success", "Posted!", null);
+                    showEmptyMsg = false;
 
                     // Add Post on Client End
                     loadForumPosts(res.post, false);
@@ -966,6 +981,7 @@ function loadForumPosts(posts, append) {
 
     if (posts.length > 0) {
         for (let post in posts) {
+            showEmptyMsg = false;
 
             let postObject = posts[post];
             let posterNameColour = "lightgrey";
@@ -1011,7 +1027,7 @@ function loadForumPosts(posts, append) {
             } 
         }
     }
-    else {
+    else if (showEmptyMsg) {
         $(container).append('<div class="res-empty posts-empty profile-section" >No Posts to Display</div>');
         loadedAllPosts = true;
     }
@@ -1046,7 +1062,7 @@ function loadPostComments(commentsJSON, append, element, showLoadCommentsButton)
 
         let commentBody = highlightHyperlinks(commentsJSON[comment].content, false);
 
-        let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a style="color: '+nameColour+'" href="../../profile.php?uquery='+commentsJSON[comment].user+'" >'+commentsJSON[comment].user+'</a> <div class="comment-post-date" >'+commentsJSON[comment].date+'</div></div><div class="likes-container" ><a class="likes-icon'+imgLikedClass+'" ><img title="I Like this Comment" src="/images/other/like-icon.svg" ></a><div class="likes-count'+likedClass+'" >'+commentsJSON[comment].likes+'</div><br /><div name="'+commentsJSON[comment].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentBody+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
+        let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a style="color: '+nameColour+'" href="../../profile.php?uquery='+commentsJSON[comment].user+'" >'+commentsJSON[comment].user+'</a> <div class="comment-post-date" >'+commentsJSON[comment].date+'</div></div><div class="likes-container" ><button class="likes-icon'+imgLikedClass+'" ><img title="I Like this Comment" src="/images/other/like-icon.svg" ></button><div class="likes-count'+likedClass+'" >'+commentsJSON[comment].likes+'</div><br /><div name="'+commentsJSON[comment].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentBody+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
         
         if (append) {
             $(element).append(commentHTML);
@@ -1066,7 +1082,7 @@ function applySort() {
     let sortMethod = $(".sort-options").val();
 
     // Send Request
-    if (sort !== sortMethod) {
+    if (sort !== sortMethod && !showEmptyMsg) {
         sort = sortMethod;
         popUp("clientm-fail", "Loading...", null);
 

@@ -36,12 +36,14 @@ window.onload = function() {
     }
 
     // Comment Liking
-    $(document).on("click", "a.likes-icon > img", function (e) {
+    $(document).on("click", "button.likes-icon", function (e) {
         e.stopPropagation();
         e.stopImmediatePropagation();
 
-        let element = this;
+        let element = $(this).find("img");
         let cid = $(element).parent().siblings(".del-comment").attr("name");
+
+        $(element).parent().attr("disabled", true);
 
         // Send Request
         $.ajax({
@@ -65,6 +67,8 @@ window.onload = function() {
                         $(element).parent().siblings(".likes-count").removeClass("liked");
                         $(element).parent().removeClass("like-icon-selected");
                     }
+
+                    $(element).parent().attr("disabled", false);
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
@@ -139,38 +143,45 @@ window.onload = function() {
         e.stopImmediatePropagation();
 
         let element = this;
-        let cid = $(element).parent().parent().parent().parent().siblings(".comment").find(".del-comment").attr("name");
+        let cid = $(element).parent().parent().parent().parent().siblings(".comment").find(".del-comment").attr("name");   
 
         // Send Request
-        $.ajax({
-            type: "POST",
-            url: "../../utils/delete_reply.php",
-            dataType: "json",
-            data: {
-                cid: cid,
-                rid: $(element).attr("name")
-            },
-            success: function(res) {
-                if (res.success) {
-                    popUp("clientm-success", res.message, null);
+        if (!$(element).attr("disabled")) {
+            $(element).attr("disabled", true);
 
-                    // Remove Reply HTML on Client End
-                    let repliesContainer = $(element).parent().parent().parent().parent();
-                    let replies = $(element).parent().parent().parent();
-                    
-                    $(element).parent().parent().remove();
-                    if ($(replies).children().length == 1) {
-                        $(repliesContainer).empty();
+            $.ajax({
+                type: "POST",
+                url: "../../utils/delete_reply.php",
+                dataType: "json",
+                data: {
+                    cid: cid,
+                    rid: $(element).attr("name")
+                },
+                success: function(res) {
+                    if (res.success) {
+                        popUp("clientm-success", res.message, null);
+    
+                        // Remove Reply HTML on Client End
+                        let repliesContainer = $(element).parent().parent().parent().parent();
+                        let replies = $(element).parent().parent().parent();
+
+                        $(element).removeAttr("disabled");
+                        
+                        $(element).parent().parent().remove();
+                        
+                        if ($(replies).children().length == 1) {
+                            $(repliesContainer).empty();
+                        }
                     }
+                    else {
+                        popUp("clientm-fail", res.message, null);
+                    }
+                },
+                error: function(err) {
+                    popUp("clientm-fail", "Failed to Contact Server", null);
                 }
-                else {
-                    popUp("clientm-fail", res.message, null);
-                }
-            },
-            error: function(err) {
-                popUp("clientm-fail", "Failed to Contact Server", null);
-            }
-        });
+            });
+        }
     });
 
     // Toggles Replies Section of a Comment
@@ -219,6 +230,7 @@ function register() {
             confPass: confPass
         },
         success: function(res) {
+
             // Display Success/Error to user
             if (res.success) {
                 popUp("clientm-success", res.message, null);
@@ -658,17 +670,62 @@ function loadReplies(fullHTML, repliesJSON) {
     return replyHTML;
 }
 
+// Highlight Profile Links
+function highlightProfileLinks(text) {
+    let indicies = [];
+    let final = text;
+
+    // Get Index of Every @ Symbol
+    for (let i = 0; i < text.length; i++) {
+        let char = text[i];
+
+        if (char == "@") { // Profile Pages
+            if (!indicies.includes(i)) {
+                indicies.push(i);
+            }
+        }
+    }
+
+    // Loop through each Index
+    let breakChars = [" ", "\n", "(", ")", "<", ">"];
+
+    for (let l = 0; l < indicies.length; l++) {
+        let linkIndex = indicies[l];
+        let linkHtml;
+        let fullLink = "";
+
+        for (let i = linkIndex; i < text.length; i++) {
+            let char = text[i];
+
+            if (!breakChars.includes(char)) {
+                fullLink += char;       
+            }
+            else {
+                break;
+            }
+        }
+
+        linkHtml = '<a style="color: #57f54e" class="h-link" href="/profile.php?uquery='+fullLink.substr(1)+'" >' + fullLink + "</a>";
+
+        final = final.replace(fullLink, linkHtml);
+    }
+
+    return final;
+}
+
 // Highlight Specific Elements in Text
 function highlightHyperlinks(text, renderImages) {
     let indicies = [];
-    let final = text;
+    let final = highlightProfileLinks(text);
 
     // Get Index of Every HTTP Keyword
     for (let i = 0; i < text.length; i++) {
         let word = text[i] + text[i + 1] + text[i + 2] + text[i + 3] + text[i + 4] + text[i + 5] + text[i + 6] + text[i + 7];
 
-        if (word.includes("http://") || word.includes("https://")) {
-            indicies.push(i);
+        if (word.includes("http://") || word.includes("https://")) { // Links
+            if (!indicies.includes(i)) {
+                indicies.push(i);
+            }
         }
     }
 
@@ -694,7 +751,7 @@ function highlightHyperlinks(text, renderImages) {
         linkHtml = '<a class="h-link" href="'+fullLink+'" target="_blank" >' + fullLink + "</a>";
 
         // Add Image Tag if Render Images = True
-        if (renderImages && checkURL(fullLink)) {
+        if (renderImages && isImage(fullLink)) {
             linkHtml += '<br /><img src="'+fullLink+'" class="h-link-img" ><br />';
         }
 
@@ -705,6 +762,6 @@ function highlightHyperlinks(text, renderImages) {
 }
 
 // https://stackoverflow.com/questions/9714525/javascript-image-url-verify
-function checkURL(url) {
+function isImage(url) {
     return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
 }

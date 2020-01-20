@@ -476,6 +476,7 @@ button.post-forum-btn {
   font-size: 20px;
   transition: 0.3s;
   margin-top: 20px;
+  margin-bottom: 15px;
   padding: 9px;
   width: 466px;
 }
@@ -595,19 +596,25 @@ button.post-forum-btn {
   transition: 0.2s ease;
 }
 
-a.likes-icon > img {
+button.likes-icon {
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  transform: translateX(5px);
+}
+
+button.likes-icon > img {
   transition: 0.3s ease;
   margin-bottom: -6px;
   filter: sepia(100%) saturate(0) brightness(70%) hue-rotate(255deg);
   width: 25px;
 }
 
-a.likes-icon > img:hover {
+button.likes-icon > img:hover {
   filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(255deg);
   transition: 0.3s ease;
 }
 
-a.like-icon-selected > img {
+button.like-icon-selected > img {
   filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(255deg);
 }
 
@@ -1006,7 +1013,7 @@ button.clientm-fail:hover {
 .account-options {
   background-color: #18181c;
   border: 3px solid #3c3c42;
-  border-radius: 3px;
+  border-radius: 5px;
   box-shadow: 0 10px 8px 0 rgba(0, 0, 0, 0.3), 0 3px 20px 0 rgba(0, 0, 0, 0.3);
   display: none;
   transform: translate(-15px, 100px);
@@ -1204,6 +1211,7 @@ div.login-form-container {
   border-radius: 3px;
   margin: 3px;
   margin-bottom: -1px;
+  height: 80px;
   width: 80px;
 }
 
@@ -1684,6 +1692,7 @@ button.close-btn:active {
 }
 
 .post-forum {
+  margin-top: 7px;
   width: 466px;
 }
 

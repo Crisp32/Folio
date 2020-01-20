@@ -116,7 +116,7 @@ class Forum {
 
             if (count($members) == 0) {
 
-                // Delete Database
+                // Delete Forum
                 return [
                     "success" => $db->query($removeJoinedForumQuery) && $this->delete(),
                     "doReload" => true
@@ -125,14 +125,27 @@ class Forum {
             else {
 
                 // Demote
+                $newOwner = $this->ownerUID;
+
                 if ($this->isModerator($uid)) {
+                    if ($this->ownerUID == $uid) {
+
+                        // Promote Random Mod (or Member)
+                        $newOwner = $this->selectRandomOwner();
+                        
+                        if ($this->isModerator($newOwner)) {
+                            $this->demote($newOwner); // Remove Moderator Rank
+                        }
+                    }
+
                     $this->demote($uid);
                 }
 
                 // Update Database
                 $membersStr = $db->query("SELECT members FROM forums WHERE fid='$forumId'")->fetch_array(MYSQLI_ASSOC)["members"];
+
                 return [
-                    "success" => $db->multi_query("UPDATE forums SET members=JSON_REMOVE('$membersStr', '$[$memberIndex]') WHERE fid='$forumId';" . $removeJoinedForumQuery),
+                    "success" => $db->multi_query("UPDATE forums SET owner='$newOwner', members=JSON_REMOVE('$membersStr', '$[$memberIndex]') WHERE fid='$forumId';" . $removeJoinedForumQuery),
                     "doReload" => false
                 ];
             }
@@ -253,14 +266,8 @@ class Forum {
                 $newOwner = $members[mt_rand(0, count($members) - 1)];
             }
 
-            // Update Forum in DB
-            if ($newOwner !== "" && $newOwner !== null) {
-                $updateQuery = $db->query("UPDATE forums SET owner='$newOwner' WHERE fid='$forumId'");
-                return $updateQuery;
-            }
-            else {
-                return false;
-            }
+            // Return new Owner UID
+            return $newOwner;
         }
         else {
             return false;
