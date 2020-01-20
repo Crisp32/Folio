@@ -9,7 +9,7 @@ session_start();
 
 $maxCommentLength = 120;
 
-$maxComments = 80;
+$maxComments = 70;
 $maxReplies = 50;
 
 // Init DB
@@ -36,8 +36,10 @@ if (validateSession($_SESSION["user"])) {
 
     $insertStatement;
     $updateStatement;
+    $commentCount = 0;
 
     $postDate = date("j-n-Y");
+    $rank = "member";
 
     if ($type == $TYPE_PROFILE) {
         
@@ -49,6 +51,11 @@ if (validateSession($_SESSION["user"])) {
         if ($profile->user["allowComments"] == 1) {
             $error["success"] = true;
 
+            if ($profileId == $activeUser) {
+                $rank = "owner";
+            }
+
+            $commentCount = intval($profile->user["commentCount"]);
             $insertStatement = "INSERT INTO comments (uid, commenterId, type, content, postDate, usersLiked, likes, usersReplied, repliesCount) VALUES ('$profileId', '$activeUser', '$type', '$commentContent', '$postDate', '[]', '0', '[]', '0');";
             $updateStatement = "UPDATE users SET commentCount=commentCount+1 WHERE uid=$profileId;";
         }
@@ -68,6 +75,14 @@ if (validateSession($_SESSION["user"])) {
         if ($forum->hasMember($activeUser)) {
             $error["success"] = true;
 
+            if ($forum->ownerUID == $activeUser) {
+                $rank = "owner";
+            }
+            else if ($forum->isModerator($activeUser)) {
+                $rank = "mod";
+            }
+
+            $commentCount = intval($forumPost->post["commentCount"]);
             $insertStatement = "INSERT INTO comments (uid, commenterId, type, content, postDate, usersLiked, likes, usersReplied, repliesCount) VALUES ('$id', '$activeUser', '$type', '$commentContent', '$postDate', '[]', '0', '[]', '0');";
             $updateStatement = "UPDATE forumPosts SET commentCount=commentCount+1 WHERE pid=$id;";
         }
@@ -78,18 +93,18 @@ if (validateSession($_SESSION["user"])) {
 
     // Validate Comment
     if ($error["success"]) {
-        if (!empty($commentContent)) {
-            if (strlen($commentContent) > $maxCommentLength) {
-                echo json_encode([
-                    "success" => false,
-                    "message" => "Comment Must be Less than $maxCommentLength Characters"
-                ]);
-            }
-            else {                
-                $cidQuery = $db->query("SELECT cid FROM comments ORDER BY cid DESC LIMIT 1");
-                if ($db->multi_query($insertStatement . $updateStatement)) {            
-                    if ($cidQuery) {
-                        $cid = $cidQuery->fetch_array(MYSQLI_ASSOC)["cid"] + 1;
+        if (!($commentCount >= $maxComments)) {
+            if (!empty($commentContent)) {
+                if (strlen($commentContent) > $maxCommentLength) {
+                    echo json_encode([
+                        "success" => false,
+                        "message" => "Comment Must be Less than $maxCommentLength Characters"
+                    ]);
+                }
+                else {  
+                    $query = $db->multi_query($insertStatement . $updateStatement);              
+                    if ($query) {            
+                        $cid = $db->insert_id;
 
                         // Send Successful Response
                         echo json_encode([
@@ -102,6 +117,7 @@ if (validateSession($_SESSION["user"])) {
                                     "replies" => null,
                                     "likes" => 0,
                                     "cid" => $cid,
+                                    "rank" => $rank,
                                     "delDisplay" => "block"
                                 ]
                             ]
@@ -114,18 +130,18 @@ if (validateSession($_SESSION["user"])) {
                         ]);
                     }
                 }
-                else {
-                    echo json_encode([
-                        "success" => false,
-                        "message" => $db->error
-                    ]);
-                }
+            }
+            else {
+                echo json_encode([
+                    "success" => false,
+                    "message" => "Comment Must be Greater than 0 Characters"
+                ]);
             }
         }
         else {
             echo json_encode([
                 "success" => false,
-                "message" => "Comment Must be Greater than 0 Characters"
+                "message" => "The Maximum Amount of Comments here has been Reached"
             ]);
         }
     }

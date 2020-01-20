@@ -1,1 +1,5 @@
-Commands out of sync; you can't run this command now
+Array
+(
+    [replies] => [[0, 3, "test", "19-1-2020"]]
+    [type] => forumpost
+)

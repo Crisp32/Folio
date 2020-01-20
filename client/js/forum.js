@@ -14,6 +14,7 @@ let loadAmounts = 6; // How many Posts to Request and Load when Needed
 let loadedAllPosts = false;
 
 let loadedPostComments = []; // List of Post IDs of Comments Loaded
+let commentLoadAmounts = 5;
 
 let confirm = {
     action: "",
@@ -269,7 +270,9 @@ function triggerOnLoad() {
     // View Forum Comments Button
     $(document).on("click", ".show-post-comments", function (e) {
         let element = $(this);
-        let postId = $(element).parent().siblings(".forum-post-voting").attr("data-pid");
+        let votingElement = $(element).parent().siblings(".forum-post-voting");
+        let postId = $(votingElement).attr("data-pid");
+        let commentCount = parseInt($(votingElement).attr("data-comments"));
         let hasLoaded = loadedPostComments.includes(postId);
         let commentsElement = $(element).parent().parent().siblings(".forum-post-comments");
 
@@ -282,8 +285,13 @@ function triggerOnLoad() {
             $(commentsElement).css("display", "none");
         }
 
+        if (commentCount == 0) {
+            hasLoaded = true;
+        }
+
         if (!hasLoaded) {
             $(commentsElement).find(".res-empty").text("Loading Comments...");
+            $(element).attr("disabled", true);
 
             $.ajax({
                 type: "POST",
@@ -293,7 +301,7 @@ function triggerOnLoad() {
                     type: "forumpost",
                     pid: postId,
                     min: 0,
-                    max: 5
+                    max: commentLoadAmounts
                 },
                 success: function(res) {
                     if (res.success) {
@@ -304,10 +312,12 @@ function triggerOnLoad() {
 
                         if (res.comments == "" || res.comments == null || res.comments == []) {
                             $(emptyElement).text("No Comments to Display");
+                            $(element).attr("disabled", false);
                         }
                         else {
                             $(emptyElement).css("display", "none");
-                            loadPostComments(res.comments, true, $(commentsElement).find(".forum-post-comments-container"));
+                            $(element).attr("disabled", false);
+                            loadPostComments(res.comments, true, $(commentsElement).find(".forum-post-comments-container"), true);
                         }
                     }
                     else {
@@ -322,7 +332,7 @@ function triggerOnLoad() {
     });
 
     // Add Forum Post Comment Button
-    $(document).on("click", ".add-comment-btn", function (e) {
+    $(document).on("click", ".post-forum-comment", function (e) {
         let element = $(this);
         let postContainer = $(element).parent().parent().siblings(".forum-post-container");
         let postId = $(postContainer).find(".forum-post-voting").attr("data-pid");
@@ -337,6 +347,9 @@ function triggerOnLoad() {
             popUp("clientm-fail", "Comment Must be Greater than 0 Characters", null);
         }
         else {
+            $(element).siblings(".add-comment").val("");
+
+            // Send Request
             $.ajax({
                 type: "POST",
                 url: "../../utils/add_comment.php",
@@ -352,7 +365,7 @@ function triggerOnLoad() {
 
                         // Load Comments into DOM
                         $(commentsEmptyElement).css("display", "none");
-                        loadPostComments(res.comment, false, $(element).parent().siblings(".forum-post-comments-container"));
+                        loadPostComments(res.comment, false, $(element).parent().siblings(".forum-post-comments-container"), false);
                     }
                     else {
                         popUp("clientm-fail", res.message, null);
@@ -363,6 +376,86 @@ function triggerOnLoad() {
                 }
             });
         }
+    });
+
+    // Delete Post Comment Button
+    $(document).on("click", ".del-comment", function (e) {
+        let element = $(this);
+        let emptyElement = $(element).parent().parent().parent().parent().parent().find(".res-empty");
+        let commentContainer = $(emptyElement).siblings(".forum-post-comments-container");
+
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/delete_comment.php",
+            dataType: "json",
+            data: {
+                cid: $(element).attr("name"),
+                profile: $(element).parent().siblings(".forum-post-voting").attr("data-pid")
+            },
+            success: function(res) {
+                if (res.success) {
+                    popUp("clientm-success", res.message, null);
+
+                    // Mofify DOM
+                    $(element).parent().parent().parent().remove();
+
+                    if ($(commentContainer).children().length == 0) {
+                        $(emptyElement).css("display", "block");
+                    }
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+            }
+        });
+    });
+
+    // Load More Comments Button
+    $(document).on("click", ".load-more-comments", function (e) {
+        let element = $(this);
+        let votingElement = $(element).parent().parent().siblings(".forum-post-container").find(".forum-post-voting");
+        let postId = $(votingElement).attr("data-pid");
+        let commentsElement = $(element).parent().siblings(".forum-post-comments-container");
+
+        $(element).text("Loading Comments...");
+        $(element).attr("disabled", true);
+
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/get_comments.php",
+            dataType: "json",
+            data: {
+                type: "forumpost",
+                pid: postId,
+                min: commentsElement.children().length,
+                max: commentLoadAmounts
+            },
+            success: function(res) {
+                if (res.success) {
+
+                    // Modify DOM
+                    if (res.comments == "" || res.comments == null || res.comments == []) {
+                        $(element).text("No More Comments to Display");
+                    }
+                    else {
+                        loadPostComments(res.comments, true, $(commentsElement), false);
+                        $(element).text("Load More Comments");
+                        $(element).attr("disabled", false);
+                    }
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+            }
+        });
     });
 }
 
@@ -409,7 +502,7 @@ function loadForum(fquery) {
                     }
 
                     $("#profile-img").attr("src", forum.icon);
-                    $("#bio").val(forum.description);
+                    $("#bio").html(highlightHyperlinks(forum.description, false));
                     $("#profile-name").text(forum.name);
                     $("#forum-members").text(forum.members);
                     $("#creation-date").text(forum.date);
@@ -608,7 +701,7 @@ function openForumSettings() {
 
     $(".create-forum-modal #forum-img-url").val(imgURL);
     $(".create-forum-modal .forum-icon-sel").attr("src", $(".forum-img#profile-img").attr("src"));
-    $(".create-forum-modal #forum-desc-textarea").val($("#bio").val());
+    $(".create-forum-modal #forum-desc-textarea").val($("#bio").text());
 
     // Get Banned Users
     if (!loadedBannedUsers) {
@@ -766,7 +859,7 @@ function memberAction(user, action) {
     }
 
     // Close Confirmation Page
-    closeMemberActionConfirmation();
+    closeModal();
 }
 
 // Forum Posting
@@ -788,6 +881,9 @@ function addForumPost() {
         popUp("clientm-fail", "Body Must be Greater than 0 Characters", null);
     }
     else {
+        $(".forum-post-title").val("");
+        $(".forum-post-textarea").val("");
+
         // Send Request
         $.ajax({
             type: "POST",
@@ -804,10 +900,6 @@ function addForumPost() {
 
                     // Add Post on Client End
                     loadForumPosts(res.post, false);
-
-                    // Clear Input
-                    $(".forum-post-title").val("");
-                    $(".forum-post-textarea").val("");
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
@@ -891,7 +983,10 @@ function loadForumPosts(posts, append) {
                 break;
         }
 
-        let html = '<div class="forum-post-wrapper" ><div class="profile-section forum-post-container" ><h2 class="section-title" >'+postObject.title+'</h2><br /><div class="forum-post-info" >Posted '+postObject.date+' by <a style="color: '+posterNameColour+'" href="/profile.php?uquery='+postObject.posterName+'" >'+postObject.posterName+'</a></div><div class="forum-post-body" >'+postObject.body+'</div><div class="forum-post-voting" data-pid="'+postObject.pid+'" ><button title="Upvote" class="upvote vote'+upvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><button title="Downvote" class="downvote vote'+downvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><div class="forum-post-votes" style="color: '+voteCountColour+'" >'+postObject.voteCount+'</div></div><div class="forum-post-actions" >'+actionButtons+'</div></div><br /><div class="profile-section forum-post-comments" ><div class="add-post-comment-div" ><input class="add-comment" placeholder="Comment" /><button class="add-comment-btn" >Post</button></div><div class="res-empty post-comments-empty" >No Comments to Display</div><div class="forum-post-comments-container" ></div></div></div><br /></div>';
+        let postTitle = highlightHyperlinks(postObject.title, false);
+        let postBody = highlightHyperlinks(postObject.body, true);
+
+        let html = '<div class="forum-post-wrapper" ><div class="profile-section forum-post-container" ><h2 class="section-title" >'+postTitle+'</h2><br /><div class="forum-post-info" >Posted '+postObject.date+' by <a style="color: '+posterNameColour+'" href="/profile.php?uquery='+postObject.posterName+'" >'+postObject.posterName+'</a></div><div class="forum-post-body" >'+postBody+'</div><div class="forum-post-voting" data-comments="'+postObject.comments+'" data-pid="'+postObject.pid+'" ><button title="Upvote" class="upvote vote'+upvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><button title="Downvote" class="downvote vote'+downvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><div class="forum-post-votes" style="color: '+voteCountColour+'" >'+postObject.voteCount+'</div></div><div class="forum-post-actions" >'+actionButtons+'</div></div><br /><div class="profile-section forum-post-comments" ><div class="add-post-comment-div" ><input class="add-comment post-forum-comment" placeholder="Comment" /><button class="post-forum-comment add-comment-btn" >Post</button></div><div class="res-empty post-comments-empty" >No Comments to Display</div><div class="forum-post-comments-container" ></div></div></div></div>';
 
         switch (append) {
             case true:
@@ -905,19 +1000,35 @@ function loadForumPosts(posts, append) {
 }
 
 // Load Comment JSON into DOM
-function loadPostComments(commentsJSON, append, element) {
+function loadPostComments(commentsJSON, append, element, showLoadCommentsButton) {
     for (let comment in commentsJSON) {
+        let nameColour = "lightgrey";
 
         // Load Replies
         let replyHTML = loadReplies(true, commentsJSON[comment].replies);
 
         // Load Comments
         let likedClass = "";
+        let imgLikedClass = "";
+        
         if (commentsJSON[comment].liked) {
             likedClass = " liked";
+            imgLikedClass = " like-icon-selected";
         }
 
-        let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a href="../../profile.php?uquery='+commentsJSON[comment].user+'" >'+commentsJSON[comment].user+'</a> <div class="comment-post-date" >'+commentsJSON[comment].date+'</div></div><div class="likes-container" ><a class="likes-icon" ><img title="I Like this Comment" src="/images/other/like-icon.png" ></a><div class="likes-count'+likedClass+'" >'+commentsJSON[comment].likes+'</div><br /><div name="'+commentsJSON[comment].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentsJSON[comment].content+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
+        // Get Rank Colour
+        switch (commentsJSON[comment].rank) {
+            case "owner":
+                nameColour = "violet";
+                break;
+            case "mod":
+                nameColour = "orange";
+                break;
+        }
+
+        let commentBody = highlightHyperlinks(commentsJSON[comment].content, false);
+
+        let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a style="color: '+nameColour+'" href="../../profile.php?uquery='+commentsJSON[comment].user+'" >'+commentsJSON[comment].user+'</a> <div class="comment-post-date" >'+commentsJSON[comment].date+'</div></div><div class="likes-container" ><a class="likes-icon'+imgLikedClass+'" ><img title="I Like this Comment" src="/images/other/like-icon.svg" ></a><div class="likes-count'+likedClass+'" >'+commentsJSON[comment].likes+'</div><br /><div name="'+commentsJSON[comment].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentBody+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
         
         if (append) {
             $(element).append(commentHTML);
@@ -925,5 +1036,9 @@ function loadPostComments(commentsJSON, append, element) {
         else {
             $(element).prepend(commentHTML);
         }
+    }
+
+    if (commentsJSON.length > commentLoadAmounts - 1 && showLoadCommentsButton) {
+        $(element).parent().append('<div style="text-align: center" ><button class="load-more-comments" >Load More Comments</button></div>');
     }
 }

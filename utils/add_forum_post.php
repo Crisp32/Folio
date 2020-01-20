@@ -77,6 +77,7 @@ if (validateSession($_SESSION["user"])) {
                             "voteCount" => 0,
                             "upvoted" => false,
                             "downvoted" => false,
+                            "comments" => 0,
                             "canEdit" => true
                         ]
                     ]

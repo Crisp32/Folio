@@ -168,6 +168,7 @@ body {
   text-align: left;
   line-height: 23px;
   overflow-wrap: break-word;
+  overflow-x: hidden;
   overflow-y: auto;
   resize: none;
   padding: 12px;
@@ -176,6 +177,14 @@ body {
   margin-bottom: -3px;
   height: 80px;
   width: 400px;
+}
+
+pre#bio {
+  white-space: pre-wrap;       /* Since CSS 2.1 */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+  white-space: -pre-wrap;      /* Opera 4-6 */
+  white-space: -o-pre-wrap;    /* Opera 7 */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 
 #loading-info {
@@ -287,11 +296,40 @@ div#top-bar {
 }
 
 /* Classes */
+.load-more-comments:disabled, .load-more-comments[disabled], .show-post-comments:disabled, .show-post-comments[disabled] {
+  background-color: white;
+  color: black;
+}
+
+.load-more-comments {
+  background-color: white;
+  border: none;
+  border-radius: 3px;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 19px;
+  transition: 0.3s;
+  margin-top: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 5px;
+  padding-top: 5px;
+  width: calc(100% - 24px);
+}
+
+.load-more-comments:hover {
+  background-color: #a3a3a3;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.forum-post-wrapper {
+  margin-bottom: 10px;
+}
+
 .forum-post-comments-container {
   overflow-y: auto;
   text-align: left;
   margin-top: 15px;
-  max-height: 290px;
+  max-height: 568px;
   height: auto;
 }
 
@@ -369,6 +407,7 @@ button.post-forum-btn {
   color: white;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 20px;
+  transition: 0.3s;
   margin-top: 8px;
   padding: 5px;
   width: 428px;
@@ -378,16 +417,19 @@ button.post-forum-btn {
   background-color: #1f9143;
   color: lightgrey;
   cursor: pointer;
+  transition: 0.3s;
 }
 
 .joined-forum-btn {
   color: white;
   background-color: #f53643;
+  transition: 0.3s;
 }
 
 .joined-forum-btn:hover {
   color: lightgrey;
   background-color: #b62731;
+  transition: 0.3s;
 }
 
 .view-members {
@@ -520,15 +562,19 @@ button.post-forum-btn {
 }
 
 a.likes-icon > img {
+  transition: 0.3s ease;
   margin-bottom: -6px;
-  transform: scale(1);
-  transition: 0.1s ease;
-  width: 30px;
+  filter: sepia(100%) saturate(0) brightness(70%) hue-rotate(255deg);
+  width: 25px;
 }
 
 a.likes-icon > img:hover {
-  transform: scale(1.15);
-  transition: 0.1s ease;
+  filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(255deg);
+  transition: 0.3s ease;
+}
+
+a.like-icon-selected > img {
+  filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(255deg);
 }
 
 .liked {
@@ -978,7 +1024,7 @@ button.clientm-fail:hover {
 .votes-container {
   position: absolute;
   right: 110px;
-  margin-top: 5px;
+  margin-top: -1px;
 }
 
 .delete-comment {
@@ -1205,12 +1251,12 @@ button.close-members-modal {
 
 .member-option-red {
   color: white;
-  background: #f53643;
+  background: #ff1430;
 }
 
 .member-option-red:hover {
   color: lightgrey;
-  background: #b0232d;
+  background: #9e1021;
 }
 
 .member-option-green {
@@ -1309,14 +1355,12 @@ button.close-members-modal {
 
 .commenter-name > a, .profile-forum-title > a {
   color: #bababa;
-  transition: 0.25s;
   text-decoration: none;
 }
 
 .commenter-name > a:hover, .profile-forum-title > a:hover {
   cursor: pointer;
-  color: #696969;
-  transition: 0.25s;
+  text-decoration: underline;
 }
 
 .commenter-name {
@@ -1899,6 +1943,22 @@ select.input-field {
 }
 
 /* Override Styling */
+img.h-link-img {
+  border-radius: 3px;
+  margin-bottom: 8px;
+  margin-top: 10px;
+  max-width: 140px;
+}
+
+a.h-link {
+  color: rgb(155, 227, 255);
+  text-decoration: none;
+}
+
+a.h-link:hover {
+  text-decoration: underline;
+}
+
 .post-comments-empty {
   font-size: 22px;
   margin-bottom: -16px;

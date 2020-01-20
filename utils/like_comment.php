@@ -15,19 +15,37 @@ if (validateSession($_SESSION["user"])) {
     $user = $_SESSION["user"];
 
     $CID = escapeString($_REQUEST["cid"]);
-    $commentQuery = $db->query("SELECT usersLiked, uid, likes FROM comments WHERE cid='$CID'");
+    $commentQuery = $db->query("SELECT usersLiked, uid, likes, type FROM comments WHERE cid='$CID'");
 
     // Fetch Comment Data
     if ($commentQuery) {
         $commentData = $commentQuery->fetch_array(MYSQLI_ASSOC);
-        
-        // Validate Permissions
         $profileId = $commentData["uid"];
-        if (getUserData("allowComments", "uid='$profileId'") == 1) {
+
+        // For Forum Post Comments
+        $canLike = true;
+
+        if ($commentData["type"] == $TYPE_FORUMPOST) {
+            
+            // Get Forum Post Data
+            $forumPost = new ForumPost();
+            $forumPost->getDataById($commentData["uid"]);
+
+            // Get Forum Data
+            $forum = getForumDataById($forumPost->post["fid"]);
+            $canLike = $forum->hasMember($user);
+        }
+        else if ($commentData["type"] == $TYPE_PROFILE) {
+            $canLike = (getUserData("allowComments", "uid='$profileId'") == 1);
+        }
+
+        // Validate Permissions
+        if ($canLike) {
             
             // Check if User has Already Liked Comment
             $likesArray = json_decode($commentData["usersLiked"]);
             $likesArrayEncoded = $commentData["usersLiked"];
+
             if (in_array($user, $likesArray)) {
 
                 // Has Liked

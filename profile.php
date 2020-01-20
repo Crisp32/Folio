@@ -70,7 +70,7 @@
                       <button class="downvote vote" onclick="downVoteClick(true)" ><img src="/images/other/voteIcon.svg" ></button>
                       <div class="votes" >0</div>
                   </div>
-                  <textarea id="bio" readonly >Nothing</textarea>
+                  <pre id="bio" >Nothing</pre>
                 </div>
             </div>
           <div>

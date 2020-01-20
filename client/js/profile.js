@@ -31,21 +31,6 @@ function triggerOnLoad() {
         }
      });
 
-    // Toggles Replies Section of a Comment
-    $(document).on("click", ".reply-options", function (e) {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-
-        if ($(this).siblings(".replies").css("display") == "none") {
-            $(this).siblings(".replies").css("display", "block");
-            $(this).text($(this).text().replace("Expand", "Collapse"));
-        }
-        else {
-            $(this).siblings(".replies").css("display", "none");
-            $(this).text($(this).text().replace("Collapse", "Expand"));
-        }
-    });
-
     // Delete Comment
     $(document).on("click", ".del-comment", function (e) {
         e.stopPropagation();
@@ -81,106 +66,6 @@ function triggerOnLoad() {
             }
         });
     });
-
-    // Delete Reply
-    $(document).on("click", ".reply-del-comment", function (e) {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-
-        let element = this;
-        let cid = $(element).parent().parent().parent().parent().siblings(".comment").find(".del-comment").attr("name");
-
-        // Send Request
-        $.ajax({
-            type: "POST",
-            url: "../../utils/delete_reply.php",
-            dataType: "json",
-            data: {
-                cid: cid,
-                rid: $(element).attr("name")
-            },
-            success: function(res) {
-                if (res.success) {
-                    popUp("clientm-success", res.message, null);
-
-                    // Remove Reply HTML on Client End
-                    let repliesContainer = $(element).parent().parent().parent().parent();
-                    let replies = $(element).parent().parent().parent();
-                    
-                    $(element).parent().parent().remove();
-                    if ($(replies).children().length == 1) {
-                        $(repliesContainer).empty();
-                    }
-                }
-                else {
-                    popUp("clientm-fail", res.message, null);
-                }
-            },
-            error: function(err) {
-                popUp("clientm-fail", "Failed to Contact Server", null);
-            }
-        });
-    });
-
-    // Reply to Comment
-    $(document).on("click", ".post-reply-btn", function (e) {
-        let replyContent = $(this).siblings(".add-comment").val();
-        let commentCID = $(this).parent().siblings(".comment").find(".delete-comment").attr("name");
-
-        let element = this;
-
-        // Client Side Validation
-        if (replyContent.length > 120) {
-            popUp("clientm-fail", "Reply must not Exceed 120 Characters", null);
-        }
-        else if (replyContent.length == 0) {
-            popUp("clientm-fail", "Reply must be Greater than 0 Characters", null);
-        }
-        else {
-            // Send Request
-            $.ajax({
-                type: "POST",
-                url: "../../utils/add_reply.php",
-                dataType: "json",
-                data: {
-                    cid: commentCID,
-                    content: replyContent,
-                    type: "profile"
-                },
-                success: function(res) {
-                    if (res.success) {
-                        popUp("clientm-success", res.message, null);
-    
-                        // Clear Input Field
-                        $(element).siblings(".add-comment").val("")
-    
-                        // Display Reply on Client Side
-                        let repliesContainer = $(element).parent().siblings(".replies-container");
-                        let noReplies = $(repliesContainer).html() == "";
-                        let replyHTML = loadReplies(noReplies, res.reply);
-                        
-                        $(repliesContainer).find(".reply-options").css("display", "block");
-                        $(repliesContainer).find(".replies").css("display", "block");
-    
-                        if (noReplies) {
-                            $(repliesContainer).prepend(replyHTML);
-                        }
-                        else {
-                            $(repliesContainer).find(".reply-options").text($(repliesContainer).find(".reply-options").text().replace("Expand", "Collapse"));
-                            $(repliesContainer).find(".replies").prepend(replyHTML);
-                        }
-                    }
-                    else {
-                        popUp("clientm-fail", res.message, null);
-                    }
-                },
-                error: function(err) {
-                    popUp("clientm-fail", "Failed to Contact Server", null);
-                }
-            });
-        }
-        
-    });
 }
 
 function loadProfile(username) {
@@ -200,7 +85,7 @@ function loadProfile(username) {
                 // Load Requested data into Page
                 $("#profile-img").attr("src", res.image);
                 $("#profile-name").text(res.username);
-                $("#bio").text(res.bio);
+                $("#bio").html(highlightHyperlinks(res.bio, false));
                 $("#profile-location").text(res.location);
                 $(".votes").text(res.votes);
                 $("#join-date").text(res.date);
@@ -263,45 +148,6 @@ function loadProfile(username) {
         console.log("Finished Loading Profile");
     });
 
-    // Comment Liking
-    $(document).on("click", "a.likes-icon > img", function (e) {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-
-        let element = this;
-        let cid = $(element).parent().siblings(".del-comment").attr("name");
-
-        // Send Request
-        $.ajax({
-            type: "POST",
-            url: "../../utils/like_comment.php",
-            dataType: "json",
-            data: {
-                cid: cid
-            },
-            success: function(res) {
-                if (res.success) {
-
-                    // Display Like Count
-                    $(element).parent().siblings(".likes-count").text(res.likes);
-                    
-                    if (res.liked) {
-                        $(element).parent().siblings(".likes-count").addClass("liked");
-                    }
-                    else {
-                        $(element).parent().siblings(".likes-count").removeClass("liked");
-                    }
-                }
-                else {
-                    popUp("clientm-fail", res.message, null);
-                }
-            },
-            error: function(err) {
-                popUp("clientm-fail", "Failed to Contact Server", null);
-            }
-        });
-    });
-
 }
 
 function loadErrorProfile() {
@@ -349,17 +195,33 @@ function voteUser() {
 function loadComments(commentsJSON, method) {
 
     for (let comment in commentsJSON) {
+        let nameColour = "lightgrey";
+
+        // Get Rank Colour
+        switch (commentsJSON[comment].rank) {
+            case "owner":
+                nameColour = "violet";
+                break;
+            case "mod":
+                nameColour = "orange";
+                break;
+        }
 
         // Load Replies
         let replyHTML = loadReplies(true, commentsJSON[comment].replies);
-
+        
         // Load Comments
+        let commentBody = highlightHyperlinks(commentsJSON[comment].content, false);
+
         let likedClass = "";
+        let imgLikedClass = "";
+        
         if (commentsJSON[comment].liked) {
             likedClass = " liked";
+            imgLikedClass = " like-icon-selected";
         }
 
-        let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a href="../../profile.php?uquery='+commentsJSON[comment].user+'" >'+commentsJSON[comment].user+'</a> <div class="comment-post-date" >'+commentsJSON[comment].date+'</div></div><div class="likes-container" ><a class="likes-icon" ><img title="I Like this Comment" src="/images/other/like-icon.png" ></a><div class="likes-count'+likedClass+'" >'+commentsJSON[comment].likes+'</div><br /><div name="'+commentsJSON[comment].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentsJSON[comment].content+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
+        let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a style="color: '+nameColour+'" href="../../profile.php?uquery='+commentsJSON[comment].user+'" >'+commentsJSON[comment].user+'</a> <div class="comment-post-date" >'+commentsJSON[comment].date+'</div></div><div class="likes-container" ><a class="likes-icon'+imgLikedClass+'" ><img title="I Like this Comment" src="/images/other/like-icon.svg" ></a><div class="likes-count'+likedClass+'" >'+commentsJSON[comment].likes+'</div><br /><div name="'+commentsJSON[comment].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentBody+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
         
         if (method == "append") {
             $("#comments-container").append(commentHTML);

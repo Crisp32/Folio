@@ -17,85 +17,102 @@ if (validateSession($_SESSION["user"])) {
     $user = $_SESSION["user"];
     $commentCID = escapeString($_REQUEST["cid"]);
     $replyContent = escapeString($_REQUEST["content"]);
-    $type = escapeString($_REQUEST["type"]);
 
-    // Check if POST Request was Tampered with
-    if ($type == $TYPE_PROFILE || $type == $TYPE_FORUMPOST) {
+    // Validate Permissions
+    $type = $db->query("SELECT type FROM comments WHERE cid=$commentCID")->fetch_array(MYSQLI_ASSOC)["type"];
+    $commentOwner = getCommentData("uid", $type, "cid='$commentCID'");
 
-        // Validate Permissions
-        $commentOwner = getCommentData("uid", $type, "cid='$commentCID'");
-        if (getUserData("allowComments", "uid='$commentOwner'") == 1) {
-            
-            // Check if Reply Content is Valid
-            if (strlen($replyContent) > $maxReplyLength) {
-                echo json_encode([
-                    "success" => false,
-                    "message" => "Reply must not Exceed $maxReplyLength Characters"
-                ]);
-            }
-            else if (strlen($replyContent) == 0) {
-                echo json_encode([
-                    "success" => false,
-                    "message" => "Reply must be Greater than 0 Characters"
-                ]);
+    // Check if Reply Content is Valid
+    if (strlen($replyContent) > $maxReplyLength) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Reply must not Exceed $maxReplyLength Characters"
+        ]);
+    }
+    else if (strlen($replyContent) == 0) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Reply must be Greater than 0 Characters"
+        ]);
+    }
+    else {
+        $error = [
+            "success" => false,
+            "message" => ""
+        ];
+
+        // Generate a Reply ID
+        $usersRepliedEncoded = getCommentData("usersReplied", $type, "cid='$commentCID'");
+        $usersReplied = json_decode($usersRepliedEncoded);
+        $RID = count($usersReplied);
+        $date = date("j-n-Y");
+        
+        // Post Comment For a Profile
+        if ($type == $TYPE_PROFILE) {
+            $allowComments = (getUserData("allowComments", "uid='$commentOwner'") == 1);
+
+            if ($allowComments) {
+                $error["success"] = true;
             }
             else {
-                // Post Comment For a Profile
-                if ($type == $TYPE_PROFILE) {
+                $error["message"] = "This User has Commenting Disabled";
+            }
+        }
+        else if ($type == $TYPE_FORUMPOST) {
+            
+            // Get Forum Post Data
+            $postId = getCommentData("uid", $TYPE_FORUMPOST, "cid=$commentCID");
 
-                    // Generate a Reply ID
-                    $usersRepliedEncoded = getCommentData("usersReplied", "profile", "cid='$commentCID'");
-                    $usersReplied = json_decode($usersRepliedEncoded);
-                    $RID = count($usersReplied);
-                    $date = date("j-n-Y");
+            $forumPost = new ForumPost();
+            $forumPost->getDataById($postId);
 
-                    // Insert Into Database
-                    $addReplyQuery = "UPDATE comments SET repliesCount=repliesCount+1, usersReplied=JSON_ARRAY_INSERT('$usersRepliedEncoded', '$[0]', JSON_ARRAY($RID, $user, '$replyContent', '$date')) WHERE cid='$commentCID' AND type='profile'";
-                    if ($db->query($addReplyQuery)) {
-                        echo json_encode([
-                            "success" => true,
-                            "message" => "Posted Reply!",
-                            "reply" => [
-                                "0" => [
-                                    "user" => getUserData("username", "uid='$user'"),
-                                    "content" => $replyContent,
-                                    "date" => $date,
-                                    "rid" => $RID,
-                                    "delDisplay" => "block"
-                                ]
-                            ]
-                        ]);
-                    }
-                    else {
-                        echo json_encode([
-                            "success" => false,
-                            "message" => $db->error
-                        ]);
-                    }
-                }
-                else if ($type == $TYPE_FORUMPOST) {
-                    // Post Comment For a Blogpost
-                }
-                else {
-                    echo json_encode([
-                        "success" => false,
-                        "message" => "Invalid Type"
-                    ]);
-                }
+            // Get Forum Data
+            $forum = getForumDataById($forumPost->post["fid"]);
+
+            if ($forum->hasMember($user)) {
+                $error["success"] = true;
+            }
+            else {
+                $error["message"] = "You Must be a Member of this Forum to Reply to Comments";
             }
         }
         else {
             echo json_encode([
                 "success" => false,
-                "message" => "This User has Commenting Disabled"
+                "message" => "Invalid Type"
             ]);
         }
-    }
-    else {
-        echo json_encode([
-            "success" => false,
-            "message" => "Request Error"
-        ]);
+
+        if ($error["success"]) {
+
+            // Insert Into Database
+            $addReplyQuery = $db->query("UPDATE comments SET repliesCount=repliesCount+1, usersReplied=JSON_ARRAY_INSERT('$usersRepliedEncoded', '$[0]', JSON_ARRAY($RID, $user, '$replyContent', '$date')) WHERE cid='$commentCID' AND type='$type'");
+                
+            if ($addReplyQuery) {
+                echo json_encode([
+                    "success" => true,
+                    "message" => "Posted Reply!",
+                    "reply" => [
+                        "0" => [
+                            "user" => getUserData("username", "uid='$user'"),
+                            "content" => $replyContent,
+                            "date" => $date,
+                            "rid" => $RID,
+                            "delDisplay" => "block"
+                        ]
+                    ]
+                ]);
+            }
+            else {
+                echo json_encode([
+                    "success" => false,
+                    "message" => $db->error
+                ]);
+            }
+        }
+        else {
+            echo json_encode($error);
+        }
     }
 }
 else {

@@ -115,7 +115,7 @@
                 </div><br />
                 <button class="join-forum-btn" onclick="joinForum()" >Join Forum</button>
                 <div>
-                    <textarea id="bio" readonly >Nothing</textarea>
+                    <pre id="bio" >Nothing</pre>
                 </div>
             <div>
         </div>

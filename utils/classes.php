@@ -386,11 +386,10 @@ class Forum {
             "downvotes" => []
         ]);
         $insertStatement = "INSERT INTO forumPosts (fid, uid, title, body, voteCount, date, votes, commentCount) VALUES ('$forumId', '$userId', '$title', '$body', '0', '$date', '$votes', '0')";
-        $getPidQuery = "SELECT pid FROM forumPosts WHERE fid='$forumId' ORDER BY pid DESC LIMIT 1";
 
         return [
             "success" => $db->query($insertStatement),
-            "pid" => $db->query($getPidQuery)->fetch_array(MYSQLI_ASSOC)["pid"]
+            "pid" => $db->insert_id
         ];
     }
 

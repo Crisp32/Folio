@@ -51,11 +51,19 @@ if ($type == $TYPE_PROFILE) {
                             $delDisplay = "none";
                         }
 
+                        // Colour Profile Owner Name
+                        $rank = "member";
+
+                        if ($replyData["uid"] == $profileUID) {
+                            $rank = "owner";
+                        }
+
                         $replyJSON = [
                             "user" => getUserData("username", "uid='".$replyData["uid"]."'"),
                             "content" => $replyData["content"],
                             "date" => $replyData["date"],
                             "rid" => $replyData["rid"],
+                            "rank" => $rank,
                             "delDisplay" => $delDisplay
                         ];
 
@@ -82,6 +90,13 @@ if ($type == $TYPE_PROFILE) {
                     $liked = true;
                 }
 
+                // Colour Profile Owner Name
+                $rank = "member";
+
+                if ($comment["commenterId"] == $profileUID) {
+                    $rank = "owner";
+                }
+
                 // Push to Comments Array
                 array_push($comments, [
                     "user" => getUserData("username", "uid='".$comment["commenterId"]."'"),
@@ -91,6 +106,7 @@ if ($type == $TYPE_PROFILE) {
                     "liked" => $liked,
                     "replies" => $replies,
                     "cid" => $comment["cid"],
+                    "rank" => $rank,
                     "delDisplay" => $delDisplayComment
                 ]);
             }
@@ -127,7 +143,7 @@ else if ($type == $TYPE_FORUMPOST) {
         $forumInstance = getForumDataById($forumPost->post["fid"]);
 
         // Get Comments
-        $selectQuery = $db->query("SELECT * FROM comments WHERE uid=$postId AND type='forumpost'");
+        $selectQuery = $db->query("SELECT * FROM comments WHERE uid=$postId AND type='forumpost' ORDER BY cid DESC LIMIT $min, $max");
         $comments = [];
 
         while ($comment = $selectQuery->fetch_array(MYSQLI_ASSOC)) {
@@ -146,11 +162,21 @@ else if ($type == $TYPE_FORUMPOST) {
                     ];
 
                     // Check if Active user can Delete the Comment
-                    if ($forumPost->post["uid"] == $_SESSION["user"] || $forumInstance->isModerator($_SESSION["user"])) {
+                    if ($forumPost->post["uid"] == $_SESSION["user"] || $forumInstance->isModerator($_SESSION["user"]) || $comment["commenterId"] == $_SESSION["user"]) {
                         $delDisplay = "block";
                     }
                     else {
                         $delDisplay = "none";
+                    }
+
+                    // Get Member Rank
+                    $rank = "member";
+
+                    if ($forumInstance->ownerUID == $replyData["uid"]) {
+                        $rank = "owner";
+                    }
+                    else if ($forumInstance->isModerator($replyData["uid"])) {
+                        $rank = "mod";
                     }
 
                     $replyJSON = [
@@ -158,6 +184,7 @@ else if ($type == $TYPE_FORUMPOST) {
                         "content" => $replyData["content"],
                         "date" => $replyData["date"],
                         "rid" => $replyData["rid"],
+                        "rank" => $rank,
                         "delDisplay" => $delDisplay
                     ];
 
@@ -170,7 +197,7 @@ else if ($type == $TYPE_FORUMPOST) {
             $delDisplayComment = "";
 
             // Check if Active user can Delete the Comment
-            if ($forumPost->post["uid"] == $_SESSION["user"] || $forumInstance->isModerator($_SESSION["user"])) {
+            if ($forumPost->post["uid"] == $_SESSION["user"] || $comment["commenterId"] == $_SESSION["user"] || $forumInstance->isModerator($_SESSION["user"])) {
                 $delDisplayComment = "block";
             }
             else {
@@ -184,6 +211,16 @@ else if ($type == $TYPE_FORUMPOST) {
                 $liked = true;
             }
 
+            // Get Member Rank
+            $rank = "member";
+
+            if ($forumInstance->ownerUID == $comment["commenterId"]) {
+                $rank = "owner";
+            }
+            else if ($forumInstance->isModerator($comment["commenterId"])) {
+                $rank = "mod";
+            }
+
             // Push to Comments Array
             array_push($comments, [
                 "user" => getUserData("username", "uid='".$comment["commenterId"]."'"),
@@ -193,6 +230,7 @@ else if ($type == $TYPE_FORUMPOST) {
                 "liked" => $liked,
                 "replies" => $replies,
                 "cid" => $comment["cid"],
+                "rank" => $rank,
                 "delDisplay" => $delDisplayComment
             ]);
         }

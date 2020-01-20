@@ -18,7 +18,7 @@ if (validateSession($_SESSION["user"])) {
     $CID = escapeString($_REQUEST["cid"]);
 
     // Validate User Permissions
-    $commentQuery = $db->query("SELECT uid, JSON_EXTRACT(usersReplied, '$[*]') AS replies FROM comments WHERE cid='$CID'");
+    $commentQuery = $db->query("SELECT commenterId, uid, type, JSON_EXTRACT(usersReplied, '$[*]') AS replies FROM comments WHERE cid='$CID'");
 
     if ($commentQuery) {
 
@@ -36,8 +36,26 @@ if (validateSession($_SESSION["user"])) {
             "content" => $reply[2],
             "date" => $reply[3]
         ];
+
+        // Extra Conditions
+        $conditions = true;
+
+        if ($comment["type"] == $TYPE_FORUMPOST) {
+
+            // Get Forum Post Data
+            $forumPost = new ForumPost();
+            $forumPost->getDataById($comment["uid"]);
+
+            // Get Forum Data
+            $forum = getForumDataById($forumPost->post["fid"]);
+
+            $conditions = ($replyAssoc["uid"] == $user || $forumPost->post["uid"] == $user || $forum->isModerator($user) || $comment["commenterId"] == $user);
+        }
+        else if ($comment["type"] == $TYPE_PROFILE) {
+            $conditions = ($replyAssoc["uid"] == $user || $comment["uid"] == $user);
+        }
         
-        if ($replyAssoc["uid"] == $user || $comment["uid"] == $user) {
+        if ($conditions) {
             
             // Update Database
             $updateQuery = "UPDATE comments SET usersReplied=JSON_REMOVE('$repliesEncoded', '$[$replyIndex]'), repliesCount=repliesCount-1 WHERE cid='$CID'";

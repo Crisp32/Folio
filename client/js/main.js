@@ -35,6 +35,160 @@ window.onload = function() {
         triggerOnLoad();
     }
 
+    // Comment Liking
+    $(document).on("click", "a.likes-icon > img", function (e) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        let element = this;
+        let cid = $(element).parent().siblings(".del-comment").attr("name");
+
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/like_comment.php",
+            dataType: "json",
+            data: {
+                cid: cid
+            },
+            success: function(res) {
+                if (res.success) {
+
+                    // Display Like Count
+                    $(element).parent().siblings(".likes-count").text(res.likes);
+                    
+                    if (res.liked) {
+                        $(element).parent().siblings(".likes-count").addClass("liked");
+                        $(element).parent().addClass("like-icon-selected");
+                    }
+                    else {
+                        $(element).parent().siblings(".likes-count").removeClass("liked");
+                        $(element).parent().removeClass("like-icon-selected");
+                    }
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+            }
+        });
+    });
+
+    // Reply to Comment
+    $(document).on("click", ".post-reply-btn", function (e) {
+        let replyContent = $(this).siblings(".add-comment").val();
+        let commentCID = $(this).parent().siblings(".comment").find(".delete-comment").attr("name");
+
+        let element = $(this);
+
+        // Client Side Validation
+        if (replyContent.length > 120) {
+            popUp("clientm-fail", "Reply must not Exceed 120 Characters", null);
+        }
+        else if (replyContent.length == 0) {
+            popUp("clientm-fail", "Reply must be Greater than 0 Characters", null);
+        }
+        else {
+            $(element).siblings(".add-comment").val("");
+
+            // Send Request
+            $.ajax({
+                type: "POST",
+                url: "../../utils/add_reply.php",
+                dataType: "json",
+                data: {
+                    cid: commentCID,
+                    content: replyContent
+                },
+                success: function(res) {
+                    if (res.success) {
+                        popUp("clientm-success", res.message, null);
+    
+                        // Display Reply on Client Side
+                        let repliesContainer = $(element).parent().siblings(".replies-container");
+                        let noReplies = $(repliesContainer).html() == "";
+                        let replyHTML = loadReplies(noReplies, res.reply);
+                        
+                        $(repliesContainer).find(".reply-options").css("display", "block");
+                        $(repliesContainer).find(".replies").css("display", "block");
+    
+                        if (noReplies) {
+                            $(repliesContainer).prepend(replyHTML);
+                        }
+                        else {
+                            $(repliesContainer).find(".reply-options").text($(repliesContainer).find(".reply-options").text().replace("Expand", "Collapse"));
+                            $(repliesContainer).find(".replies").prepend(replyHTML);
+                        }
+                    }
+                    else {
+                        popUp("clientm-fail", res.message, null);
+                    }
+                },
+                error: function(err) {
+                    popUp("clientm-fail", "Failed to Contact Server", null);
+                }
+            });
+        }
+    });
+
+    // Delete Reply
+    $(document).on("click", ".reply-del-comment", function (e) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        let element = this;
+        let cid = $(element).parent().parent().parent().parent().siblings(".comment").find(".del-comment").attr("name");
+
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/delete_reply.php",
+            dataType: "json",
+            data: {
+                cid: cid,
+                rid: $(element).attr("name")
+            },
+            success: function(res) {
+                if (res.success) {
+                    popUp("clientm-success", res.message, null);
+
+                    // Remove Reply HTML on Client End
+                    let repliesContainer = $(element).parent().parent().parent().parent();
+                    let replies = $(element).parent().parent().parent();
+                    
+                    $(element).parent().parent().remove();
+                    if ($(replies).children().length == 1) {
+                        $(repliesContainer).empty();
+                    }
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+            }
+        });
+    });
+
+    // Toggles Replies Section of a Comment
+    $(document).on("click", ".reply-options", function (e) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        if ($(this).siblings(".replies").css("display") == "none") {
+            $(this).siblings(".replies").css("display", "block");
+            $(this).text($(this).text().replace("Expand", "Collapse"));
+        }
+        else {
+            $(this).siblings(".replies").css("display", "none");
+            $(this).text($(this).text().replace("Collapse", "Expand"));
+        }
+    });
+
+    //
     initSearch();
 
     if (pathname !== "/profile.php" && pathname !== "/forum.php") {
@@ -435,6 +589,7 @@ function addComment() {
         popUp("clientm-fail", "Comment Must be Greater than 0 Characters", null);
     }
     else {
+        $(".add-comment").val("");
 
         // Send Request
         $.ajax({
@@ -453,7 +608,6 @@ function addComment() {
                     loadComments(res.comment);
                     popUp("clientm-success", "Posted Comment!", null);
                     $(".comments-empty.res-empty").css("display", "none");
-                    $(".add-comment").val("");
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
@@ -480,11 +634,77 @@ function loadReplies(fullHTML, repliesJSON) {
             endReplyTag = '<div class="end-replies" >Continue Comments</div></div>';
         }
         replyHTML += replyOptions;
+
         for (let reply in replies) {
-            replyHTML += '<div class="comment reply" ><div class="reply-indent" ></div><div class="commenter-name" ><a href="/profile.php?uquery='+replies[reply].user+'" >'+replies[reply].user+'</a> <div class="comment-post-date" >'+replies[reply].date+'</div></div><div><div name="'+replies[reply].rid+'" class="delete-comment reply-del-comment noselect" style="display: '+replies[reply].delDisplay+'" >Delete</div></div><div class="comment-content" style="margin-bottom: 5px" >'+replies[reply].content+'</div></div>';
+            let nameColour = "lightgrey";
+
+            // Get Rank Colour
+            switch (replies[reply].rank) {
+                case "owner":
+                    nameColour = "violet";
+                    break;
+                case "mod":
+                    nameColour = "orange";
+                    break;
+            }
+
+            let replyBody = highlightHyperlinks(replies[reply].content, false);
+
+            replyHTML += '<div class="comment reply" ><div class="reply-indent" ></div><div class="commenter-name" ><a style="color: '+nameColour+'" href="/profile.php?uquery='+replies[reply].user+'" >'+replies[reply].user+'</a> <div class="comment-post-date" >'+replies[reply].date+'</div></div><div><div name="'+replies[reply].rid+'" class="delete-comment reply-del-comment noselect" style="display: '+replies[reply].delDisplay+'" >Delete</div></div><div class="comment-content" style="margin-bottom: 5px" >'+replyBody+'</div></div>';
         }
         replyHTML += endReplyTag;
     }
 
     return replyHTML;
+}
+
+// Highlight Specific Elements in Text
+function highlightHyperlinks(text, renderImages) {
+    let indicies = [];
+    let final = text;
+
+    // Get Index of Every HTTP Keyword
+    for (let i = 0; i < text.length; i++) {
+        let word = text[i] + text[i + 1] + text[i + 2] + text[i + 3] + text[i + 4] + text[i + 5] + text[i + 6] + text[i + 7];
+
+        if (word.includes("http://") || word.includes("https://")) {
+            indicies.push(i);
+        }
+    }
+
+    // Loop through each Index
+    let breakChars = [" ", "\n", "(", ")", "<", ">"];
+
+    for (let l = 0; l < indicies.length; l++) {
+        let linkIndex = indicies[l];
+        let linkHtml;
+        let fullLink = "";
+
+        for (let i = linkIndex; i < text.length; i++) {
+            let char = text[i];
+
+            if (!breakChars.includes(char)) {
+                fullLink += char;       
+            }
+            else {
+                break;
+            }
+        }
+
+        linkHtml = '<a class="h-link" href="'+fullLink+'" target="_blank" >' + fullLink + "</a>";
+
+        // Add Image Tag if Render Images = True
+        if (renderImages && checkURL(fullLink)) {
+            linkHtml += '<br /><img src="'+fullLink+'" class="h-link-img" ><br />';
+        }
+
+        final = final.replace(fullLink, linkHtml);
+    }
+
+    return final;
+}
+
+// https://stackoverflow.com/questions/9714525/javascript-image-url-verify
+function checkURL(url) {
+    return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
 }

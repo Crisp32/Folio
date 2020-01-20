@@ -69,7 +69,8 @@ if (!empty($forum)) {
                 "rank" => $rank,
                 "upvoted" => $upvoted,
                 "downvoted" => $downvoted,
-                "canEdit" => $canEdit
+                "canEdit" => $canEdit,
+                "comments" => intval($post["commentCount"])
             ]);
         }
 
