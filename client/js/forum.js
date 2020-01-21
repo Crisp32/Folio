@@ -10,7 +10,7 @@ let hasShowed = false;
 let loadedBannedUsers = false;
 
 let loadedPosts = 0; // Tracks how many Posts currently Loaded
-let loadAmounts = 6; // How many Posts to Request and Load when Needed
+let postLoadAmounts = 6; // How many Posts to Request and Load when Needed
 let loadedAllPosts = false;
 let showEmptyMsg = true;
 
@@ -32,8 +32,11 @@ let deletePost = {
 }
 
 // On Load
-function triggerOnLoad() {
-    loadForum(forum);
+function triggerOnForumLoad() {
+    let pathname = window.location.pathname;
+    if (pathname == "/forum.php") {
+        loadForum(forum);
+    }
 
     // View Member Button
     $(document).on("click", "#members-modal .view-member, .banned-members-container .view-member", function (e) {
@@ -87,19 +90,24 @@ function triggerOnLoad() {
 
     // Load Forum Posts as Client Scrolls
     $(window).scroll(function() {
-        if($(window).scrollTop() + $(window).height() == $(document).height()) {
+        if ($(window).scrollTop() + $(window).height() == $(document).height()) {
             if (!loadedAllPosts) {
-                let requestedPosts = getForumPosts(loadedPosts, loadAmounts);
+                let requestedPosts = getForumPosts(loadedPosts, postLoadAmounts);
     
                 if (!requestedPosts) {
                     loadedAllPosts = true;
                 }
 
-                loadedPosts += loadAmounts;
+                loadedPosts += postLoadAmounts;
                 showEmptyMsg = false;
             }
         }
     });
+
+    initForumButtons();
+}
+
+function initForumButtons() {
 
     // Forum Post Upvote Button
     $(document).on("click", ".forum-post-container .upvote", function (e) {
@@ -240,6 +248,7 @@ function triggerOnLoad() {
         deletePost.pid = $(deletePost.element).parent().siblings(".forum-post-voting").attr("data-pid");
         
         // Open Confirmation Modal
+        closeModal();
         $("#confirm-post-delete-modal").css("display", "block");
     });
 
@@ -528,8 +537,8 @@ function loadForum(fquery) {
                     $("#creation-date").text(forum.date);
 
                     // Load Posts
-                    getForumPosts(0, loadAmounts);
-                    loadedPosts += loadAmounts;
+                    getForumPosts(0, postLoadAmounts);
+                    loadedPosts += postLoadAmounts;
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
@@ -1011,11 +1020,17 @@ function loadForumPosts(posts, append) {
                     posterNameColour = "orange";
                     break;
             }
+
+            let forumNameHtml = '';
+
+            if (window.location.pathname !== "/forum.php") {
+                forumNameHtml = 'on <a style="color: #ffea4a" href="/forum.php?fquery='+postObject.forumName+'" >' + postObject.forumName + '</a>';
+            }
     
             let postTitle = highlightHyperlinks(postObject.title, false);
             let postBody = highlightHyperlinks(postObject.body, true);
     
-            let html = '<div class="forum-post-wrapper" ><div class="profile-section forum-post-container" ><h2 class="section-title" >'+postTitle+'</h2><br /><div class="forum-post-info" >Posted '+postObject.date+' by <a style="color: '+posterNameColour+'" href="/profile.php?uquery='+postObject.posterName+'" >'+postObject.posterName+'</a></div><div class="forum-post-body" >'+postBody+'</div><div class="forum-post-voting" data-comments="'+postObject.comments+'" data-pid="'+postObject.pid+'" ><button title="Upvote" class="upvote vote'+upvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><button title="Downvote" class="downvote vote'+downvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><div class="forum-post-votes" style="color: '+voteCountColour+'" >'+postObject.voteCount+'</div></div><div class="forum-post-actions" >'+actionButtons+'</div></div><br /><div class="profile-section forum-post-comments" ><div class="add-post-comment-div" ><input class="add-comment post-forum-comment" placeholder="Comment" /><button class="post-forum-comment add-comment-btn" >Post</button></div><div class="res-empty post-comments-empty" >No Comments to Display</div><div class="forum-post-comments-container" ></div></div></div></div>';
+            let html = '<div class="forum-post-wrapper" ><div class="profile-section forum-post-container" ><h2 class="section-title" >'+postTitle+'</h2><br /><div class="forum-post-info" >Posted '+postObject.date+' by <a style="color: '+posterNameColour+'" href="/profile.php?uquery='+postObject.posterName+'" >'+postObject.posterName+'</a> '+forumNameHtml+'</div><div class="forum-post-body" >'+postBody+'</div><div class="forum-post-voting" data-comments="'+postObject.comments+'" data-pid="'+postObject.pid+'" ><button title="Upvote" class="upvote vote'+upvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><button title="Downvote" class="downvote vote'+downvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><div class="forum-post-votes" style="color: '+voteCountColour+'" >'+postObject.voteCount+'</div></div><div class="forum-post-actions" >'+actionButtons+'</div></div><br /><div class="profile-section forum-post-comments" ><div class="add-post-comment-div" ><input class="add-comment post-forum-comment" placeholder="Comment" /><button class="post-forum-comment add-comment-btn" >Post</button></div><div class="res-empty post-comments-empty" >No Comments to Display</div><div class="forum-post-comments-container" ></div></div></div></div>';
     
             switch (append) {
                 case true:
@@ -1093,13 +1108,13 @@ function applySort() {
             data: {
                 forum: forum,
                 min: 0,
-                max: loadAmounts,
+                max: postLoadAmounts,
                 sort: sort
             },
             success: function(res) {
                 if (res.success) {
                     loadedAllPosts = false;
-                    loadedPosts = loadAmounts;
+                    loadedPosts = postLoadAmounts;
 
                     $("#forum-posts-container").empty();
                     loadForumPosts(res.posts, true);

@@ -11,13 +11,15 @@ session_start();
 $db = db();
 
 // Request Params
-$forum = escapeString($_REQUEST["forum"]);
 $min = escapeString(intval($_REQUEST["min"]));
 $max = escapeString(intval($_REQUEST["max"]));
 
+if (isset($_REQUEST["forum"])) {
+    $forum = escapeString($_REQUEST["forum"]);
+}
+
 // Null Check Forum Name
-if (!empty($forum)) {
-    $forumInstance = getForumDataById(getForumIdByName($forum));
+if (isset($forum) || isset($_REQUEST["username"])) {
     $user = $_SESSION["user"];
 
     // Select Sorting Method
@@ -36,14 +38,31 @@ if (!empty($forum)) {
             break;
     }
 
+    if (isset($_REQUEST["username"])) { // For Displaying User Posts on Profile
+        $username = $_REQUEST["username"];
+        $uid = getUserData("uid", "username='$username'");
+
+        $condition = "uid=$uid";
+    }
+    else { // For Normal Forum Viewing
+        $forumInstance = getForumDataById(getForumIdByName($forum));
+        $forumId = $forumInstance->FID;
+
+        $condition = "fid=$forumId";
+    }
+
     // Get Forum Posts from Database
-    $forumId = $forumInstance->FID;
-    $postQuery = $db->query("SELECT * FROM forumPosts WHERE fid=$forumId $sort");
+    $postQuery = $db->query("SELECT * FROM forumPosts WHERE $condition $sort");
 
     if ($postQuery) {
         $posts = [];
 
         while ($post = $postQuery->fetch_array(MYSQLI_ASSOC)) {
+
+            if (isset($_REQUEST["username"])) {
+                $forumInstance = getForumDataById($post["fid"]);
+                $forumId = $forumInstance->FID;
+            }
             
             // Check if Voted on Post
             $upvoted = false;
@@ -86,7 +105,8 @@ if (!empty($forum)) {
                 "upvoted" => $upvoted,
                 "downvoted" => $downvoted,
                 "canEdit" => $canEdit,
-                "comments" => intval($post["commentCount"])
+                "comments" => intval($post["commentCount"]),
+                "forumName" => $forumInstance->name
             ]);
         }
 

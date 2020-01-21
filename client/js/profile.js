@@ -130,6 +130,7 @@ function loadProfile(username) {
 
                 // Display Joined Forums
                 let profileForums = getProfileForums(username);
+
                 if (profileForums == null || profileForums == "") {
                     $(".forums-empty").css("display", "block");
                 }
@@ -294,7 +295,8 @@ function loadJoinedForums(forums, append) {
     $(".forums-empty").css("display", "none");
 
     for (let forum in forums) {
-        let html = '<div class="profile-forum" ><img class="profile-forum-icon" src="'+forums[forum].icon+'" ><div class="profile-forum-title" title="Owned By '+forums[forum].owner+'" ><a href="/forum.php?fquery='+forums[forum].name+'" >'+forums[forum].name+'</a><div class="profile-forum-date" >'+forums[forum].date+'</div></div><div class="profile-forum-desc" >'+forums[forum].description+'</div></div>';
+        let description = highlightHyperlinks(forums[forum].description, false);
+        let html = '<div class="profile-forum" ><img class="profile-forum-icon" src="'+forums[forum].icon+'" ><div class="profile-forum-title" title="Owned By '+forums[forum].owner+'" ><a href="/forum.php?fquery='+forums[forum].name+'" >'+forums[forum].name+'</a><div class="profile-forum-date" >'+forums[forum].date+'</div></div><div class="profile-forum-desc" >'+description+'</div></div>';
         switch (append) {
             case true: $(container).append(html); break;
             default: $(container).prepend(html); break;
@@ -363,4 +365,66 @@ function createForum() {
             }
         });
     }
+}
+
+// View User's Forum Posts
+let hasLoadedUserPosts = false;
+
+function showUserPosts() {
+    $("#user-posts-modal").css("display", "block");
+
+    if (!hasLoadedUserPosts) {
+        initForumButtons();
+
+        // Load Forum Posts as Client Scrolls
+        $(window).on("scroll", function() { 
+            if ($(window).scrollTop() >= $("#forum-posts-container").offset().top + $("#forum-posts-container").offset().top + $("#forum-posts-container").outerHeight() - window.innerHeight) {
+                if (!loadedAllPosts) {
+                    getUserForumPosts(loadedPosts, postLoadAmounts, false);
+
+                    loadedPosts += postLoadAmounts;
+                    showEmptyMsg = false;
+                }
+            } 
+        });
+        
+        // Send Request
+        $("#forum-posts-container").append('<div class="res-empty posts-empty profile-section">Loading Posts...</div>');
+
+        getUserForumPosts(0, postLoadAmounts, true);
+        hasLoadedUserPosts = true;
+    }
+}
+
+function getUserForumPosts(min, max, async) {
+    $.ajax({
+        type: "POST",
+        url: "../../utils/get_forum_posts.php",
+        dataType: "json",
+        async: async,
+        data: {
+            username: profile,
+            min: min,
+            max: max,
+            sort: sort
+        },
+        success: function(res) {
+            if (res.success) {
+                if (res.posts == [] || res.posts == "" || res.posts == null || res.posts.length < postLoadAmounts) {
+                    loadedAllPosts = true;
+                }
+
+                $(".posts-empty").remove();
+
+                loadForumPosts(res.posts, true);
+                loadedPosts += postLoadAmounts;
+            }
+            else {
+                popUp("clientm-fail", res.message, null);
+            }
+        },
+        error: function(err) {
+            popUp("clientm-fail", "Failed to Contact Server", null);
+        }
+    });
 }

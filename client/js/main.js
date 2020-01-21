@@ -31,8 +31,14 @@ window.onload = function() {
 
     // Run On Load from other Scripts
     let pathname = window.location.pathname;
-    if (pathname == "/profile.php" || pathname == "/forum.php") {
-        triggerOnLoad();
+
+    switch (pathname) {
+        case "/profile.php":
+            triggerOnLoad();
+            break;
+        case "/forum.php":
+            triggerOnForumLoad();
+            break
     }
 
     // Comment Liking

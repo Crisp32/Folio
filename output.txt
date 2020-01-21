@@ -1,5 +1,1 @@
-Array
-(
-    [replies] => [[0, 3, "test", "19-1-2020"]]
-    [type] => forumpost
-)
+SELECT * FROM forumPosts WHERE uid= ORDER BY pid DESC LIMIT 0, 6

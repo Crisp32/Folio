@@ -254,7 +254,7 @@ class Forum {
         if (isset($forumId)) {
             $mods = $this->getModerators();
             $modsLen = count($mods);
-            $newOwner;
+            $newOwner = 0;
 
             if ($modsLen >= 2) {
                 // Select Random Moderator

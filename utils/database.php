@@ -14,7 +14,7 @@ function db() {
     
     // Check Connection
     if ($db->connect_error) {
-        die("Database Error: " . $conn->connect_error);
+        die("Database Error: " . $db->connect_error);
     }
 
     return $db;
