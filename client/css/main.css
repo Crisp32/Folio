@@ -340,6 +340,18 @@ div#top-bar {
 }
 
 /* Classes */
+button.del-account {
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 18px;
+  margin-top: 16px;
+  margin-bottom: 15px;
+  padding: 10px;
+  transition: 0.3s;
+}
+
 .del-notif {
   float: right;
   margin-right: 3px;
@@ -2124,6 +2136,10 @@ select.input-field {
 }
 
 /* Override Styling */
+.del-account-code {
+  display: none;
+}
+
 .notifs-empty {
   font-size: 23px;
   padding: 0;
@@ -2135,7 +2151,7 @@ button.confirm-pass-change {
   background-color: white;
   color: black;
   transition: 0.3s;
-  margin-bottom: 17px;
+  margin-bottom: 30px;
   margin-top: 15px;
   padding: 10px;
 }

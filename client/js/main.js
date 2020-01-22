@@ -962,3 +962,57 @@ function addToNotifCount(num) {
 function closeModal() {
     $(".modal-bg").css("display", "none");
 }
+
+// Account Deletion
+let generateCode = true;
+let code = "";
+
+function deleteAccount() {
+    let element = $("button.del-account");
+    $(element).text("Loading...");
+
+    if (!generateCode) {
+        code = $(".del-account-code").val();
+    }
+
+    // Send Request
+    if (!$(element).attr("disabled")) {
+        $(element).attr("disabled", true)
+
+        $.ajax({
+            type: "POST",
+            url: "../../utils/delete_account.php",
+            dataType: "json",
+            data: {
+                generateCode: generateCode,
+                code: code
+            },
+            success: function(res) {
+                if (res.success) {
+                    if (res.deleted) {
+                        location.replace("/index.php");
+                    }
+                    else {
+                        popUp("clientm-success", res.message, null);
+
+                        $(".del-account-code").css("display", "block");
+                        $(element).text("Confirm Deletion");
+                        $(element).removeAttr("disabled");
+
+                        generateCode = false;
+                    }
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                    $(element).removeAttr("disabled");
+                } 
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+                $(element).text("Delete Account");
+            }
+        }).done(function () {
+            $(element).text("Delete Account");
+        });
+    }
+}

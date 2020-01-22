@@ -65,6 +65,11 @@ if (validateSession($_SESSION["user"])) {
 				<input type="password" class="input-field" id="conf-new-pass" placeholder="Confirm New Password" />
 				<button class="standard-button confirm-pass-change" onclick="changePass()" >Confirm</button>
 			</div><br />
+
+			<div class="p-header settings-option-header" >Danger<br />
+				<input type="text" class="input-field del-account-code" placeholder="Verification Code" />
+				<button class="member-option-default member-option-red del-account" onclick="deleteAccount()" >Delete Account</button>
+			</div><br />
 		</div>
 	</div>
 </div>

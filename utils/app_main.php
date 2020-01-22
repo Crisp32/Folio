@@ -51,7 +51,8 @@ function getForumIdByName($forumName) {
 // Get all Forum Data
 function getForumDataById($forumId) {
     $db = $GLOBALS["db"];
-    $query = "SELECT * FROM forums WHERE fid='$forumId'";
+
+    $query = "SELECT * FROM forums WHERE fid=$forumId";
     $forumData = $db->query($query);
 
     if ($forumData) {
@@ -127,7 +128,7 @@ function initPHPMailer($mail, $sendTo) {
 
 // Verification Code Algorithm
 function generateVerificationCode() {
-    return strtoupper(substr(md5(strval(rand(0, 200))), 0, 8));
+    return strtoupper(substr(md5(strval(mt_rand(0, 200))), 0, 8));
 }
 
 // Returns User Information
@@ -246,6 +247,15 @@ function htmlFormat($string) {
     $str = str_replace("&#039;", "'", $str);
 
     return $str;
+}
+
+function parseBool($str) {
+    if (strtolower($str) == "true") {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 ?>

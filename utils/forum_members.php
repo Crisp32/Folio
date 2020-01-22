@@ -24,12 +24,13 @@ if (forumExists($forumName)) {
 
     // Process each Member and Push to JSON Array
     foreach ($members as $member) {
-        if ($member !== null && $member !== "") {
-            $user = $_SESSION["user"];
 
-            // Get Member Data
-            $memberData = new User();
-            $memberData->getUserDataByUID($member);
+        // Get Member Data
+        $memberData = new User();
+        $memberData->getUserDataByUID($member);
+
+        if ($memberData->user["username"] !== null) {
+            $user = $_SESSION["user"];
 
             // Check if Member is also a Moderator
             $moderator = $forum->isModerator($member);

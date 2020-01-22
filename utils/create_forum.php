@@ -10,7 +10,7 @@ session_start();
 // Init DB
 $db = db();
 
-$illegalChars = "'&*()^%$#@!+:-";
+$illegalChars = "'&*()^%$#@!+:-[]";
 
 if (validateSession($_SESSION["user"])) {
     $userInstance = new User($db);

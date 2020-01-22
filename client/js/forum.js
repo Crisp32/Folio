@@ -1020,7 +1020,15 @@ function loadForumPosts(posts, append) {
             let forumNameHtml = '';
 
             if (window.location.pathname !== "/forum.php") {
-                forumNameHtml = 'on <a style="color: #ffea4a" href="/forum.php?fquery='+postObject.forumName+'" >' + postObject.forumName + '</a>';
+                let forumName = postObject.forumName;
+                let forumLink = "/forum.php?fquery=" + postObject.forumName;
+
+                if (forumName == null) {
+                    forumName = "[REMOVED]"
+                    forumLink = "#";
+                }
+
+                forumNameHtml = 'on <a style="color: #ffea4a" href="'+forumLink+'" >' + forumName + '</a>';
             }
     
             let postTitle = highlightHyperlinks(postObject.title, false);

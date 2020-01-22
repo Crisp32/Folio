@@ -455,6 +455,45 @@ class User {
         }
     }
 
+    public function deleteAccount() {
+        $db = $GLOBALS["db"];
+        $uid = $this->user["uid"];
+        $joinedForums = $db->query("SELECT joinedForums FROM users WHERE uid=$uid");
+        
+        if ($joinedForums) {
+            $forums = json_decode($joinedForums->fetch_array(MYSQLI_ASSOC)["joinedForums"], true);
+
+            // Loop through each Forum
+            foreach ($forums as $forum) {
+                $assoc = $db->query("SELECT members, owner FROM forums WHERE fid=$forum")->fetch_array(MYSQLI_ASSOC);
+                
+                $memberList = json_decode($assoc["members"], true);
+                $memberIndex = array_search($uid, $memberList);
+
+                unset($memberList[$memberIndex]);
+                $membersEncoded = json_encode($memberList);
+
+                $owner = $assoc["owner"];
+
+                if ($owner == $uid) {
+                    $owner = $memberList[mt_rand(0, count($memberList))];
+                }
+                
+                if (count($memberList) > 0) {
+                    $db->query("UPDATE forums SET owner='$owner', members='$membersEncoded' WHERE fid=$forum");
+                }
+                else {
+                    $db->query("DELETE FROM forums WHERE fid=$forum");
+                }
+            }
+
+            return $db->query("DELETE FROM users WHERE uid=$uid");
+        }
+        else {
+            return false;
+        }
+    }
+
     public function upvotedBy($uid) {
         $votes = $this->getVotes();
 

@@ -24,7 +24,7 @@ $votesJSON = '{"upvotes": [], "downvotes": []}';
 $maxChars = 20;
 $minPass = 6;
 
-$illegalChars = "'&*()^%$#@!+:-";
+$illegalChars = "'&*()^%$#@!+:-[]";
 
 // Insertion Query
 if (empty($location) || !validLocation($location)) {
