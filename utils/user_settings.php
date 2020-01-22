@@ -26,7 +26,8 @@ if (isset($_SESSION["user"])) {
             "image" => $userInstance->user["profileImagePath"],
             "bio" => htmlFormat($userInstance->user["profileBio"]),
             "location" => $userInstance->user["accountLocation"],
-            "comments" => $userInstance->user["allowComments"]
+            "comments" => $userInstance->user["allowComments"],
+            "email" => $userInstance->user["email"]
         ]);
     }
     catch (Exception $err) {

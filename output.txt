@@ -1,1 +1,8 @@
-SELECT * FROM forumPosts WHERE uid= ORDER BY pid DESC LIMIT 0, 6
+Array
+(
+    [nid] => 8
+    [uid] => 5
+    [message] => @crisp commented on your profile
+    [date] => 21-1-2020
+    [subMessage] => henlo
+)

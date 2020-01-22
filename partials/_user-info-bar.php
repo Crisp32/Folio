@@ -26,6 +26,7 @@ $profileImage = $user->user["profileImagePath"];
         <a class="skip-reg" href="/index.php" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Home</div></a><br />
         <a class="skip-reg" href="/profile.php?uquery=<?php echo $username; ?>" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Profile</div></a><br />
         <a class="skip-reg" href="javascript:openSettings()" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Account</div></a><br />
+        <a class="skip-reg" href="javascript: showNotifications()" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Inbox (<div class="notif-count" ><?php echo strval(Notification::getCount($sess)); ?></div>)</div></a><br />
         <a class="skip-reg" href="javascript: logout()" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Logout</div></a>
 
         <br/><button class="close-options standard-button" onclick="toggleOptions()" >Close</button>

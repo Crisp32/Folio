@@ -101,8 +101,28 @@ if (validateSession($_SESSION["user"])) {
                         "message" => "Comment Must be Less than $maxCommentLength Characters"
                     ]);
                 }
-                else {  
-                    $query = $db->multi_query($insertStatement . $updateStatement);              
+                else {
+                    // Push Notification
+                    $username = $user->user["username"];
+
+                    if ($type == $TYPE_FORUMPOST) {
+                        $postOwner = $forumPost->post["uid"];
+
+                        if ($activeUser != $postOwner) {
+                            $postName = $forumPost->post["title"];
+                            Notification::push($postOwner, "@$username commented on your post, $postName", $commentContent);
+                        }
+                    }
+                    else if ($type == $TYPE_PROFILE) {
+                        if ($profileId != $activeUser) {
+                            $profileName = $profile->user["username"];
+                            Notification::push($profileId, "@$username commented on your profile", $commentContent);
+                        }
+                    }
+
+                    // Update Database
+                    $query = $db->multi_query($insertStatement . $updateStatement);
+
                     if ($query) {            
                         $cid = $db->insert_id;
 

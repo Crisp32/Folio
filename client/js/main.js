@@ -143,6 +143,48 @@ window.onload = function() {
         }
     });
 
+    // Delete Notification
+    $(document).on("click", "button.del-notif", function (e) {
+        let element = $(this);
+        let notifElement = $(this).parent().parent();
+        let nid = $(notifElement).attr("data-nid");
+
+        // Send Request
+        if (!$(element).attr("disabled")) {
+            $(element).attr("disabled", true);
+
+            $.ajax({
+                type: "POST",
+                url: "../../utils/delete_notification.php",
+                dataType: "json",
+                data: {
+                    nid: nid
+                },
+                success: function(res) {
+                    if (res.success) {
+                        popUp("clientm-success", "Deleted Notification!", null);
+
+                        $(element).removeAttr("disabled");
+                        $(notifElement).remove();
+
+                        if ($("#notifications-container").children().length == 0) {
+                            $("#notifications-container").append('<div class="notification-wrapper" ><div class="res-empty notifs-empty" >Inbox Empty</div></div>');
+                            $(".delete-all").css("display", "none");
+                        }
+
+                        addToNotifCount(-1);
+                    }
+                    else {
+                        popUp("clientm-fail", res.message, null);
+                    }
+                },
+                error: function(err) {
+                    popUp("clientm-fail", "Failed to Contact Server", null);
+                }
+            });
+        }
+    });
+
     // Delete Reply
     $(document).on("click", ".reply-del-comment", function (e) {
         e.stopPropagation();
@@ -344,15 +386,13 @@ function login() {
     popUp("clientm-fail", "Loading...", null);
 
     // Client Side Validation
-    if (username.length > 20 || username.length == 0) {
+    if (username.length == 0) {
         popUp("clientm-fail", "Invalid Username", null);
     }
     else if (password.length == 0) {
         popUp("clientm-fail", "Invalid Password", null);
     }
     else {
-        
-        // Send Request
         $.ajax({
             type: "POST",
             url: "../../utils/login_user.php",
@@ -515,6 +555,7 @@ function openSettings() {
                 $("#bio-textarea").text(res.bio);
                 $(".account-loc-setting").val(loc);
                 $("#allowComments").val(res.comments);
+                $(".settings-email").text(res.email);
 
                 // Hide Loading Screen
                 $("#settings-load").css("display", "block");
@@ -769,5 +810,155 @@ function highlightHyperlinks(text, renderImages) {
 
 // https://stackoverflow.com/questions/9714525/javascript-image-url-verify
 function isImage(url) {
-    return(url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+    return (url.match(/\.(jpeg|jpg|gif|png)$/) != null);
+}
+
+// Change Password Setting
+function changePass() {
+    let oldPass = $("#old-pass").val();
+    let newPass = $("#new-pass").val();
+    let confNewPass = $("#conf-new-pass").val();
+
+    // Client Side Check
+    if (oldPass.length == 0) {
+        popUp("clientm-fail", "Invalid Entry for Old Password", null);
+    }
+    else if (newPass.length == 0) {
+        popUp("clientm-fail", "New Password Must be Greater than 0 Characters", null);
+    }
+    else if (newPass !== confNewPass) {
+        popUp("clientm-fail", "New Passwords don't Match", null);
+    }
+    else {
+        popUp("clientm-fail", "Validating...", null);
+
+        $.ajax({
+            type: "POST",
+            url: "../../utils/reset_password.php",
+            dataType: "json",
+            data: {
+                oldpass: oldPass,
+                newpass: newPass,
+                newpassConf: confNewPass
+            },
+            success: function(res) {
+                if (res.success) {
+                    popUp("clientm-success", "Successfully Changed Password", null);
+
+                    $(".confirm-pass-change").attr("disabled", true);
+                    $(".confirm-pass-change").text("Successfully Changed");
+
+                    $("#old-pass").val("");
+                    $("#new-pass").val("");
+                    $("#conf-new-pass").val("");
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                } 
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+            }
+        });
+    }
+}
+
+// Open Inbox Modal
+let hasLoadedInbox = false;
+
+function showNotifications() {
+    $("#inbox-modal").css("display", "block");
+    $(".account-options").css("display", "none");
+
+    // Get Notifications from Database
+    if (!hasLoadedInbox) {
+        $.ajax({
+            type: "POST",
+            url: "../../utils/get_notifications.php",
+            dataType: "json",
+            success: function(res) {
+                if (res.success) {
+                    hasLoadedInbox = true;
+
+                    $("#notifications-container").empty();
+
+                    if (res.notifications.length == 0) {
+                        $("#notifications-container").append('<div class="notification-wrapper" ><div class="res-empty notifs-empty" >Inbox Empty</div></div>');
+                        $(".delete-all").css("display", "none");
+                    }
+                    else {
+                        loadNotifs(res.notifications, false);
+                        $(".delete-all").css("display", "inline-block");
+                    }
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                } 
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+            }
+        });
+    }
+}
+
+function loadNotifs(notifs, append) {
+    let container = $("#notifications-container");
+
+    if (notifs.length > 0) {
+        for (let notif in notifs) {
+            let notifObject = notifs[notif];
+    
+            let body = highlightHyperlinks(notifObject.body);
+            let sub = highlightHyperlinks(notifObject.sub);
+    
+            let html = '<div class="notification-wrapper" data-nid="'+notifObject.nid+'" ><div class="notif-date" >'+notifObject.date+' <button class="member-action member-default-option member-option-red del-notif" >Delete</button></div><div class="notif-body" >'+body+'</div><div class="notif-sub" >'+sub+'</div></div>';
+    
+            switch (append) {
+                case true:
+                    $(container).append(html);
+                    break;
+                case false:
+                    $(container).prepend(html);
+                    break;
+            }
+        }
+
+        $(".notif-count").text(notifs.length);
+    }
+}
+
+function deleteAllNotifs() {
+    $.ajax({
+        type: "POST",
+        url: "../../utils/delete_notification.php",
+        dataType: "json",
+        data: {
+            nid: "all"
+        },
+        success: function(res) {
+            if (res.success) {
+                popUp("clientm-success", "Deleted All Notifications!", null);
+                
+                $("#notifications-container").empty();
+                $("#notifications-container").append('<div class="notification-wrapper" ><div class="res-empty notifs-empty" >Inbox Empty</div></div>');
+                $(".delete-all").css("display", "none");
+                $(".notif-count").text("0");
+            }
+            else {
+                popUp("clientm-fail", res.message, null);
+            } 
+        },
+        error: function(err) {
+            popUp("clientm-fail", "Failed to Contact Server", null);
+        }
+    });
+}
+
+function addToNotifCount(num) {
+    $(".notif-count").text(parseInt($(".notif-count").text()) + num);
+}
+
+function closeModal() {
+    $(".modal-bg").css("display", "none");
 }

@@ -9,6 +9,20 @@ if (validateSession($_SESSION["user"])) {
 
 ?>
 
+<!--User Inbox Modal-->
+<div id="inbox-modal" class="modal-bg" >
+	<div class="modal-content" >
+		<h2 class="modal-title" >Notification Inbox</h2>
+
+		<button class="close-search-btn close-user-posts" onclick="closeModal()">Close</button>
+		<button class="close-search-btn close-user-posts delete-all" onclick="deleteAllNotifs()">Delete All</button>
+
+		<div id="notifications-container" >
+			<div class="notification-wrapper" ><div class="res-empty notifs-empty" >Loading Inbox...</div></div>
+		</div>
+	</div>
+</div>
+
 <!--User Settings Menu-->
 <div id="settings-bg" >
 	<div id="settings-menu" >
@@ -39,6 +53,17 @@ if (validateSession($_SESSION["user"])) {
 					<option default value="1" >Yes</option>
 					<option value="0" >No</option>
 				</select>
+			</div><br />
+
+			<div class="p-header settings-option-header" >Email Address<br />
+				<div class="settings-email" >example@example.ca</div>
+			</div><br />
+
+			<div class="p-header settings-option-header" >Change Password<br />
+				<input type="password" class="input-field" id="old-pass" placeholder="Old Password" />
+				<input style="margin-top: 25px" type="password" class="input-field" id="new-pass" placeholder="New Password" />
+				<input type="password" class="input-field" id="conf-new-pass" placeholder="Confirm New Password" />
+				<button class="standard-button confirm-pass-change" onclick="changePass()" >Confirm</button>
 			</div><br />
 		</div>
 	</div>

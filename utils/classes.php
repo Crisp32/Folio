@@ -723,3 +723,45 @@ class ForumPost {
         ];
     }
 }
+
+class Notification {
+
+    public function push($uid, $body, $subMessage) {
+        $maxNotifs = 60;
+
+        if (Notification::getCount($uid) < $maxNotifs) {
+            $db = $GLOBALS["db"];
+            $date = date("j-n-Y");
+
+            return $db->query("INSERT INTO notifications (uid, message, subMessage, date) VALUES ($uid, '$body', '$subMessage', '$date')");
+        }
+        else {
+            return true;
+        }
+    }
+
+    public function getCount($uid) {
+        $db = $GLOBALS["db"];
+
+        $count = $db->query("SELECT COUNT(*) AS 'count' FROM notifications WHERE uid=$uid");
+        return intval($count->fetch_array(MYSQLI_ASSOC)["count"]);
+    }
+
+    public function delete($nid) {
+        $db = $GLOBALS["db"];
+        return $db->query("DELETE FROM notifications WHERE nid=$nid");
+    }
+
+    public function getAssoc($nid) {
+        $db = $GLOBALS["db"];
+        $query = $db->query("SELECT * FROM notifications WHERE nid=$nid");
+
+        if ($query) {
+            $notif = $query->fetch_array(MYSQLI_ASSOC);
+            return $notif;
+        }
+        else {
+            return false;
+        }
+    }
+}

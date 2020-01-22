@@ -37,6 +37,16 @@ body {
 }
 
 /* IDs */
+#notifications-container {
+  text-align: center;
+  margin-top: -5px;
+}
+
+#inbox-modal > .modal-content {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
 #user-posts-modal > .modal-content {
   max-width: 500px;
   max-height: 570px;
@@ -242,10 +252,10 @@ pre#bio {
 }
 
 #search-button {
-  background-color: white;
+  background-color: #34c24e;
   border: none;
   border-radius: 3px;
-  color: black;
+  color: white;
   display: inline-block;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 21px;
@@ -256,7 +266,8 @@ pre#bio {
 }
 
 #search-button:hover {
-  background-color: #a3a3a3;
+  background-color: #228334;
+  color: lightgrey;
   cursor: pointer;
   transition: 0.3s;
 }
@@ -329,6 +340,73 @@ div#top-bar {
 }
 
 /* Classes */
+.del-notif {
+  float: right;
+  margin-right: 3px;
+}
+
+.notification-wrapper {
+  background-color: #29292e;
+  border: none;
+  border-radius: 3px;
+  display: inline-block;
+  margin-bottom: 15px;
+  margin-left: 1px;
+  padding: 7px;
+  width: calc(100% - 44px);
+}
+
+.notif-date {
+  color: grey;
+  font-size: 18px;
+  text-align: left;
+  margin-bottom: 8px;
+  margin-left: 5px;
+  margin-top: 3px;
+}
+
+.notif-body {
+  font-size: 16px;
+  text-align: left;
+  margin-left: 5px;
+}
+
+.notif-sub {
+  background-color: #1d1d23;
+  border: none;
+  border-radius: 3px;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 18px;
+  text-align: left;
+  margin-bottom: 5px;
+  margin-top: 10px;
+  margin-left: 5px;
+  max-height: 90px;
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  padding: 10px;
+  width: calc(100% - 30px);
+}
+
+.notif-count {
+  display: inline-block;
+}
+
+.settings-email {
+  color: #8cff53;
+  background-color: #242429;
+  border: none;
+  border-radius: 4px;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 20px;
+  letter-spacing: 1px;
+  margin-top: 10px;
+  margin-bottom: 30px;
+  overflow-x: hidden;
+  padding: 6px;
+  padding-left: 10px;
+}
+
 .sorting-options-container {
   margin-top: -5px;
   margin-bottom: 12px;
@@ -2046,6 +2124,28 @@ select.input-field {
 }
 
 /* Override Styling */
+.notifs-empty {
+  font-size: 23px;
+  padding: 0;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+button.confirm-pass-change {
+  background-color: white;
+  color: black;
+  transition: 0.3s;
+  margin-bottom: 17px;
+  margin-top: 15px;
+  padding: 10px;
+}
+
+button.confirm-pass-change:hover {
+  background-color: #a3a3a3;
+  color: black;
+  transition: 0.3s;
+}
+
 img.h-link-img {
   border-radius: 3px;
   margin-bottom: 8px;
@@ -2075,10 +2175,10 @@ select.search-filter {
 }
 
 button.close-search-btn {
-  background-color: #c23434;
+  background-color: white;
   border-radius: 3px;
   border: none;
-  color: white;
+  color: black;
   font-family: 'Ubuntu Mono', monospace;
   font-size: 20px;
   transition: 0.3s;
@@ -2090,8 +2190,7 @@ button.close-search-btn {
 }
 
 button.close-search-btn:hover {
-  background-color: #8a2323;;
-  color: lightgrey;
+  background-color: #a3a3a3;
   cursor: pointer;
   transition: 0.3s;
 }
@@ -2099,6 +2198,21 @@ button.close-search-btn:hover {
 button.close-user-posts {
   margin-top: -10px;
   margin-bottom: 20px;
+}
+
+button.delete-all {
+  background-color: #ff1429;
+  color: white;
+  display: none;
+  margin-top: -5px;
+  transition: 0.3s;
+}
+
+button.delete-all:hover {
+  background-color: #a50d1a;
+  color: lightgrey;
+  display: none;
+  transition: 0.3s;
 }
 
 .search-res-empty {

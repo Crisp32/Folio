@@ -604,10 +604,6 @@ function closeLeaveForum() {
     $("#leave-forum-modal").css("display", "none");
 }
 
-function closeModal() {
-    $(".modal-bg").css("display", "none");
-}
-
 // Render Forum Members JSON as HTML
 function loadMembers(members) {
     let container = $("#members-container");
