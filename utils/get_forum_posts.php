@@ -19,7 +19,7 @@ if (isset($_REQUEST["forum"])) {
 }
 
 // Null Check Forum Name
-if (isset($forum) || isset($_REQUEST["username"])) {
+if (isset($forum) || isset($_REQUEST["username"]) || isset($_REQUEST["suggested"])) {
     $user = $_SESSION["user"];
 
     // Select Sorting Method
@@ -44,6 +44,13 @@ if (isset($forum) || isset($_REQUEST["username"])) {
 
         $condition = "uid=$uid";
     }
+    else if (isset($_REQUEST["suggested"])) {
+        $suggested = parseBool($_REQUEST["suggested"]);
+
+        if ($suggested) {
+            $condition = "voteCount>0 AND commentCount>0";
+        }
+    }
     else { // For Normal Forum Viewing
         $forumInstance = getForumDataById(getForumIdByName($forum));
         $forumId = $forumInstance->FID;
@@ -59,7 +66,7 @@ if (isset($forum) || isset($_REQUEST["username"])) {
 
         while ($post = $postQuery->fetch_array(MYSQLI_ASSOC)) {
 
-            if (isset($_REQUEST["username"])) {
+            if (isset($_REQUEST["username"]) || $suggested) {
                 $forumInstance = getForumDataById($post["fid"]);
                 $forumId = $forumInstance->FID;
             }

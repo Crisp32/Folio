@@ -44,7 +44,9 @@ body {
 
 #inbox-modal > .modal-content {
   max-height: 600px;
+  max-width: 500px;
   overflow-y: auto;
+  width: 80vw;
 }
 
 #user-posts-modal > .modal-content {
@@ -299,7 +301,7 @@ pre#bio {
 div#top-bar {
   background-color: #2a2a2e;
   border-bottom: 3px solid #3c3c42;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
   display: inline-block;
   position: fixed;
   height: 80px;
@@ -340,6 +342,54 @@ div#top-bar {
 }
 
 /* Classes */
+.seperation-border {
+  border-top: 5px solid #0f0f13;
+  border-top-style: dashed;
+  margin-top: 35px;
+  margin-bottom: -10px;
+}
+
+.credit-area {
+  margin-top: 35px;
+  padding-bottom: 15px;
+}
+
+.credit-name {
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 18px;
+  line-height: 20px;
+  margin-bottom: 20px;
+  margin-left: 15px;
+  opacity: 0.7;
+}
+
+.link-title {
+  font-size: 18px;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+  margin-left: 15px;
+}
+
+.link-title ~ .h-link {
+  font-size: 18px;
+  margin-left: 15px;
+}
+
+.title {
+  color: white;
+  font-size: 50px;
+  letter-spacing: 2px;
+  text-align: left;
+  margin: auto;
+  margin-bottom: 1px;
+  margin-top: 15px;
+  margin-left: 15px;
+}
+
+.title > * {
+  display: inline-block;
+}
+
 button.del-account {
   border: none;
   border-radius: 3px;
@@ -372,7 +422,8 @@ button.del-account {
   color: grey;
   font-size: 18px;
   text-align: left;
-  margin-bottom: 8px;
+  letter-spacing: 1px;
+  margin-bottom: 13px;
   margin-left: 5px;
   margin-top: 3px;
 }
@@ -380,6 +431,7 @@ button.del-account {
 .notif-body {
   font-size: 16px;
   text-align: left;
+  line-height: 25px;
   margin-left: 5px;
 }
 
@@ -745,7 +797,7 @@ button.like-icon-selected > img {
   background-color: #18181c;
   border: 3px solid #3c3c42;
   border-radius: 5px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
   display: inline-block;
   text-align: center;
   margin-top: 25px;
@@ -989,14 +1041,13 @@ button.reg-button:hover {
 }
 
 button.login-success, button.login-success:hover, button.login-success:active {
-	color: white;
-  background-color: rgb(211, 145, 22);
+	color: black;
+  background-color: white;
   background-position: center;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
   margin-top: 30px;
   margin-bottom: 5px;
   transition: 0.3s;
-  width: calc(100% + 23px);
 }
 
 button.reg-button:active {
@@ -1679,7 +1730,7 @@ img.forum-editor-folio {
   margin: auto;
   overflow-x: hidden;
   overflow-y: auto;
-  width: 50vw;
+  width: 70vw;
   height: auto;
   max-width: 400px;
   min-width: 300px;
@@ -1706,8 +1757,8 @@ img.forum-editor-folio {
   margin-top: 18px;
   margin-left: 22px;
   margin-right: 100%;
-  width: 11vw;
-  height: 11vw;
+  width: 16vw;
+  height: 16vw;
   max-width: 120px;
   max-height: 120px;
   min-width: 70px;
@@ -1718,7 +1769,6 @@ img.forum-editor-folio {
   float: left;
   margin-bottom: 35px;
   margin-right: 80px;
-  width: 100%;
 }
 
 #bio-textarea, #forum-desc-textarea {
@@ -1727,7 +1777,6 @@ img.forum-editor-folio {
   margin-bottom: 35px;
   resize: none;
   height: 80px;
-  width: 100%;
 }
 
 .account-loc-setting {
@@ -1880,6 +1929,14 @@ button.close-btn:active {
   width: 420px;
 }
 
+#forum-posts-container.home-forum-posts {
+  margin-top: 20px;
+}
+
+#forum-posts-container.home-forum-posts .profile-section {
+  width: 455px;
+}
+
 /* Mobile Compatibility */
 @media (max-width: 450px) {
 
@@ -1898,15 +1955,6 @@ button.close-btn:active {
   
   .upvote:hover {
     filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(150deg);
-  }
-
-}
-
-/* iPhone 5 (Stupid Small Screen) */
-@media (max-width: 350px) {
-
-  .dev-name {
-    margin-top: 10px;
   }
 
 }
@@ -1934,6 +1982,11 @@ button.close-btn:active {
     width: calc(90vw + 15px);
   }
 
+  #forum-posts-container.home-forum-posts .profile-section {
+    position: static;
+    width: calc(90vw + 15px);
+  }
+
   .posts-empty {
     width: calc(90vw + -25px);
   }
@@ -1952,10 +2005,6 @@ button.close-btn:active {
 
   .post-forum {
     width: calc(90vw + 14px);
-  }
-
-  #bio-textarea, #prof-img-url {
-    max-width: 240px;
   }
 
   #top-buttons {
@@ -2028,18 +2077,6 @@ button.close-btn:active {
     margin-left: 27px;
     position: relative;
     width: auto;
-  }
-
-  .p-header > input {
-    width: calc(100% - 23px);
-  }
-
-  .p-header > .dropdown {
-    width: 100%;
-  }
-
-  .p-header > button {
-    width: 100%;
   }
   
   .register-prompt-container {
@@ -2136,6 +2173,24 @@ select.input-field {
 }
 
 /* Override Styling */
+.home-content-container {
+  margin-bottom: 16px;
+  margin-top: -6px;
+}
+
+.section-empty {
+  font-size: 27px;
+  padding: 5px;
+}
+
+#settings-menu .p-header > input, #settings-menu .p-header > .input-field {
+  width: calc(100% - 23px);
+}
+
+#settings-menu .p-header > .dropdown {
+  width: calc(100% - 1px);
+}
+
 .del-account-code {
   display: none;
 }
@@ -2200,7 +2255,7 @@ button.close-search-btn {
   transition: 0.3s;
   margin: auto;
   margin-left: 1px;
-  margin-bottom: 13px;
+  margin-bottom: 17px;
   padding: 8px;
   width: calc(100% - 30px);
 }
@@ -2298,6 +2353,26 @@ button.close-options:hover {
   float: left;
   transform: translate(-23px, -8px) scale(0.85);
   margin-bottom: 1px;
+}
+
+#reg-form .input-field {
+  width: calc(100% - 23px);
+}
+
+#reg-form .dropdown {
+  width: calc(100% - 1px);
+}
+
+#reg-form button {
+  width: calc(100% - 1px);
+}
+
+div.login-form-container input {
+  width: calc(100% - 25px);
+}
+
+div.login-form-container button {
+  width: calc(100% - 3px);
 }
 
 /* Webkit */

@@ -136,6 +136,8 @@ class Forum {
                         if ($this->isModerator($newOwner)) {
                             $this->demote($newOwner); // Remove Moderator Rank
                         }
+
+                        Notification::push($newOwner, "You are the new owner of: <strong>$this->name</strong>", "[Old Owner has Left]");
                     }
 
                     $this->demote($uid);
@@ -465,22 +467,40 @@ class User {
 
             // Loop through each Forum
             foreach ($forums as $forum) {
-                $assoc = $db->query("SELECT members, owner FROM forums WHERE fid=$forum")->fetch_array(MYSQLI_ASSOC);
+                $assoc = $db->query("SELECT name, members, bans, mods, owner FROM forums WHERE fid=$forum")->fetch_array(MYSQLI_ASSOC);
                 
+                // Remove From Member List
                 $memberList = json_decode($assoc["members"], true);
                 $memberIndex = array_search($uid, $memberList);
 
                 unset($memberList[$memberIndex]);
                 $membersEncoded = json_encode($memberList);
 
+                // Remove From Ban List
+                $banList = json_decode($assoc["bans"], true);
+                $banIndex = array_search($uid, $banList);
+
+                unset($banList[$banIndex]);
+                $bansEncoded = json_encode($banList);
+
+                // Remove From Moderator List
+                $modList = json_decode($assoc["mods"], true);
+                $modIndex = array_search($uid, $modList);
+
+                unset($modList[$modIndex]);
+                $modsEncoded = json_encode($modList);
+
                 $owner = $assoc["owner"];
 
                 if ($owner == $uid) {
                     $owner = $memberList[mt_rand(0, count($memberList))];
+
+                    $forumName = $assoc["name"];
+                    Notification::push($owner, "You Are the New Owner of $forumName", "[The Old Owner has Deleted their Account]");
                 }
                 
                 if (count($memberList) > 0) {
-                    $db->query("UPDATE forums SET owner='$owner', members='$membersEncoded' WHERE fid=$forum");
+                    $db->query("UPDATE forums SET owner='$owner', members='$membersEncoded', mods='$modsEncoded', bans='$bansEncoded' WHERE fid=$forum");
                 }
                 else {
                     $db->query("DELETE FROM forums WHERE fid=$forum");

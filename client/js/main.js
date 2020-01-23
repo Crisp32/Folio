@@ -6,6 +6,8 @@
 // Global Variables
 let saved = false;
 
+const REMOVED_CONTENT = "[DELETED]";
+
 // Display loading until page loads
 window.onload = function() {
 
@@ -33,7 +35,13 @@ window.onload = function() {
     let pathname = window.location.pathname;
 
     switch (pathname) {
+        case "/":
+            triggerOnLoad();
+            break;
         case "/profile.php":
+            triggerOnLoad();
+            break;
+        case "/index.php":
             triggerOnLoad();
             break;
         case "/forum.php":
@@ -382,9 +390,6 @@ function login() {
     let username = $("#username").val();
     let password = $("#login-pass").val();
 
-    // Display Loading Popup
-    popUp("clientm-fail", "Loading...", null);
-
     // Client Side Validation
     if (username.length == 0) {
         popUp("clientm-fail", "Invalid Username", null);
@@ -393,33 +398,45 @@ function login() {
         popUp("clientm-fail", "Invalid Password", null);
     }
     else {
-        $.ajax({
-            type: "POST",
-            url: "../../utils/login_user.php",
-            dataType: "json",
-            data: {
-                username: username,
-                password: password
-            },
-            success: function(res) {
-                // Display Success/Error to user
-                if (res.success) {
-                    popUp("clientm-success", res.message + ". Click Here to go to Home Page", "../../index.php");
+        if (!$("#login-btn").attr("disabled")) {
 
-                    // Change Button
-                    $(".reg-button").addClass("login-success");
-                    $(".reg-button").removeClass("reg-button");
-                    $(".login-success").removeAttr("onclick");
-                    $(".login-success").text("Logged In");
+            // Display Loading Popup
+            $("#login-btn").text("Logging In...");
+            $("#login-btn").attr("disabled", true);
+
+            // Send Request
+            $.ajax({
+                type: "POST",
+                url: "../../utils/login_user.php",
+                dataType: "json",
+                data: {
+                    username: username,
+                    password: password
+                },
+                success: function(res) {
+                    // Display Success/Error to user
+                    if (res.success) {
+                        popUp("clientm-success", res.message + ". Click Here to go to Home Page", "../../index.php");
+    
+                        // Change Button
+                        $(".reg-button").addClass("login-success");
+                        $(".reg-button").removeClass("reg-button");
+                        $(".login-success").removeAttr("onclick");
+                        $(".login-success").text("Logged In");
+                    }
+                    else {
+                        popUp("clientm-fail", res.message, null);
+                        $("#login-btn").text("Login");
+                    }
+                },
+                error: function(err) {
+                    popUp("clientm-fail", "Failed to Contact Server", null);
+                    $("#login-btn").text("Login");
                 }
-                else {
-                    popUp("clientm-fail", res.message, null);
-                }
-            },
-            error: function(err) {
-                popUp("clientm-fail", "Failed to Contact Server", null);
-            }
-        });
+            }).done(function () {
+                $("#login-btn").removeAttr("disabled");
+            });
+        }
     }
 }
 
@@ -708,14 +725,23 @@ function loadReplies(fullHTML, repliesJSON) {
             }
 
             let replyBody = highlightHyperlinks(replies[reply].content, false);
+            let user = replies[reply].user
+            let userLink = "/profile.php?uquery=" + user;
 
-            replyHTML += '<div class="comment reply" ><div class="reply-indent" ></div><div class="commenter-name" ><a style="color: '+nameColour+'" href="/profile.php?uquery='+replies[reply].user+'" >'+replies[reply].user+'</a> <div class="comment-post-date" >'+replies[reply].date+'</div></div><div><div name="'+replies[reply].rid+'" class="delete-comment reply-del-comment noselect" style="display: '+replies[reply].delDisplay+'" >Delete</div></div><div class="comment-content" style="margin-bottom: 5px" >'+replyBody+'</div></div>';
+            if (user == null) {
+                user = REMOVED_CONTENT;
+                userLink = "#";
+            }
+
+            replyHTML += '<div class="comment reply" ><div class="reply-indent" ></div><div class="commenter-name" ><a style="color: '+nameColour+'" href="'+userLink+'" >'+user+'</a> <div class="comment-post-date" >'+replies[reply].date+'</div></div><div><div name="'+replies[reply].rid+'" class="delete-comment reply-del-comment noselect" style="display: '+replies[reply].delDisplay+'" >Delete</div></div><div class="comment-content" style="margin-bottom: 5px" >'+replyBody+'</div></div>';
         }
         replyHTML += endReplyTag;
     }
 
     return replyHTML;
 }
+
+let breakChars = [" ", "\n", "(", ")", "<", ">", "[", "]"];
 
 // Highlight Profile Links
 function highlightProfileLinks(text) {
@@ -734,8 +760,6 @@ function highlightProfileLinks(text) {
     }
 
     // Loop through each Index
-    let breakChars = [" ", "\n", "(", ")", "<", ">"];
-
     for (let l = 0; l < indicies.length; l++) {
         let linkIndex = indicies[l];
         let linkHtml;
@@ -777,8 +801,6 @@ function highlightHyperlinks(text, renderImages) {
     }
 
     // Loop through each Index
-    let breakChars = [" ", "\n", "(", ")", "<", ">"];
-
     for (let l = 0; l < indicies.length; l++) {
         let linkIndex = indicies[l];
         let linkHtml;

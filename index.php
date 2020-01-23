@@ -10,14 +10,70 @@
   </head>
   <body>
     <!--Javascript Sources-->
+    <script src="/client/js/home.js" ></script>
+    <script src="/client/js/forum.js" ></script>
     <?php require("partials/_included-js.php"); ?>
+
+    <!--Confirm Forum Post Action Modal-->
+    <div id="confirm-post-delete-modal" class="modal-bg small-modal" >
+      <div class="modal-content" >
+        <h2 class="modal-title" >Perform this Action?</h2>
+        <div class="leave-forum-msg" >Are you sure that you want to Delete this Post?</div>
+        <div class="leave-forum-btns" >
+          <button class="standard-button close-btn" onclick="closeModal()" >Cancel</button>
+          <button id="confirm-post-delete" class="standard-button save-btn" >Confirm</button>
+        </div>
+      </div>
+    </div>
 
     <!--Render Page-->
     <?php require("partials/_loading.php"); ?>
     <?php require("partials/_top-bar.php"); ?>
     
-    <div id="content" >
-      <?php require("partials/_client-msg.php"); ?>
+    <div style="text-align: center" >
+      <div id="content" >
+        <div class="credit-area" ></div>
+        <div class="profile-section credit-area" >
+          <div class="prof-forum-section profile-section-container" >
+            <h1 class="title" >fol<div style="color: darkgrey" >.</div>io</h1>
+
+            <div class="credit-name" >&copy; Connell Reffo<br />&#8226; Developed 2019-2020</div>
+
+            <div class="link-title" >View the Project on GitHub:</div>
+            <a class="h-link" href="#" >https://github.com/folio</a>
+          </div>
+        </div>
+        <br />
+
+        <div class="profile-section" >
+          <div class="prof-forum-section profile-section-container" >
+            <h2 class="section-title" >Top Users</h2>
+
+            <div id="top-users-container" class="home-content-container" >
+              <div class="res-empty section-empty" >Nothing to See Here</div>
+            </div>
+          </div>
+        </div>
+        <br />
+
+        <div class="profile-section" >
+          <div class="prof-forum-section profile-section-container" >
+            <h2 class="section-title" >Popular Forums</h2>
+
+            <div id="popular-forums-container" class="home-content-container" >
+              <div class="res-empty section-empty" >Nothing to See Here</div>
+            </div>
+          </div>
+        </div>
+        <br />
+
+        <div class="seperation-border" ></div>
+        <div id="forum-posts-container" class="home-forum-posts" >
+          <div class="posts-empty res-empty" >Loading Posts...</div>
+        </div>
+
+        <?php require("partials/_client-msg.php"); ?>
+      </div>
     </div>
   </body>
 </html>

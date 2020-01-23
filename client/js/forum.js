@@ -1018,23 +1018,30 @@ function loadForumPosts(posts, append) {
             }
 
             let forumNameHtml = '';
+            let forumName = postObject.forumName;
+            let forumLink = "/forum.php?fquery=" + postObject.forumName;
+
+            if (forumName == null) {
+                forumName = REMOVED_CONTENT;
+                forumLink = "#";
+            }
 
             if (window.location.pathname !== "/forum.php") {
-                let forumName = postObject.forumName;
-                let forumLink = "/forum.php?fquery=" + postObject.forumName;
-
-                if (forumName == null) {
-                    forumName = "[REMOVED]"
-                    forumLink = "#";
-                }
-
                 forumNameHtml = 'on <a style="color: #ffea4a" href="'+forumLink+'" >' + forumName + '</a>';
             }
     
             let postTitle = highlightHyperlinks(postObject.title, false);
             let postBody = highlightHyperlinks(postObject.body, true);
+
+            let poster = postObject.posterName;
+            let posterLink = "/profile.php?uquery=" + postObject.posterName;
+
+            if (poster == null) {
+                poster = REMOVED_CONTENT;
+                posterLink = "#";
+            }
     
-            let html = '<div class="forum-post-wrapper" ><div class="profile-section forum-post-container" ><h2 class="section-title" >'+postTitle+'</h2><br /><div class="forum-post-info" >Posted '+postObject.date+' by <a style="color: '+posterNameColour+'" href="/profile.php?uquery='+postObject.posterName+'" >'+postObject.posterName+'</a> '+forumNameHtml+'</div><div class="forum-post-body" >'+postBody+'</div><div class="forum-post-voting" data-comments="'+postObject.comments+'" data-pid="'+postObject.pid+'" ><button title="Upvote" class="upvote vote'+upvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><button title="Downvote" class="downvote vote'+downvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><div class="forum-post-votes" style="color: '+voteCountColour+'" >'+postObject.voteCount+'</div></div><div class="forum-post-actions" >'+actionButtons+'</div></div><br /><div class="profile-section forum-post-comments" ><div class="add-post-comment-div" ><input class="add-comment post-forum-comment" placeholder="Comment" /><button class="post-forum-comment add-comment-btn" >Post</button></div><div class="res-empty post-comments-empty" >No Comments to Display</div><div class="forum-post-comments-container" ></div></div></div></div>';
+            let html = '<div class="forum-post-wrapper" ><div class="profile-section forum-post-container" ><h2 class="section-title" >'+postTitle+'</h2><br /><div class="forum-post-info" >Posted '+postObject.date+' by <a style="color: '+posterNameColour+'" href="'+posterLink+'" >'+poster+'</a> '+forumNameHtml+'</div><div class="forum-post-body" >'+postBody+'</div><div class="forum-post-voting" data-comments="'+postObject.comments+'" data-pid="'+postObject.pid+'" ><button title="Upvote" class="upvote vote'+upvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><button title="Downvote" class="downvote vote'+downvoteClasses+'" ><img src="/images/other/voteIcon.svg" ></button><div class="forum-post-votes" style="color: '+voteCountColour+'" >'+postObject.voteCount+'</div></div><div class="forum-post-actions" >'+actionButtons+'</div></div><br /><div class="profile-section forum-post-comments" ><div class="add-post-comment-div" ><input class="add-comment post-forum-comment" placeholder="Comment" /><button class="post-forum-comment add-comment-btn" >Post</button></div><div class="res-empty post-comments-empty" >No Comments to Display</div><div class="forum-post-comments-container" ></div></div></div></div>';
     
             switch (append) {
                 case true:
@@ -1080,8 +1087,15 @@ function loadPostComments(commentsJSON, append, element, showLoadCommentsButton)
         }
 
         let commentBody = highlightHyperlinks(commentsJSON[comment].content, false);
+        let commenter = commentsJSON[comment].user;
+        let userLink = "/profile.php?uquery=" + commentsJSON[comment].user;
 
-        let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a style="color: '+nameColour+'" href="../../profile.php?uquery='+commentsJSON[comment].user+'" >'+commentsJSON[comment].user+'</a> <div class="comment-post-date" >'+commentsJSON[comment].date+'</div></div><div class="likes-container" ><button class="likes-icon'+imgLikedClass+'" ><img title="I Like this Comment" src="/images/other/like-icon.svg" ></button><div class="likes-count'+likedClass+'" >'+commentsJSON[comment].likes+'</div><br /><div name="'+commentsJSON[comment].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentBody+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
+        if (commenter == null) {
+            commenter = REMOVED_CONTENT;
+            userLink = "#";
+        }
+
+        let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a style="color: '+nameColour+'" href="'+userLink+'" >'+commenter+'</a> <div class="comment-post-date" >'+commentsJSON[comment].date+'</div></div><div class="likes-container" ><button class="likes-icon'+imgLikedClass+'" ><img title="I Like this Comment" src="/images/other/like-icon.svg" ></button><div class="likes-count'+likedClass+'" >'+commentsJSON[comment].likes+'</div><br /><div name="'+commentsJSON[comment].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentBody+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
         
         if (append) {
             $(element).append(commentHTML);

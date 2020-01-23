@@ -228,7 +228,15 @@ function loadComments(commentsJSON, method) {
             imgLikedClass = " like-icon-selected";
         }
 
-        let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a style="color: '+nameColour+'" href="../../profile.php?uquery='+commentsJSON[comment].user+'" >'+commentsJSON[comment].user+'</a> <div class="comment-post-date" >'+commentsJSON[comment].date+'</div></div><div class="likes-container" ><button class="likes-icon'+imgLikedClass+'" ><img title="I Like this Comment" src="/images/other/like-icon.svg" ></button><div class="likes-count'+likedClass+'" >'+commentsJSON[comment].likes+'</div><br /><div name="'+commentsJSON[comment].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentBody+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
+        let commenter = commentsJSON[comment].user;
+        let userLink = "/profile.php?uquery=" + commentsJSON[comment].user;
+
+        if (commenter == null) {
+            commenter = REMOVED_CONTENT;
+            userLink = "#";
+        }
+
+        let commentHTML = '<div class="comment-full" ><div class="comment" ><div class="commenter-name" ><a style="color: '+nameColour+'" href="'+userLink+'" >'+commenter+'</a> <div class="comment-post-date" >'+commentsJSON[comment].date+'</div></div><div class="likes-container" ><button class="likes-icon'+imgLikedClass+'" ><img title="I Like this Comment" src="/images/other/like-icon.svg" ></button><div class="likes-count'+likedClass+'" >'+commentsJSON[comment].likes+'</div><br /><div name="'+commentsJSON[comment].cid+'" class="del-comment delete-comment noselect" style="display: '+commentsJSON[comment].delDisplay+'" >Delete</div></div><div class="comment-content" >'+commentBody+'</div></div><div class="add-reply" ><input class="add-comment" placeholder="Reply" /><button class="add-comment-btn post-reply-btn" >Post</button></div><div class="replies-container" >'+replyHTML+'</div></div>';
         
         if (method == "append") {
             $("#comments-container").append(commentHTML);

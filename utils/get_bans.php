@@ -30,9 +30,10 @@ if (forumExists($forumName)) {
 
         // Process each Member and Push to JSON Array
         foreach ($members as $member) {
-            if ($member !== null && $member !== "") {
-                $memberData = new User();
-                $memberData->getUserDataByUID($member);
+            $memberData = new User();
+            $memberData->getUserDataByUID($member);
+
+            if ($memberData->user["username"] !== null) {
 
                 // Create Array
                 $memberDataJSON = [

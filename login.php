@@ -39,7 +39,7 @@ if (isset($_SESSION["user"])) {
           <br />
           <div class="p-header" >Password
             <input type="password" class="input-field" id="login-pass" placeholder="Password" />
-            <button class="standard-button inl reg-button" onclick="login()" >Login</button>
+            <button id="login-btn" class="standard-button inl reg-button" onclick="login()" >Login</button>
           </div>
           
           <br /><br />

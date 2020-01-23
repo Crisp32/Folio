@@ -89,6 +89,15 @@ if (validateSession($_SESSION["user"])) {
             $addReplyQuery = $db->query("UPDATE comments SET repliesCount=repliesCount+1, usersReplied=JSON_ARRAY_INSERT('$usersRepliedEncoded', '$[0]', JSON_ARRAY($RID, $user, '$replyContent', '$date')) WHERE cid='$commentCID' AND type='$type'");
                 
             if ($addReplyQuery) {
+                $commenter = getCommentData("commenterId", $type, "cid='$commentCID'");
+                
+                if ($commenter != $user) {
+                    $commentContent = getCommentData("content", $type, "cid=$commentCID");
+                    $username = getUserData("username", "uid=$user");
+
+                    Notification::push($commenter, "@$username replied to your comment: <strong>$commentContent</strong>", $replyContent);
+                }
+
                 echo json_encode([
                     "success" => true,
                     "message" => "Posted Reply!",

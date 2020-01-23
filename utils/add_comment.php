@@ -110,7 +110,7 @@ if (validateSession($_SESSION["user"])) {
 
                         if ($activeUser != $postOwner) {
                             $postName = $forumPost->post["title"];
-                            Notification::push($postOwner, "@$username commented on your post, $postName", $commentContent);
+                            Notification::push($postOwner, "@$username commented on your post: <strong>$postName</strong>", $commentContent);
                         }
                     }
                     else if ($type == $TYPE_PROFILE) {

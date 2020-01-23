@@ -13,6 +13,7 @@ $db = db();
 // Check Session
 if (validateSession($_SESSION["user"])) {
     $user = $_SESSION["user"];
+    $username = getUserData("username", "uid=$user");
 
     // Get Requested Action
     $targetUsername = escapeString($_REQUEST["user"]);
@@ -37,6 +38,8 @@ if (validateSession($_SESSION["user"])) {
                 if (!$forumInstance->isModerator($targetUserId) || $user == $forumInstance->ownerUID) {
                     $forumInstance->removeMember($targetUserId);
 
+                    Notification::push($targetUserId, "You have been kicked from: <strong>".$forumInstance->name."</strong>", "[Kicked By @$username]");
+
                     // Send Success to Client
                     echo json_encode([
                         "success" => true,
@@ -56,6 +59,8 @@ if (validateSession($_SESSION["user"])) {
                 if (!$forumInstance->isModerator($targetUserId) || $user == $forumInstance->ownerUID) {
                     $forumInstance->banMember($targetUserId);
 
+                    Notification::push($targetUserId, "You have been Banned from: <strong>".$forumInstance->name."</strong>", "[Banned By @$username]");
+
                     // Send Success to Client
                     echo json_encode([
                         "success" => true,
@@ -74,6 +79,8 @@ if (validateSession($_SESSION["user"])) {
                 // Check Ranks
                 if (!$forumInstance->isModerator($targetUserId) || $user == $forumInstance->ownerUID) {
                     if ($forumInstance->promote($targetUserId)) {
+                        Notification::push($targetUserId, "You have been promoted in: <strong>".$forumInstance->name."</strong>", "[Promoted By @$username]");
+
                         echo json_encode([
                             "success" => true,
                             "message" => "Promoted $targetUsername"
@@ -99,6 +106,8 @@ if (validateSession($_SESSION["user"])) {
                 // Check Ranks
                 if (!$forumInstance->isModerator($targetUserId) || $user == $forumInstance->ownerUID) {
                     if ($forumInstance->demote($targetUserId)) {
+                        Notification::push($targetUserId, "You have been demoted in: <strong>".$forumInstance->name."</strong>", "[Demoted By @$username]");
+
                         echo json_encode([
                             "success" => true,
                             "message" => "Demoted $targetUsername"
