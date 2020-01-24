@@ -272,38 +272,44 @@ function register() {
     let password = $("#pass").val();
     let confPass = $("#conf-pass").val();
 
-    popUp("clientm-fail", "Loading...", null);
-
-    $.ajax({
-        type: "POST",
-        url: "../../utils/register_user.php",
-        dataType: "json",
-        data: {
-            email: email,
-            location: location,
-            username: username,
-            password: password,
-            confPass: confPass
-        },
-        success: function(res) {
-
-            // Display Success/Error to user
-            if (res.success) {
-                popUp("clientm-success", res.message, null);
-                
-                // Prompt User for Verification Code
-                if (res.verify) {
-                    verifyPage();
+    if (!$("#reg-user").attr("disabled")) {
+        $("#reg-user").attr("disabled", true);
+        $("#reg-user").text("Verifying...");
+    
+        $.ajax({
+            type: "POST",
+            url: "../../utils/register_user.php",
+            dataType: "json",
+            data: {
+                email: email,
+                location: location,
+                username: username,
+                password: password,
+                confPass: confPass
+            },
+            success: function(res) {
+    
+                // Display Success/Error to user
+                if (res.success) {
+                    popUp("clientm-success", res.message, null);
+                    
+                    // Prompt User for Verification Code
+                    if (res.verify) {
+                        verifyPage();
+                    }
                 }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
             }
-            else {
-                popUp("clientm-fail", res.message, null);
-            }
-        },
-        error: function(err) {
-            popUp("clientm-fail", "Failed to Contact Server", null);
-        }
-    });
+        }).done(function () {
+            $("#reg-user").removeAttr("disabled");
+            $("#reg-user").text("Send Verification Code");
+        });
+    }
 }
 
 function resendVerification() {
@@ -311,30 +317,35 @@ function resendVerification() {
     // Get User Input
     let user = $("#resend-to").val();
 
-    // Display Loading Popup
-    popUp("clientm-fail", "Loading...", null);
-
-    // Send Request
-    $.ajax({
-        type: "POST",
-        url: "../../utils/resend_code.php",
-        dataType: "json",
-        data: {
-            uname: user
-        },
-        success: function(res) {
-            // Display Success/Error to user
-            if (res.success) {
-                popUp("clientm-success", res.message, null);
+    if (!$("#resend-code").attr("disabled")) {
+        $("#resend-code").attr("disabled", true);
+        $("#resend-code").text("Verifying...");
+    
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/resend_code.php",
+            dataType: "json",
+            data: {
+                uname: user
+            },
+            success: function(res) {
+                // Display Success/Error to user
+                if (res.success) {
+                    popUp("clientm-success", res.message, null);
+                }
+                else {
+                    popUp("clientm-fail", res.message, null);
+                }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
             }
-            else {
-                popUp("clientm-fail", res.message, null);
-            }
-        },
-        error: function(err) {
-            popUp("clientm-fail", "Failed to Contact Server", null);
-        }
-    });
+        }).done(function() {
+            $("#resend-code").removeAttr("disabled");
+            $("#resend-code").text("Resend Code");
+        });
+    }
 }
 
 // Final Verification Step for registration
@@ -344,38 +355,45 @@ function verifyAccount() {
     let user = $("#resend-to").val();
     let code = $("#vcode").val();
 
-    // Display Loading Popup
-    popUp("clientm-fail", "Loading...", null);
-
-    // Send Request
-    $.ajax({
-        type: "POST",
-        url: "../../utils/verify_user.php",
-        dataType: "json",
-        data: {
-            uname: user,
-            code: code
-        },
-        success: function(res) {
-            // Display Success/Error to user
-            if (res.success) {
-
-                // Prompt user to go to login page when Verified
-                if (res.redirect) {
+    if (!$("#finish-reg").attr("disabled")) {
+        $("#finish-reg").attr("disabled", true);
+        $("#finish-reg").text("Verifying...");
+    
+        // Send Request
+        $.ajax({
+            type: "POST",
+            url: "../../utils/verify_user.php",
+            dataType: "json",
+            data: {
+                uname: user,
+                code: code
+            },
+            success: function(res) {
+                // Display Success/Error to user
+                if (res.success && res.redirect) {
+    
+                    // Prompt user to go to login page when Verified
                     popUp("clientm-success", res.message + ". Click Here to Login", "../../login.php");
+                        
+                    $("#finish-reg").addClass("login-success");
+                    $("#finish-reg").text("Registered!");
+                    $("#resend-code").attr("disabled", true);
                 }
                 else {
-                    popUp("clientm-success", res.message, null);
+                    popUp("clientm-fail", res.message, null);
+    
+                    $("#finish-reg").removeAttr("disabled");
+                    $("#finish-reg").text("Register");
                 }
+            },
+            error: function(err) {
+                popUp("clientm-fail", "Failed to Contact Server", null);
+    
+                $("#finish-reg").removeAttr("disabled");
+                $("#finish-reg").text("Register");
             }
-            else {
-                popUp("clientm-fail", res.message, null);
-            }
-        },
-        error: function(err) {
-            popUp("clientm-fail", "Failed to Contact Server", null);
-        }
-    });
+        });
+    }
 }
 
 // Load Verification Prompt

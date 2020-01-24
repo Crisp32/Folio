@@ -2009,6 +2009,26 @@ button.close-btn:active {
   width: 445px;
 }
 
+div.login-form-container input {
+  width: calc(100% - 3px);
+}
+
+div.login-form-container button {
+  width: calc(100% + 19px);
+}
+
+#reg-form .input-field {
+  width: calc(100% - 5px);
+}
+
+#reg-form .dropdown {
+  width: calc(100% + 17px);
+}
+
+#reg-form button {
+  width: calc(100% + 17px);
+}
+
 /* Mobile Compatibility */
 @media (max-width: 450px) {
 
@@ -2033,6 +2053,26 @@ button.close-btn:active {
 
 /* Mobile Viewport Styling */
 @media (max-width: 700px) {
+
+  #reg-form .input-field {
+    width: calc(100% - 23px);
+  }
+  
+  #reg-form .dropdown {
+    width: calc(100% - 1px);
+  }
+  
+  #reg-form button {
+    width: calc(100% - 1px);
+  }
+
+  div.login-form-container input {
+    width: calc(100% - 25px);
+  }
+  
+  div.login-form-container button {
+    width: calc(100% - 3px);
+  }
 
   .forum-img {
     margin-right: 10px;
@@ -2454,26 +2494,6 @@ button.top-bar-btns {
   float: left;
   transform: translate(-23px, -8px) scale(0.85);
   margin-bottom: 1px;
-}
-
-#reg-form .input-field {
-  width: calc(100% - 23px);
-}
-
-#reg-form .dropdown {
-  width: calc(100% - 1px);
-}
-
-#reg-form button {
-  width: calc(100% - 1px);
-}
-
-div.login-form-container input {
-  width: calc(100% - 25px);
-}
-
-div.login-form-container button {
-  width: calc(100% - 3px);
 }
 
 /* Webkit */

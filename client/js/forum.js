@@ -698,6 +698,7 @@ function joinForum() {
                 else {
                     $("#forum-members").text(parseInt($("#forum-members").text()) - 1);
                     $("#post-forum-section").css("display", "none");
+                    $(".delete-post").remove();
                     $(".edit-forum-btn").remove();
                     displayJoinForumBtn();
                 }

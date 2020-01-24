@@ -7,11 +7,10 @@
     <div class="p-header" >Account Username
         <input type="text" class="input-field" id="resend-to" placeholder="Username" />
         
-        <button class="standard-button inl reg-button" onclick="verifyAccount()" >Register</button>
-        <button class="standard-button inl reg-button" style="margin-top: 25px" onclick="resendVerification()" >Resend Code</button>
+        <button id="finish-reg" class="standard-button inl reg-button" onclick="verifyAccount()" >Register</button>
+        <button id="resend-code" class="standard-button inl reg-button" style="margin-top: 25px" onclick="resendVerification()" >Resend Code</button>
     </div>
 
 
     <div class="form-footer" ><img class="footer-img" src="/images/other/folioLogoBlack.svg" ></div>
-
 </div>

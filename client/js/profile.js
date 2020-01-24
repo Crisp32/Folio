@@ -313,12 +313,12 @@ function getProfileForums() {
             profile: profile
         },
         success: function(res) {
-            if (res.forums !== "" && res.forums !== [] && res.forums !== null) {
-                loadJoinedForums(res.forums, true);
-            }
-            else {
+            if (res.forums == "" || res.forums == [] || res.forums == null) {
                 $(".forums-empty").text("No Forums to Display");
                 $(".forums-empty").css("display", "block");
+            }
+            else {
+                loadJoinedForums(res.forums, true);
             }
         },
         error: function() {

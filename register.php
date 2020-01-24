@@ -48,7 +48,7 @@ if (isset($_SESSION["user"])) {
             <div class="p-header" >Password
               <input type="password" class="input-field" id="pass" placeholder="Password" />
               <input type="password" class="input-field second-input" id="conf-pass" placeholder="Confirm Password" />
-              <button class="standard-button inl reg-button" onclick="register()" >Send Verification Code</button>
+              <button id="reg-user" class="standard-button inl reg-button" onclick="register()" >Send Verification Code</button>
             </div>
 
             <br /><br />
