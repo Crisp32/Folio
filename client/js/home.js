@@ -157,10 +157,10 @@ function renderUserList(usersJSON) {
     for (let u = 0; u < usersJSON.length; u++) {
         let user = usersJSON[u];
 
-        let voteWord = " Vote";
+        let voteWord = " Votes";
 
-        if (user.votes > 1) {
-            voteWord = " Votes";
+        if (user.votes == 1 || user.votes == -1) {
+            voteWord = " Vote";
         }
 
         let html = '<div class="home-list-item" ><div class="item-num" >'+(u + 1)+' <div class="bullet-point" style="color: #0cdc00" >&#8226;</div></div><img class="item-icon" src="'+user.image+'" ><div class="item-title-sub" ><div class="item-title" ><a href="/profile.php?uquery='+user.username+'" >'+user.username+'</a></div><div class="item-sub" >'+user.votes+voteWord+'</div></div></div>';

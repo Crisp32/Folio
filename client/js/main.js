@@ -486,6 +486,10 @@ function popUp(cssClass, content, onclickHyperlink) {
     }
     else {
         elementChild.attr("onclick", "popDown()");
+
+        if (!content.toLowerCase().includes("loading")) {
+            popUpTimer(content.length * 0.25);
+        }
     }
     
     elementChild.removeClass(elementChild.attr("class"));
@@ -493,6 +497,16 @@ function popUp(cssClass, content, onclickHyperlink) {
     elementChild.text(content);
 
     element.css("transform", "translate(0, 0)");
+}
+
+// Automatically Hide Popup
+function popUpTimer(secs) {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            popDown();
+            resolve();
+        }, secs * 1000)
+    });
 }
 
 function popDown() {
