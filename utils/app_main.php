@@ -261,4 +261,8 @@ function parseBool($str) {
     }
 }
 
+function currentDate() {
+    return date("Y-m-d");
+}
+
 ?>

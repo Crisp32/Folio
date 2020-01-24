@@ -33,7 +33,7 @@ class Forum {
         $description = $this->description;
         $db = $GLOBALS["db"];
 
-        $date = date("j-n-Y");
+        $date = currentDate();
         $insertStatement = "INSERT INTO forums(owner, name, iconPath, description, date, members, mods, bans) VALUES ('$ownerUID', '$name', '$iconURL', '$description', '$date', '[]', '[]', '[]')";
 
         return $db->query($insertStatement);
@@ -389,7 +389,7 @@ class Forum {
 
     public function addPost($title, $body, $userId, $forumId) {
         $db = $GLOBALS["db"];
-        $date = date("j-n-Y");
+        $date = currentDate();
         $votes = json_encode([
             "upvotes" => [],
             "downvotes" => []
@@ -469,17 +469,17 @@ class User {
             foreach ($forums as $forum) {
                 $assoc = $db->query("SELECT name, members, bans, mods, owner FROM forums WHERE fid=$forum")->fetch_array(MYSQLI_ASSOC);
                 
-                // Remove From Member List
+                // Member List
                 $membersEncoded = $assoc["members"];
                 $memberList = json_decode($membersEncoded, true);
                 $memberIndex = array_search($uid, $memberList);
 
-                // Remove From Ban List
+                // Ban List
                 $bansEncoded = $assoc["bans"];
                 $banList = json_decode($bansEncoded, true);
                 $banIndex = array_search($uid, $banList);
 
-                // Remove From Moderator List
+                // Moderator List
                 $modsEncoded = $assoc["mods"];
                 $modList = json_decode($modsEncoded, true);
                 $modIndex = array_search($uid, $modList);
@@ -487,7 +487,10 @@ class User {
                 $owner = $assoc["owner"];
 
                 if ($owner == $uid) {
-                    $owner = $memberList[mt_rand(0, count($memberList))];
+                    $mlist = $memberList;
+                    unset($mlist[$memberIndex]);
+
+                    $owner = $mlist[mt_rand(0, count($mlist))];
 
                     $forumName = $assoc["name"];
                     Notification::push($owner, "You Are the New Owner of $forumName", "[The Old Owner has Deleted their Account]");
@@ -784,7 +787,7 @@ class Notification {
 
         if (Notification::getCount($uid) < $maxNotifs) {
             $db = $GLOBALS["db"];
-            $date = date("j-n-Y");
+            $date = currentDate();
 
             return $db->query("INSERT INTO notifications (uid, message, subMessage, date) VALUES ($uid, '$body', '$subMessage', '$date')");
         }

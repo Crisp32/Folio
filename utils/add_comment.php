@@ -38,7 +38,7 @@ if (validateSession($_SESSION["user"])) {
     $updateStatement;
     $commentCount = 0;
 
-    $postDate = date("j-n-Y");
+    $postDate = currentDate();
     $rank = "member";
 
     if ($type == $TYPE_PROFILE) {

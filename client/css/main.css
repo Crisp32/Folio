@@ -200,7 +200,7 @@ body {
 
 #content {
   display: none;
-  padding-top: 70px;
+  padding-top: 50px;
   width: 100%;
 }
 
@@ -290,7 +290,7 @@ pre#bio {
   transition: 0.3s;
   text-align: left;
   margin: auto;
-  margin-top: 21px;
+  margin-top: 12px;
   margin-left: 24px;
   padding: 12px;
   padding-left: 16px;
@@ -309,7 +309,7 @@ div#top-bar {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.1), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
   display: inline-block;
   position: fixed;
-  height: 80px;
+  height: 67px;
   width: 100%;
   z-index: 10;
 }
@@ -334,7 +334,7 @@ div#top-bar {
   float: left;
   margin: 10px;
   margin-right: -5px;
-  margin-top: 20px;
+  margin-top: 12px;
   width: 120px;
 }
 
@@ -804,25 +804,29 @@ button.post-forum-btn {
 
 .vote:hover {
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: 0.5s;
 }
 
 .downvote {
+  filter: sepia(200%) saturate(0%) brightness(100%) hue-rotate(200deg);
   transform: translateX(60px) rotate(180deg);
+  transition: 0.5s;
 }
 
 .downvote-selected {
   filter: sepia(200%) saturate(1500%) brightness(70%) hue-rotate(200deg);
-  transition: 0.2s ease;
+  transition: 0.5s;
 }
 
 .upvote {
+  filter: sepia(100%) saturate(0%) brightness(100%) hue-rotate(150deg);
   transform: translateX(26px);
+  transition: 0.5s;
 }
 
 .upvote-selected {
-  filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(150deg);
-  transition: 0.2s ease;
+  filter: sepia(100%) saturate(1500%) brightness(70%) hue-rotate(150deg);
+  transition: 0.5s;
 }
 
 button.likes-icon {
@@ -1210,16 +1214,19 @@ button.clientm-fail:hover {
 .profile-image-bar {
   border-radius: 3px;
   transition: 0.2s;
-  transform: translate(8px, 26px);
+  transform: translate(5px, 20px);
   pointer-events: none;
   position: absolute;
-  height: 45px;
-  width: 45px;
+  height: 40px;
+  width: 40px;
   z-index: 1;
 }
 
-.profile-username-btn {
+button.standard-button.profile-username-btn {
   text-align: left;
+  margin-top: 16px;
+  padding: 9px;
+  padding-bottom: 8px;
   overflow: visible;
   width: auto;
 }
@@ -1227,7 +1234,9 @@ button.clientm-fail:hover {
 .profile-username-bar {
   color: white;
   font-size: 25px;
-  margin-left: 50px;
+  transform: translateY(-2px);
+  margin-left: 45px;
+  overflow: visible;
   padding: 3px;
 }
 
@@ -1244,7 +1253,7 @@ button.clientm-fail:hover {
   border-radius: 5px;
   box-shadow: 0 10px 8px 0 rgba(0, 0, 0, 0.3), 0 3px 20px 0 rgba(0, 0, 0, 0.3);
   display: none;
-  transform: translate(-15px, 100px);
+  transform: translate(-15px, 85px);
   right: 0;
   padding-top: 7px;
   position: absolute;
@@ -1866,7 +1875,7 @@ button.save-btn {
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
   border-color: rgba(0, 0, 0, 0);
   color: white;
-  transition: 0.5s ease;
+  transition: 0.5s;
   margin-left: 10px;
 }
 
@@ -1874,7 +1883,7 @@ button.save-btn:hover {
   color: lightgrey;
   background: #36bf50 radial-gradient(circle, transparent 1%, #29943d 1%) center/15000%;
   border-color: rgba(0, 0, 0, 0);
-  transition: 0.5s ease;
+  transition: 0.5s;
   margin-left: 10px;
 }
 
@@ -1891,7 +1900,7 @@ button.close-btn {
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.2);
   border-color: rgba(0, 0, 0, 0);
   color: white;
-  transition: 0.5s ease;
+  transition: 0.5s;
   margin-left: 10px;
 }
 
@@ -1899,7 +1908,7 @@ button.close-btn:hover {
   color: lightgrey;
   background: #bf3636 radial-gradient(circle, transparent 1%, #942929 1%) center/15000%;
   border-color: rgba(0, 0, 0, 0);
-  transition: 0.5s ease;
+  transition: 0.5s;
   margin-left: 10px;
 }
 
@@ -2017,7 +2026,7 @@ button.close-btn:active {
   }
   
   .upvote:hover {
-    filter: sepia(100%) saturate(1000%) brightness(70%) hue-rotate(150deg);
+    filter: sepia(100%) saturate(1500%) brightness(70%) hue-rotate(150deg);
   }
 
 }
@@ -2095,7 +2104,7 @@ button.close-btn:active {
     transform: translateY(-35px);
   }
 
-  #bio {
+  #bio, .profile-name-cont #bio {
     margin-right: 0;
     width: calc(100% - 46px);
   }
@@ -2124,7 +2133,7 @@ button.close-btn:active {
     max-width: unset;
   }
 
-  #user-posts-modal .forum-post-container {
+  #user-posts-modal .forum-post-container, .forum-post-comments {
     width: calc(100% - 35px);
   }
 
@@ -2154,20 +2163,29 @@ button.close-btn:active {
 
   /* Shrink User Info */
   .account-options {
-    transform: translate(-10px, 105px);
+    transform: translate(-10px, 85px);
   }
 
   .options-container-bubble {
     transform: translate(130px, -110px);
   }
 
-  .profile-username-btn {
-    width: 68px;
-    height: 58px;
+  button.standard-button.profile-username-btn {
+    margin-right: 18px;
+    height: 48px;
+    width: 48px;
   }
 
   .profile-username-bar {
     display: none;
+  }
+
+  .profile-bar-container {
+    overflow: visible;
+  }
+
+  .profile-image-bar {
+    transform: translate(4px, 20px);
   }
 
   button.login-success, button.login-success:hover, button.login-success:active {
@@ -2404,6 +2422,10 @@ button.close-options {
 button.close-options:hover {
   background-color: #a3a3a3;
   color: black;
+}
+
+button.top-bar-btns {
+  margin-top: 12px;
 }
 
 .votes-container {

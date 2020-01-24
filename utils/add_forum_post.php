@@ -71,7 +71,7 @@ if (validateSession($_SESSION["user"])) {
                             "title" => $title,
                             "body" => $body,
                             "posterName" => getUserData("username", "uid='$user'"),
-                            "date" => date("j-n-Y"),
+                            "date" => currentDate(),
                             "rank" => $rank,
                             "pid" => $addPostQuery["pid"],
                             "voteCount" => 0,

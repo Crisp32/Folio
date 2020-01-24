@@ -47,7 +47,7 @@ if (validateSession($_SESSION["user"])) {
         $usersRepliedEncoded = getCommentData("usersReplied", $type, "cid='$commentCID'");
         $usersReplied = json_decode($usersRepliedEncoded);
         $RID = count($usersReplied);
-        $date = date("j-n-Y");
+        $date = currentDate();
         
         // Post Comment For a Profile
         if ($type == $TYPE_PROFILE) {

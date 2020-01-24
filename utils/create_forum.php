@@ -98,7 +98,7 @@ if (validateSession($_SESSION["user"])) {
                             "name" => $forumName,
                             "description" => $forumDesc,
                             "icon" => $forumIcon,
-                            "date" => date("j-n-Y")
+                            "date" => currentDate()
                         ]
                     ]
                 ]);
