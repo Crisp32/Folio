@@ -99,7 +99,7 @@
           <div>
           <br />
           <div>
-            <div class="profile-section" >
+            <div class="profile-section forum-section" >
               <div class="prof-forum-section profile-section-container" >
                 <h2 class="section-title" >Forums<button class="new-forum new-btn" onclick="openForumMenu()" >+ Create New Forum</button></h2>
                 <div style="font-size: 25px; margin-top: -25px" class="forums-empty res-empty">No Active Forums to Display</div>

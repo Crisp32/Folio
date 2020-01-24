@@ -17,10 +17,12 @@ if (validateSession($_SESSION["user"])) {
     $user = $_SESSION["user"];
     $commentCID = escapeString($_REQUEST["cid"]);
     $replyContent = escapeString($_REQUEST["content"]);
+    $rank = "member";
 
     // Validate Permissions
     $type = $db->query("SELECT type FROM comments WHERE cid=$commentCID")->fetch_array(MYSQLI_ASSOC)["type"];
-    $commentOwner = getCommentData("uid", $type, "cid='$commentCID'");
+    $commentOwner = getCommentData("commenterId", $type, "cid='$commentCID'");
+    $profile = getCommentData("uid", $type, "cid='$commentCID'");
 
     // Check if Reply Content is Valid
     if (strlen($replyContent) > $maxReplyLength) {
@@ -51,6 +53,10 @@ if (validateSession($_SESSION["user"])) {
         if ($type == $TYPE_PROFILE) {
             $allowComments = (getUserData("allowComments", "uid='$commentOwner'") == 1);
 
+            if ($profile == $user) {
+                $rank = "owner";
+            }
+
             if ($allowComments) {
                 $error["success"] = true;
             }
@@ -68,6 +74,13 @@ if (validateSession($_SESSION["user"])) {
 
             // Get Forum Data
             $forum = getForumDataById($forumPost->post["fid"]);
+
+            if ($forum->ownerUID == $user) {
+                $rank = "owner";
+            }
+            else if ($forum->isModerator($user)) {
+                $rank = "mod";
+            }
 
             if ($forum->hasMember($user)) {
                 $error["success"] = true;
@@ -89,13 +102,11 @@ if (validateSession($_SESSION["user"])) {
             $addReplyQuery = $db->query("UPDATE comments SET repliesCount=repliesCount+1, usersReplied=JSON_ARRAY_INSERT('$usersRepliedEncoded', '$[0]', JSON_ARRAY($RID, $user, '$replyContent', '$date')) WHERE cid='$commentCID' AND type='$type'");
                 
             if ($addReplyQuery) {
-                $commenter = getCommentData("commenterId", $type, "cid='$commentCID'");
-                
-                if ($commenter != $user) {
+                if ($commentOwner != $user) {
                     $commentContent = getCommentData("content", $type, "cid=$commentCID");
                     $username = getUserData("username", "uid=$user");
 
-                    Notification::push($commenter, "@$username replied to your comment: <strong>$commentContent</strong>", $replyContent);
+                    Notification::push($commentOwner, "@$username replied to your comment: <strong>$commentContent</strong>", $replyContent);
                 }
 
                 echo json_encode([
@@ -107,6 +118,7 @@ if (validateSession($_SESSION["user"])) {
                             "content" => $replyContent,
                             "date" => $date,
                             "rid" => $RID,
+                            "rank" => $rank,
                             "delDisplay" => "block"
                         ]
                     ]

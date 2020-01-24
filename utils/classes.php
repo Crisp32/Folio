@@ -470,25 +470,19 @@ class User {
                 $assoc = $db->query("SELECT name, members, bans, mods, owner FROM forums WHERE fid=$forum")->fetch_array(MYSQLI_ASSOC);
                 
                 // Remove From Member List
-                $memberList = json_decode($assoc["members"], true);
+                $membersEncoded = $assoc["members"];
+                $memberList = json_decode($membersEncoded, true);
                 $memberIndex = array_search($uid, $memberList);
 
-                unset($memberList[$memberIndex]);
-                $membersEncoded = json_encode($memberList);
-
                 // Remove From Ban List
-                $banList = json_decode($assoc["bans"], true);
+                $bansEncoded = $assoc["bans"];
+                $banList = json_decode($bansEncoded, true);
                 $banIndex = array_search($uid, $banList);
 
-                unset($banList[$banIndex]);
-                $bansEncoded = json_encode($banList);
-
                 // Remove From Moderator List
-                $modList = json_decode($assoc["mods"], true);
+                $modsEncoded = $assoc["mods"];
+                $modList = json_decode($modsEncoded, true);
                 $modIndex = array_search($uid, $modList);
-
-                unset($modList[$modIndex]);
-                $modsEncoded = json_encode($modList);
 
                 $owner = $assoc["owner"];
 
@@ -500,7 +494,7 @@ class User {
                 }
                 
                 if (count($memberList) > 0) {
-                    $db->query("UPDATE forums SET owner='$owner', members='$membersEncoded', mods='$modsEncoded', bans='$bansEncoded' WHERE fid=$forum");
+                    $db->query("UPDATE forums SET owner='$owner', members=JSON_REMOVE('$membersEncoded', '$[$memberIndex]'), mods=JSON_REMOVE('$modsEncoded', '$[$modIndex]'), bans=JSON_REMOVE('$bansEncoded', '$[$banIndex]') WHERE fid=$forum");
                 }
                 else {
                     $db->query("DELETE FROM forums WHERE fid=$forum");

@@ -102,7 +102,7 @@
         <div style="overflow: visible" class="center-container" >
 
             <!--Forum Info Area-->
-            <div id="profile-name-container" >
+            <div id="profile-name-container" class="forum-name-container" >
                 <img class="forum-img" id="profile-img" src="" />
                 <button class="edit-forum-btn" onclick="openForumSettings()" >Edit</button>
 
@@ -148,7 +148,9 @@
       </div>
     </div><br />
 
-    <div id="forum-posts-container" ></div>
+    <div id="forum-posts-container" >
+      <div class="posts-empty res-empty" >Loading Posts...</div>
+    </div>
 
     <?php require "partials/_client-msg.php"; ?>
   </body>

@@ -157,6 +157,7 @@ body {
   position: relative;
   padding: 15px;
   padding-right: 0;
+  width: 440px;
 }
 
 #profile-img {
@@ -342,6 +343,60 @@ div#top-bar {
 }
 
 /* Classes */
+.home-list-item {
+  background-color: #29292e;
+  border-radius: 3px;
+  margin-bottom: 12px;
+  margin-left: 15px;
+  margin-right: 15px;
+  padding: 4px;
+  padding-bottom: 5px;
+}
+
+.home-list-item > * {
+  display: inline-block;
+}
+
+.item-icon {
+  border: none;
+  border-radius: 3px;
+  transform: translateY(3px);
+  height: 45px;
+  width: 45px;
+}
+
+.item-title {
+  display: block;
+  font-size: 17px;
+  margin-bottom: 8px;
+  margin-left: 13px;
+}
+
+.item-title > a {
+  color: white;
+  text-decoration: none;
+}
+
+.item-sub {
+  color: rgb(187, 187, 187);
+  display: block;
+  transform: translateY(-3px);
+  margin-left: 12px;
+}
+
+.item-title > a:hover {
+  text-decoration: underline;
+}
+
+.item-num {
+  color: white;
+  font-family: 'Ubuntu Mono', monospace;
+  font-size: 23px;
+  transform: translateY(-12px);
+  margin-right: 14px;
+  margin-left: 10px;
+}
+
 .seperation-border {
   border-top: 5px solid #0f0f13;
   border-top-style: dashed;
@@ -350,7 +405,7 @@ div#top-bar {
 }
 
 .credit-area {
-  margin-top: 35px;
+  margin-top: 15px;
   padding-bottom: 15px;
 }
 
@@ -1937,6 +1992,10 @@ button.close-btn:active {
   width: 455px;
 }
 
+#profile-name-container.forum-name-container {
+  width: 445px;
+}
+
 /* Mobile Compatibility */
 @media (max-width: 450px) {
 
@@ -1982,9 +2041,14 @@ button.close-btn:active {
     width: calc(90vw + 15px);
   }
 
-  #forum-posts-container.home-forum-posts .profile-section {
+  #forum-posts-container.home-forum-posts .profile-section{
     position: static;
     width: calc(90vw + 15px);
+  }
+
+  #profile-name-container.forum-name-container {
+    position: static;
+    width: calc(90vw - 1px);
   }
 
   .posts-empty {
@@ -2173,13 +2237,20 @@ select.input-field {
 }
 
 /* Override Styling */
+.forum-section {
+  margin-top: 5px;
+}
+
 .home-content-container {
-  margin-bottom: 16px;
+  margin-bottom: 4px;
   margin-top: -6px;
+  max-height: 140px;
+  overflow-y: auto;
 }
 
 .section-empty {
   font-size: 27px;
+  margin-bottom: 10px;
   padding: 5px;
 }
 
@@ -2382,12 +2453,12 @@ div.login-form-container button {
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
 }
 
 ::-webkit-scrollbar-track {
-  background-color: #111114;
-  border-radius: 5px;
+  background-color: #18181c;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {

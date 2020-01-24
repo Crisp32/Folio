@@ -7,6 +7,7 @@
 let loadedComments = 0; // Tracks how many are currently Loaded
 let loadAmounts = 5; // How many Comments to Request and Load when Needed
 let loadedAllComments = false;
+let finishedLoadingComments = false;
 
 // Execute when Page Loads
 function triggerOnLoad() {
@@ -17,16 +18,33 @@ function triggerOnLoad() {
     // Load Comments as Client Scrolls
     $(window).scroll(function() {
         if($(window).scrollTop() + $(window).height() == $(document).height()) {
-            if (!loadedAllComments) {
-                let requestedComments = getProfileComments(loadedComments, loadAmounts, profile);
-    
-                if (requestedComments != null && requestedComments != "") {
-                    loadComments(requestedComments, "append");
-                    loadedComments += loadAmounts;
-                }
-                else {
-                    loadedAllComments = true;
-                }
+            if (!loadedAllComments && finishedLoadingComments) {
+                finishedLoadingComments = false;
+
+                $.ajax({
+                    type: "POST",
+                    url: "../../utils/get_comments.php",
+                    dataType: "json",
+                    data: {
+                        type: "profile",
+                        username: profile,
+                        min: loadedComments,
+                        max: loadAmounts
+                    },
+                    success: function(res) {
+                        if (res.comments == [] || res.comments == "" || res.comments == null || res.comments.length < loadAmounts) {
+                            loadedAllComments = true;
+                        }
+                        
+                        loadComments(res.comments, "append");
+                        loadedComments += loadAmounts;
+                    },
+                    error: function() {
+                        $("#comments-container").append('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
+                    }
+                }).done(function () {
+                    finishedLoadingComments = true;
+                });
             }
         }
      });
@@ -119,24 +137,10 @@ function loadProfile(username) {
                 }
 
                 // Display Comments
-                let accountComments = getProfileComments(0, loadAmounts, username);
-                if (accountComments == null || accountComments == "" || accountComments == []) {
-                    $("#comments-container").append('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
-                }
-                else {
-                    loadedComments += loadAmounts;
-                    loadComments(accountComments, "append");
-                }
+                getProfileComments();
 
                 // Display Joined Forums
-                let profileForums = getProfileForums(username);
-
-                if (profileForums == null || profileForums == "") {
-                    $(".forums-empty").css("display", "block");
-                }
-                else {
-                    loadJoinedForums(profileForums, true);
-                }
+                getProfileForums();
             }
             else {
                 popUp("clientm-fail", res.message, null);
@@ -248,39 +252,66 @@ function loadComments(commentsJSON, method) {
 }
 
 // Get Profile Comments From Server with Specified Range
-function getProfileComments(min, max, username) {
-    let commentsXHR = $.ajax({
+function getProfileComments(min, max) {
+    $.ajax({
         type: "POST",
         url: "../../utils/get_comments.php",
         dataType: "json",
-        async: false,
         data: {
             type: "profile",
-            username: username,
-            min: min,
-            max: max
+            username: profile,
+            min: 0,
+            max: loadAmounts
+        },
+        success: function(res) {
+            if (res.success) {
+                if (res.comments == [] || res.comments == "" || res.comments == null) {
+                    $("#comments-container").append('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
+                    loadedAllComments = true;
+                }
+                else {
+                    if (res.comments.length < loadAmounts) {
+                        loadedAllComments = true;
+                    }
+    
+                    loadComments(res.comments, "append");
+                    loadedComments += loadAmounts;
+                }
+            }
+            else {
+                popUp("clientm-fail", res.message, null);
+            }
         },
         error: function() {
             $("#comments-container").append('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
         }
+    }).done(function () {
+        finishedLoadingComments = true;
     });
-
-    return commentsXHR.responseJSON.comments;
 }
 
 // Get Profile Forums
-function getProfileForums(username) {
-    let forumsXHR = $.ajax({
+function getProfileForums() {
+    $.ajax({
         type: "POST",
         url: "../../utils/get_profile_forums.php",
         dataType: "json",
-        async: false,
         data: {
-            profile: username
+            profile: profile
+        },
+        success: function(res) {
+            if (res.success) {
+
+            }
+            else {
+                popUp("clientm-fail", res.message, null);
+            }
+        },
+        error: function() {
+            $(".forums-empty").text("Failed to Load Joined Forums");
+            $(".forums-empty").css("display", "block");
         }
     });
-
-    return forumsXHR.responseJSON.forums;
 }
 
 // Forum Creation Menu

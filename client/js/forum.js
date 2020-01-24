@@ -12,6 +12,7 @@ let loadedBannedUsers = false;
 let loadedPosts = 0; // Tracks how many Posts currently Loaded
 let postLoadAmounts = 6; // How many Posts to Request and Load when Needed
 let loadedAllPosts = false;
+let finishedLoadingPosts = false;
 let showEmptyMsg = true;
 
 let loadedPostComments = []; // List of Post IDs of Comments Loaded
@@ -91,14 +92,40 @@ function triggerOnForumLoad() {
     // Load Forum Posts as Client Scrolls
     $(window).scroll(function() {
         if ($(window).scrollTop() + $(window).height() == $(document).height()) {
-            if (!loadedAllPosts) {
-                let requestedPosts = getForumPosts(loadedPosts, postLoadAmounts);
-    
-                if (!requestedPosts) {
-                    loadedAllPosts = true;
-                }
+            if (!loadedAllPosts && finishedLoadingPosts) {
+                finishedLoadingPosts = false;
 
-                loadedPosts += postLoadAmounts;
+                $.ajax({
+                    type: "POST",
+                    url: "../../utils/get_forum_posts.php",
+                    dataType: "json",
+                    data: {
+                        forum: forum,
+                        min: loadedPosts,
+                        max: postLoadAmounts,
+                        sort: sort
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            loadForumPosts(res.posts, true);
+
+                            if (res.posts == null || res.posts == [] || res.posts == "" || res.posts.length < postLoadAmounts) {
+                                loadedAllPosts = true;
+                            }
+
+                            loadedPosts += postLoadAmounts;
+                        }
+                        else {
+                            popUp("clientm-fail", res.message, null);
+                        }
+                    },
+                    error: function(err) {
+                        popUp("clientm-fail", "Failed to Contact Server", null);
+                    }
+                }).done(function () {
+                    finishedLoadingPosts = true;
+                });
+
                 showEmptyMsg = false;
             }
         }
@@ -538,7 +565,6 @@ function loadForum(fquery) {
 
                     // Load Posts
                     getForumPosts(0, postLoadAmounts);
-                    loadedPosts += postLoadAmounts;
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
@@ -942,14 +968,10 @@ function addForumPost() {
 }
 
 function getForumPosts(min, max) {
-    let retValue;
-
-    // Send Request
     $.ajax({
         type: "POST",
         url: "../../utils/get_forum_posts.php",
         dataType: "json",
-        async: false,
         data: {
             forum: forum,
             min: min,
@@ -958,27 +980,31 @@ function getForumPosts(min, max) {
         },
         success: function(res) {
             if (res.success) {
-                loadForumPosts(res.posts, true);
-                
-                if (res.posts == null || res.posts == "") {
-                    retValue = false;
+                if (res.posts == null || res.posts == "" || res.posts == []) {
+                    $("#forum-posts-container").find(".res-empty").text("No Posts to Display");
+                    loadedAllPosts = true;
                 }
                 else {
-                    retValue = true;
+                    if (res.posts.length < postLoadAmounts) {
+                        loadedAllPosts = true;
+                    }
+
+                    $("#forum-posts-container").empty();
+                    loadForumPosts(res.posts, true);
                 }
+
+                loadedPosts += postLoadAmounts;
             }
             else {
                 popUp("clientm-fail", res.message, null);
-                retValue = false;
             }
         },
         error: function(err) {
             popUp("clientm-fail", "Failed to Contact Server", null);
-            retValue = false;
         }
+    }).done(function () {
+        finishedLoadingPosts = true;
     });
-
-    return retValue;
 }
 
 function loadForumPosts(posts, append) {

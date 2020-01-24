@@ -19,7 +19,6 @@ $location = escapeString($_REQUEST["location"]);
 $username = escapeString($_REQUEST["username"]);
 $password = escapeString($_REQUEST["password"]);
 $confPass = escapeString($_REQUEST["confPass"]);
-$votesJSON = '{"upvotes": [], "downvotes": []}';
 
 $maxChars = 20;
 $minPass = 6;
@@ -30,15 +29,6 @@ $illegalChars = "'&*()^%$#@!+:-[]";
 if (empty($location) || !validLocation($location)) {
     $location = "Unknown";
 }
-
-$code = generateVerificationCode(); // Generate Verification Code
-$passHash = password_hash($password, PASSWORD_BCRYPT, array("cost" => 11));
-$profImg = randomProfileImage();
-$date = date("j-n-Y");
-$query = "INSERT INTO
-    users (username, email, accountLocation, password, verificationCode, verified, profileBio, voteCount, date, allowComments, profileImagePath, votes, joinedForums) 
-    VALUES('$username', '$email', '$location', '$passHash', '$code', '0', 'Sample Bio', '0', '$date', '1', '$profImg', '$votesJSON', '[]')
-";
 
 if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     echo json_encode(array(
@@ -109,6 +99,16 @@ else if (!empty(getUserData("email", "email='$email'"))) {
     ));
 }
 else {
+    $votesJSON = '{"upvotes": [], "downvotes": []}';
+    $code = generateVerificationCode(); // Generate Verification Code
+    $passHash = password_hash($password, PASSWORD_BCRYPT, array("cost" => 11));
+    $profImg = randomProfileImage();
+    $date = date("j-n-Y");
+    $query = "INSERT INTO
+        users (username, email, accountLocation, password, verificationCode, verified, profileBio, voteCount, date, allowComments, profileImagePath, votes, joinedForums) 
+        VALUES('$username', '$email', '$location', '$passHash', '$code', '0', 'Sample Bio', '0', '$date', '1', '$profImg', '$votesJSON', '[]')
+    ";
+    
     // Create Account and Send Auth info
     $mail = new PHPMailer();
 

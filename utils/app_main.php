@@ -30,6 +30,9 @@ $SORT_NEW = "new";
 $SORT_OLD = "old";
 $SORT_POPULAR = "popular";
 
+$CONTENT_USERS = "users";
+$CONTENT_FORUMS = "forums";
+
 // List of Possible Countries
 $countries = [
     "Canada",
