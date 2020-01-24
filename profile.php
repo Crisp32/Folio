@@ -31,7 +31,7 @@
 
     <!--User Forum Posts Modal-->
     <div id="user-posts-modal" class="modal-bg" >
-      <div class="modal-content" >
+      <div id="user-posts-modal-content" class="modal-content" >
         <h2 class="modal-title" ><?php echo $_GET["uquery"]; ?>'s Forum Posts</h2>
         <button class="close-search-btn close-user-posts" onclick="closeModal()">Close</button>
         
@@ -75,7 +75,7 @@
       
         <!--Profile Page-->
         <div class="center-container" >
-            <div id="profile-name-container" >
+            <div id="profile-name-container" class="profile-name-cont" >
                 <img id="profile-img" src="" />
                 <button class="edit-forum-btn" onclick="openSettings()" style="display: block;" >Edit</button>
                 
@@ -102,7 +102,7 @@
             <div class="profile-section forum-section" >
               <div class="prof-forum-section profile-section-container" >
                 <h2 class="section-title" >Forums<button class="new-forum new-btn" onclick="openForumMenu()" >+ Create New Forum</button></h2>
-                <div style="font-size: 25px; margin-top: -25px" class="forums-empty res-empty">No Active Forums to Display</div>
+                <div style="font-size: 25px; margin-top: -25px" class="forums-empty res-empty">Loading Forums...</div>
                 <div id="joined-forums-container" ></div>
               </div>
             </div>
@@ -115,6 +115,7 @@
                 <h2 class="section-title" >Comments <div class="section-disabled" id="comments-disabled-info" >DISABLED</div></h2>
                 <div class="add-comment-div" ><input class="add-comment" placeholder="Comment" /><button class="add-comment-btn" onclick="addComment('profile')" >Post</button></div>
                 <div id="comments-container" >
+                  <div style="font-size: 25px" class="comments-empty res-empty">Loading Comments...</div>
                 </div>
               </div>
             </div>

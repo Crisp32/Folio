@@ -7,7 +7,9 @@
 let loadedComments = 0; // Tracks how many are currently Loaded
 let loadAmounts = 5; // How many Comments to Request and Load when Needed
 let loadedAllComments = false;
+
 let finishedLoadingComments = false;
+let finishedLoadingMyPosts = false;
 
 // Execute when Page Loads
 function triggerOnLoad() {
@@ -135,6 +137,9 @@ function loadProfile(username) {
                 if (res.comments == 1) {
                     $("#comments-disabled-info").css("display", "none");
                 }
+                else {
+                    $("#comments-disabled-info").css("display", "block");
+                }
 
                 // Display Comments
                 getProfileComments();
@@ -253,41 +258,49 @@ function loadComments(commentsJSON, method) {
 
 // Get Profile Comments From Server with Specified Range
 function getProfileComments(min, max) {
-    $.ajax({
-        type: "POST",
-        url: "../../utils/get_comments.php",
-        dataType: "json",
-        data: {
-            type: "profile",
-            username: profile,
-            min: 0,
-            max: loadAmounts
-        },
-        success: function(res) {
-            if (res.success) {
-                if (res.comments == [] || res.comments == "" || res.comments == null) {
-                    $("#comments-container").append('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
-                    loadedAllComments = true;
-                }
-                else {
-                    if (res.comments.length < loadAmounts) {
+    if ($("#comments-disabled-info").css("display") == "none") {
+        $.ajax({
+            type: "POST",
+            url: "../../utils/get_comments.php",
+            dataType: "json",
+            data: {
+                type: "profile",
+                username: profile,
+                min: 0,
+                max: loadAmounts
+            },
+            success: function(res) {
+                if (res.success) {
+                    if (res.comments == [] || res.comments == "" || res.comments == null) {
+                        $(".comments-empty").text("No Comments to Display");
                         loadedAllComments = true;
                     }
-    
-                    loadComments(res.comments, "append");
-                    loadedComments += loadAmounts;
+                    else {
+                        if (res.comments.length < loadAmounts) {
+                            loadedAllComments = true;
+                        }
+                        
+                        $("#comments-container").empty();
+                        loadComments(res.comments, "append");
+                        loadedComments += loadAmounts;
+                    }
                 }
+                else {
+                    $(".comments-empty").text("No Comments to Display");
+                    loadedAllComments = true;
+                }
+            },
+            error: function() {
+                $(".comments-empty").text("Failed to Load Comments");
             }
-            else {
-                popUp("clientm-fail", res.message, null);
-            }
-        },
-        error: function() {
-            $("#comments-container").append('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
-        }
-    }).done(function () {
-        finishedLoadingComments = true;
-    });
+        }).done(function () {
+            finishedLoadingComments = true;
+        });
+    }
+    else {
+        $(".comments-empty").text("No Comments to Display");
+        loadedAllComments = true;
+    }
 }
 
 // Get Profile Forums
@@ -300,11 +313,12 @@ function getProfileForums() {
             profile: profile
         },
         success: function(res) {
-            if (res.success) {
-
+            if (res.forums !== "" && res.forums !== [] && res.forums !== null) {
+                loadJoinedForums(res.forums, true);
             }
             else {
-                popUp("clientm-fail", res.message, null);
+                $(".forums-empty").text("No Forums to Display");
+                $(".forums-empty").css("display", "block");
             }
         },
         error: function() {
@@ -416,12 +430,43 @@ function showUserPosts() {
         initForumButtons();
 
         // Load Forum Posts as Client Scrolls
-        $(window).on("scroll", function() { 
-            if ($(window).scrollTop() >= $("#forum-posts-container").offset().top + $("#forum-posts-container").offset().top + $("#forum-posts-container").outerHeight() - window.innerHeight) {
-                if (!loadedAllPosts) {
-                    getUserForumPosts(loadedPosts, postLoadAmounts, false);
+        let element = $("#user-posts-modal-content");
 
-                    loadedPosts += postLoadAmounts;
+        $(element).scroll(function() {
+            let elem = document.getElementById("user-posts-modal-content");
+
+            if (elem.scrollHeight - elem.scrollTop === elem.clientHeight) {
+                if (!loadedAllPosts && finishedLoadingMyPosts) {
+                    finishedLoadingMyPosts = false;
+
+                    $.ajax({
+                        type: "POST",
+                        url: "../../utils/get_forum_posts.php",
+                        dataType: "json",
+                        data: {
+                            username: profile,
+                            min: loadedPosts,
+                            max: postLoadAmounts,
+                            sort: "new"
+                        },
+                        success: function(res) {
+                            if (res.success) {
+                                if (res.posts == [] || res.posts == "" || res.posts == null || res.posts.length < postLoadAmounts) {
+                                    loadedAllPosts = true;
+                                }
+                
+                                loadForumPosts(res.posts, true);
+                                loadedPosts += postLoadAmounts;
+                            }
+                            else {
+                                popUp("clientm-fail", res.message, null);
+                            }
+                        },
+                        error: function(err) {
+                            popUp("clientm-fail", "Failed to Contact Server", null);
+                        }
+                    }).done(function() { finishedLoadingMyPosts = true; });
+
                     showEmptyMsg = false;
                 }
             } 
@@ -430,33 +475,39 @@ function showUserPosts() {
         // Send Request
         $("#forum-posts-container").append('<div class="res-empty posts-empty profile-section">Loading Posts...</div>');
 
-        getUserForumPosts(0, postLoadAmounts, true);
+        getUserForumPosts();
         hasLoadedUserPosts = true;
     }
 }
 
-function getUserForumPosts(min, max, async) {
+function getUserForumPosts() {
     $.ajax({
         type: "POST",
         url: "../../utils/get_forum_posts.php",
         dataType: "json",
-        async: async,
         data: {
             username: profile,
-            min: min,
-            max: max,
-            sort: sort
+            min: 0,
+            max: postLoadAmounts,
+            sort: "new"
         },
         success: function(res) {
             if (res.success) {
-                if (res.posts == [] || res.posts == "" || res.posts == null || res.posts.length < postLoadAmounts) {
+                if (res.posts == [] || res.posts == "" || res.posts == null) {
                     loadedAllPosts = true;
+                    $(".posts-empty").text("No Posts to Display");
+                }
+                else {
+                    if (res.posts.length < postLoadAmounts) {
+                        loadedAllPosts = true;
+                    }
+
+                    $("#forum-posts-container").empty();
+                    loadForumPosts(res.posts, true);
+                    loadedPosts += postLoadAmounts;
                 }
 
-                $(".posts-empty").remove();
-
-                loadForumPosts(res.posts, true);
-                loadedPosts += postLoadAmounts;
+                finishedLoadingMyPosts = true;
             }
             else {
                 popUp("clientm-fail", res.message, null);

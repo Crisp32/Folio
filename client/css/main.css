@@ -220,9 +220,9 @@ body {
   padding: 12px;
   margin-top: 10px;
   margin-right: 13px;
-  margin-bottom: -3px;
+  margin-bottom: 2px;
   height: 80px;
-  width: 400px;
+  width: 398px;
 }
 
 pre#bio {
@@ -231,6 +231,10 @@ pre#bio {
   white-space: -pre-wrap;      /* Opera 4-6 */
   white-space: -o-pre-wrap;    /* Opera 7 */
   word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.profile-name-cont #bio {
+  width: 395px;
 }
 
 #loading-info {
@@ -2237,6 +2241,10 @@ select.input-field {
 }
 
 /* Override Styling */
+.comments-empty {
+  padding-top: 8px;
+}
+
 .forum-section {
   margin-top: 5px;
 }
