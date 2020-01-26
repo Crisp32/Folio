@@ -146,60 +146,84 @@ function initForumButtons() {
         let downvote = false;
 
         let hasSelected = $(element).hasClass("upvote-selected");
+        let countDir = 0;
+        
+        if (!$(element).attr("disabled")) {
+            $(element).attr("disabled", true);
 
-        if (hasSelected) {
-            $(element).removeClass("upvote-selected");
-            $(voteCountElement).css("color", "lightgrey");
-        }
-        else {
-            $(element).addClass("upvote-selected");
-            $(voteCountElement).css("color", "rgb(106, 154, 186)");
-        }
+            if (hasSelected) {
+                $(element).removeClass("upvote-selected");
+                $(voteCountElement).css("color", "lightgrey");
+    
+                countDir = -1;
+            }
+            else {
+                $(element).addClass("upvote-selected");
+                $(voteCountElement).css("color", "rgb(106, 154, 186)");
+    
+                countDir = 1;
+            }
 
-        $(element).siblings(".downvote").removeClass("downvote-selected");
-
-        // Send Request
-        $.ajax({
-            type: "POST",
-            url: "../../utils/vote_forum_post.php",
-            dataType: "json",
-            data: {
-                pid: postId,
-                upvote: upvote,
-                downvote: downvote
-            },
-            success: function(res) {
-                if (res.success) {
-                    $(voteCountElement).text(res.votes);
-                }
-                else {
-                    popUp("clientm-fail", res.message, null);
-
+            if ($(element).siblings(".downvote").hasClass("downvote-selected")) {
+                countDir = 2;
+            }
+    
+            $(element).siblings(".downvote").removeClass("downvote-selected");
+    
+            // Edit Count
+            let voteCountText = $(voteCountElement).text();
+            $(voteCountElement).text(parseInt(voteCountText) + countDir);
+    
+            // Send Request
+            $.ajax({
+                type: "POST",
+                url: "../../utils/vote_forum_post.php",
+                dataType: "json",
+                data: {
+                    pid: postId,
+                    upvote: upvote,
+                    downvote: downvote
+                },
+                success: function(res) {
+                    if (!res.success) {
+                        popUp("clientm-fail", res.message, null);
+    
+                        // Revert Class
+                        if (!res.upvoted) {
+                            $(element).removeClass("upvote-selected");
+                            $(voteCountElement).css("color", "lightgrey");
+                        }
+                        else {
+                            $(element).addClass("upvote-selected");
+                            $(voteCountElement).css("color", "rgb(106, 154, 186)");
+                        }
+    
+                        // Revert Count
+                        voteCountText = $(voteCountElement).text();
+                        $(voteCountElement).text(parseInt(voteCountText) + (countDir * -1));
+                    }
+                },
+                error: function(err) {
+                    popUp("clientm-fail", "Failed to Contact Server", null);
+    
                     // Revert Class
-                    if (!res.upvoted) {
+                    if (hasSelected) {
                         $(element).removeClass("upvote-selected");
                         $(voteCountElement).css("color", "lightgrey");
                     }
                     else {
                         $(element).addClass("upvote-selected");
                         $(voteCountElement).css("color", "rgb(106, 154, 186)");
-                    } 
+                    }
+    
+                    // Revert Count
+                    voteCountText = $(voteCountElement).text();
+                    $(voteCountElement).text(parseInt(voteCountText) + (countDir * -1));
                 }
-            },
-            error: function(err) {
-                popUp("clientm-fail", "Failed to Contact Server", null);
-
-                // Revert Class
-                if (hasSelected) {
-                    $(element).removeClass("upvote-selected");
-                    $(voteCountElement).css("color", "lightgrey");
-                }
-                else {
-                    $(element).addClass("upvote-selected");
-                    $(voteCountElement).css("color", "rgb(106, 154, 186)");
-                }
-            }
-        });
+            }).done(function() {
+                $(element).removeAttr("disabled");
+            });
+        }
     });
 
     // Forum Post Downvote Button
@@ -212,37 +236,68 @@ function initForumButtons() {
         let downvote = true;
 
         let hasSelected = $(element).hasClass("downvote-selected");
+        let countDir = 0;
 
-        if (hasSelected) {
-            $(element).removeClass("downvote-selected");
-            $(voteCountElement).css("color", "lightgrey");
-        }
-        else {
-            $(element).addClass("downvote-selected");
-            $(voteCountElement).css("color", "rgb(194, 116, 194)");
-        }
+        if (!$(element).attr("disabled")) {
+            $(element).attr("disabled", true);
 
-        $(element).siblings(".upvote").removeClass("upvote-selected");
+            if (hasSelected) {
+                $(element).removeClass("downvote-selected");
+                $(voteCountElement).css("color", "lightgrey");
+    
+                countDir = 1;
+            }
+            else {
+                $(element).addClass("downvote-selected");
+                $(voteCountElement).css("color", "rgb(194, 116, 194)");
+    
+                countDir = -1;
+            }
 
-        // Send Request
-        $.ajax({
-            type: "POST",
-            url: "../../utils/vote_forum_post.php",
-            dataType: "json",
-            data: {
-                pid: postId,
-                upvote: upvote,
-                downvote: downvote
-            },
-            success: function(res) {
-                if (res.success) {
-                    $(voteCountElement).text(res.votes);
-                }
-                else {
-                    popUp("clientm-fail", res.message, null);
-
+            if ($(element).siblings(".upvote").hasClass("upvote-selected")) {
+                countDir = -2;
+            }
+    
+            $(element).siblings(".upvote").removeClass("upvote-selected");
+    
+            // Decrement Count
+            let voteCountText = $(voteCountElement).text();
+            $(voteCountElement).text(parseInt(voteCountText) + countDir);
+    
+            // Send Request
+            $.ajax({
+                type: "POST",
+                url: "../../utils/vote_forum_post.php",
+                dataType: "json",
+                data: {
+                    pid: postId,
+                    upvote: upvote,
+                    downvote: downvote
+                },
+                success: function(res) {
+                    if (!res.success) {
+                        popUp("clientm-fail", res.message, null);
+    
+                        // Revert Class
+                        if (!res.downvoted) {
+                            $(element).removeClass("downvote-selected");
+                            $(voteCountElement).css("color", "lightgrey");
+                        }
+                        else {
+                            $(element).addClass("downvote-selected");
+                            $(voteCountElement).css("color", "rgb(194, 116, 194)");
+                        }
+    
+                        // Revert Count
+                        voteCountText = $(voteCountElement).text();
+                        $(voteCountElement).text(parseInt(voteCountText) + (countDir * -1));
+                    }
+                },
+                error: function(err) {
+                    popUp("clientm-fail", "Failed to Contact Server", null);
+    
                     // Revert Class
-                    if (!res.downvoted) {
+                    if (hasSelected) {
                         $(element).removeClass("downvote-selected");
                         $(voteCountElement).css("color", "lightgrey");
                     }
@@ -250,22 +305,15 @@ function initForumButtons() {
                         $(element).addClass("downvote-selected");
                         $(voteCountElement).css("color", "rgb(194, 116, 194)");
                     }
+    
+                    // Revert Count
+                    voteCountText = $(voteCountElement).text();
+                    $(voteCountElement).text(parseInt(voteCountText) + (countDir * -1));
                 }
-            },
-            error: function(err) {
-                popUp("clientm-fail", "Failed to Contact Server", null);
-
-                // Revert Class
-                if (hasSelected) {
-                    $(element).removeClass("downvote-selected");
-                    $(voteCountElement).css("color", "lightgrey");
-                }
-                else {
-                    $(element).addClass("downvote-selected");
-                    $(voteCountElement).css("color", "rgb(194, 116, 194)");
-                }
-            }
-        });
+            }).done(function() {
+                $(element).removeAttr("disabled");
+            });
+        }
     });
 
     // Forum Post Delete Button
@@ -1142,7 +1190,7 @@ function applySort() {
     let sortMethod = $(".sort-options").val();
 
     // Send Request
-    if (sort !== sortMethod && !showEmptyMsg) {
+    if (sort !== sortMethod && !showEmptyMsg && $("#forum-posts-container").children().length > 1) {
         sort = sortMethod;
         popUp("clientm-fail", "Loading...", null);
 

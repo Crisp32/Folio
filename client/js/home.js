@@ -135,9 +135,9 @@ function loadTopForums() {
         },
         success: function(res) {
             if (res.success) {
-                if (res.users.length > 0) {
+                if (res.forums.length > 0) {
                     $("#popular-forums-container").empty();
-                    renderForumList(res.users);
+                    renderForumList(res.forums);
                 }
                 else {
                     $("#popular-forums-container").find(".res-empty").text("No Content to Display");

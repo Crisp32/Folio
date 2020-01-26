@@ -1,0 +1,15 @@
+{
+    "name": "connell/folio",
+    "description": "A platform where people can create forums and communicate indirectly",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Connell Reffo",
+            "email": "connellr023@gmail.com"
+        }
+    ],
+    "require": {
+        "sendgrid/sendgrid": "^7.4"
+    }
+}

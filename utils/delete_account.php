@@ -7,15 +7,11 @@
 include_once "app_main.php";
 session_start();
 
+// Initialize Composer
+require_once "../vendor/autoload.php";
+
 // Initialize Database
 $db = db();
-
-// Initialize PHPMailer
-use PHPMailer\PHPMailer\PHPMailer;
-
-require_once("../PHPMailer/PHPMailer.php");
-require_once("../PHPMailer/SMTP.php");
-require_once("../PHPMailer/Exception.php");
 
 // Check Session
 if (validateSession($_SESSION["user"])) {
@@ -30,31 +26,38 @@ if (validateSession($_SESSION["user"])) {
         $updateQuery = $db->query("UPDATE users SET verificationCode='$newCode' WHERE uid=$user");
 
         if ($updateQuery) {
-
-            // Send Email
-            $mail = new PHPMailer();
-    
-            initPHPMailer($mail, $userInstance->user["email"]);
             $username = $userInstance->user["username"];
-    
-            $mail->Subject = "Folio Verification Code";
-            $mail->Body = "
+
+            // Create Mail Object
+            $mail = new \SendGrid\Mail\Mail();
+
+            $mail->setFrom($folioEmail, $folioName);
+            $mail->setSubject("Confirm Fol.io Account Deletion");
+            $mail->addTo($userInstance->user["email"], $username);
+  
+            $mail->addContent("text/html", "
             <body style='background-color: #252529; padding: 20px; border: 7px solid #252529; border-radius: 7px' >
                 <h2 style='color: white; position: absolute; margin: auto' >Hello $username, your verification code is: </h2>
                 <h1 style='color: #f53643; font-size: 40px; margin-top: 5px; position: absolute' >$newCode</h1>
             </body>
-            ";
+            ");
 
-            if ($mail->send()) {
+            // Initialize SendGrid
+            $sendgrid = new \SendGrid($SENDGRID_API_KEY);
+
+            // Send Mail
+            try {
+                $res = $sendgrid->send($mail);
+
                 echo json_encode([
                     "success" => true,
-                    "message" => "Sent Verification Code to you Email Address"
+                    "message" => "Sent Verification Code to your Email"
                 ]);
             }
-            else {
+            catch (Exception $err) {
                 echo json_encode([
                     "success" => false,
-                    "message" => substr($mail->ErrorInfo, 0, 40) . "..."
+                    "message" => $err->getMessage()
                 ]);
             }
         }

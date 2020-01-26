@@ -58,7 +58,7 @@ else if ($contentType == $CONTENT_FORUMS) {
         // Send List Back to Client
         echo json_encode([
             "success" => true,
-            "users" => $forumList
+            "forums" => $forumList
         ]);
     }
     else {

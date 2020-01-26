@@ -59,6 +59,24 @@ window.onload = function() {
 
         $(element).parent().attr("disabled", true);
 
+        // Modify Likes Count
+        let countDir = 0;
+        let likesCountElement = $(element).parent().siblings(".likes-count");
+        let liked = $(likesCountElement).hasClass("liked");
+
+        if (liked) {
+            $(element).parent().siblings(".likes-count").removeClass("liked");
+            $(element).parent().removeClass("like-icon-selected");
+            countDir = -1;
+        }
+        else {
+            $(element).parent().siblings(".likes-count").addClass("liked");
+            $(element).parent().addClass("like-icon-selected");
+            countDir = 1;
+        }
+
+        $(likesCountElement).text(parseInt($(likesCountElement).text()) + countDir);
+
         // Send Request
         $.ajax({
             type: "POST",
@@ -68,12 +86,8 @@ window.onload = function() {
                 cid: cid
             },
             success: function(res) {
-                if (res.success) {
-
-                    // Display Like Count
-                    $(element).parent().siblings(".likes-count").text(res.likes);
-                    
-                    if (res.liked) {
+                if (!res.success) {
+                    if (liked) {
                         $(element).parent().siblings(".likes-count").addClass("liked");
                         $(element).parent().addClass("like-icon-selected");
                     }
@@ -82,15 +96,20 @@ window.onload = function() {
                         $(element).parent().removeClass("like-icon-selected");
                     }
 
-                    $(element).parent().attr("disabled", false);
-                }
-                else {
                     popUp("clientm-fail", res.message, null);
+
+                    // Revert Count
+                    $(likesCountElement).text(parseInt($(likesCountElement).text()) + (countDir * -1));
                 }
             },
             error: function(err) {
                 popUp("clientm-fail", "Failed to Contact Server", null);
+
+                // Revert Count
+                $(likesCountElement).text(parseInt($(likesCountElement).text()) + (countDir * -1));
             }
+        }).done(function() {
+            $(element).parent().attr("disabled", false);
         });
     });
 
@@ -543,33 +562,57 @@ function toggleOptions() {
 
 // Vote Button Click
 function upVoteClick(sendReq) {
-    if ($(".upvote").hasClass("upvote-selected")) {
-        $(".upvote").removeClass("upvote-selected");
-        $(".votes").css("color", "lightgrey");
-    }
-    else {
-        $(".upvote").addClass("upvote-selected");
-        $(".downvote").removeClass("downvote-selected");
+    if (!$(".votes").attr("disabled")) {
+        let votes = parseInt($(".votes").text());
+        let countOffset = 0;
 
-        $(".votes").css("color", "#6a9aba");
-    }
+        if ($(".upvote").hasClass("upvote-selected")) {
+            $(".upvote").removeClass("upvote-selected");
+            $(".votes").css("color", "lightgrey");
 
-    if (sendReq) { voteUser(); } 
+            countOffset = -1;
+        }
+        else {
+            $(".upvote").addClass("upvote-selected");
+            countOffset = 1;
+
+            if ($(".downvote").hasClass("downvote-selected")) {
+                countOffset = 2;
+                $(".downvote").removeClass("downvote-selected");
+            }
+    
+            $(".votes").css("color", "#6a9aba");
+        }
+    
+        if (sendReq) { voteUser(votes, countOffset); } 
+    }
 }
 
 function downVoteClick(sendReq) {
-    if ($(".downvote").hasClass("downvote-selected")) {
-        $(".downvote").removeClass("downvote-selected");
-        $(".votes").css("color", "lightgrey");
-    }
-    else {
-        $(".downvote").addClass("downvote-selected");
-        $(".upvote").removeClass("upvote-selected");
+    if (!$(".votes").attr("disabled")) {
+        let votes = parseInt($(".votes").text());
+        let countOffset = 0;
 
-        $(".votes").css("color", "#c274c2");
-    }
+        if ($(".downvote").hasClass("downvote-selected")) {
+            $(".downvote").removeClass("downvote-selected");
+            $(".votes").css("color", "lightgrey");
 
-    if (sendReq) { voteUser(); } 
+            countOffset = 1;
+        }
+        else {
+            $(".downvote").addClass("downvote-selected");
+            countOffset = -1;
+
+            if ($(".upvote").hasClass("upvote-selected")) {
+                countOffset = -2;
+                $(".upvote").removeClass("upvote-selected");
+            }
+    
+            $(".votes").css("color", "#c274c2");
+        }
+    
+        if (sendReq) { voteUser(votes, countOffset); } 
+    }
 }
 
 // Settings Functions
@@ -926,33 +969,38 @@ function showNotifications() {
 
     // Get Notifications from Database
     if (!hasLoadedInbox) {
-        $.ajax({
-            type: "POST",
-            url: "../../utils/get_notifications.php",
-            dataType: "json",
-            success: function(res) {
-                if (res.success) {
-                    hasLoadedInbox = true;
-
-                    $("#notifications-container").empty();
-
-                    if (res.notifications.length == 0) {
-                        $("#notifications-container").append('<div class="notification-wrapper" ><div class="res-empty notifs-empty" >Inbox Empty</div></div>');
-                        $(".delete-all").css("display", "none");
+        if (parseInt($(".notifs-count")) > 0) {
+            $.ajax({
+                type: "POST",
+                url: "../../utils/get_notifications.php",
+                dataType: "json",
+                success: function(res) {
+                    if (res.success) {
+                        hasLoadedInbox = true;
+    
+                        $("#notifications-container").empty();
+    
+                        if (res.notifications.length == 0) {
+                            $("#notifications-container").append('<div class="notification-wrapper" ><div class="res-empty notifs-empty" >Inbox Empty</div></div>');
+                            $(".delete-all").css("display", "none");
+                        }
+                        else {
+                            loadNotifs(res.notifications, false);
+                            $(".delete-all").css("display", "inline-block");
+                        }
                     }
                     else {
-                        loadNotifs(res.notifications, false);
-                        $(".delete-all").css("display", "inline-block");
-                    }
+                        popUp("clientm-fail", res.message, null);
+                    } 
+                },
+                error: function(err) {
+                    popUp("clientm-fail", "Failed to Contact Server", null);
                 }
-                else {
-                    popUp("clientm-fail", res.message, null);
-                } 
-            },
-            error: function(err) {
-                popUp("clientm-fail", "Failed to Contact Server", null);
-            }
-        });
+            });
+        }
+        else {
+            $(".notifs-empty").text("Inbox Empty");
+        }
     }
 }
 

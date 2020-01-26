@@ -66,7 +66,7 @@ if (isset($forum) || isset($_REQUEST["username"]) || isset($_REQUEST["suggested"
 
         while ($post = $postQuery->fetch_array(MYSQLI_ASSOC)) {
 
-            if (isset($_REQUEST["username"]) || $suggested) {
+            if (isset($_REQUEST["username"]) || isset($suggested)) {
                 $forumInstance = getForumDataById($post["fid"]);
                 $forumId = $forumInstance->FID;
             }

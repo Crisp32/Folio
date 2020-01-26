@@ -87,14 +87,14 @@ if (validateSession($_SESSION["user"])) {
         </select>
 		<button id="search-button" onclick="search()" >Search</button>
 
-		<div style="text-align: center" ><div class="search-res-empty res-empty" >Nothing to see Here</div><div id="search-res" ></div></div>
+		<div style="text-align: center" ><div class="search-res-empty res-empty" >Nothing to See Here</div><div id="search-res" ></div></div>
 		<button class="close-search-btn" onclick="closeSearchMenu()" >Close</button>
 	</div>
 </div>
 
 <!--Top Options Bar-->
 <div id="top-bar" >
-	<a href="/index.php" ><img title="Folio - Home" id="logo-img" src="/images/other/folioLogoWhite.svg" ></a>
+	<a href="/index.php" ><img title="Folio - Home" id="logo-img-small" src="/images/other/folioLogoSmall.svg" ><img title="Folio - Home" id="logo-img" src="/images/other/folioLogoWhite.svg" ></a>
 
 	<div style="float: left" >
 		<button id="open-search" onclick="openSearchMenu()" ><div class="bullet-point">-&gt;</div> Search <div class="bullet-point">&lt;-</div></button>

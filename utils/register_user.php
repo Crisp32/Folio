@@ -6,12 +6,8 @@
 
 include_once "app_main.php";
 
-// Init PHPMailer
-use PHPMailer\PHPMailer\PHPMailer;
-
-require_once("../PHPMailer/PHPMailer.php");
-require_once("../PHPMailer/SMTP.php");
-require_once("../PHPMailer/Exception.php");
+// Init Composer
+require_once "../vendor/autoload.php";
 
 // Authenticate Input
 $email = escapeString($_REQUEST["email"]);
@@ -109,44 +105,39 @@ else {
         VALUES('$username', '$email', '$location', '$passHash', '$code', '0', 'Sample Bio', '0', '$date', '1', '$profImg', '$votesJSON', '[]')
     ";
     
-    // Create Account and Send Auth info
-    $mail = new PHPMailer();
+    if (insertUser($query)) {
+        // Create Mail Object
+        $mail = new \SendGrid\Mail\Mail();
 
-    // Send Email
-    initPHPMailer($mail, $email);
+        $mail->setFrom($folioEmail, $folioName);
+        $mail->setSubject("Verify Fol.io Account");
+        $mail->addTo($email, $username);
 
-    $mail->Subject = "Folio Verification Code";
-    $mail->Body = "
-    <body style='background-color: #252529; padding: 20px; border: 7px solid #252529; border-radius: 7px' >
-        <h2 style='color: white; position: absolute; margin: auto' >Hello $username, your verification code is: </h2>
-        <h1 style='color: #f53643; font-size: 40px; margin-top: 5px; position: absolute' >$code</h1>
-    </body>
-    ";
+        $mail->addContent("text/html", "
+        <body style='background-color: #252529; padding: 20px; border: 7px solid #252529; border-radius: 7px' >
+            <h2 style='color: white; position: absolute; margin: auto' >Hello $username, your verification code is: </h2>
+            <h1 style='color: #f53643; font-size: 40px; margin-top: 5px; position: absolute' >$code</h1>
+        </body>
+        ");
 
-    // Send Code
-    if ($mail->send()) {
+        // Initialize SendGrid
+        $sendgrid = new \SendGrid($SENDGRID_API_KEY);
 
-        // Create User
-        if (!insertUser($query)) { // Execute Query
-            echo json_encode(array(
-                "success" => false,
-                "message" => $db->error
-            ));
-        }
-        else {
-            // Send Successful Response
-            echo json_encode(array(
+        // Send Mail
+        try {
+            $res = $sendgrid->send($mail);
+
+            echo json_encode([
                 "success" => true,
-                "verify" => true,
-                "message" => "Sent Email Verifaction to " . substr($email, 0, 23)
-            ));
+                "message" => "Sent Verification Code to $email"
+            ]);
         }
-    }
-    else {
-        echo json_encode(array(
-            "success" => false,
-            "message" => substr($mail->ErrorInfo, 0, 40) . "..."
-        ));
+        catch (Exception $err) {
+            echo json_encode([
+                "success" => false,
+                "message" => $err->getMessage()
+            ]);
+        }
     }
 }
 

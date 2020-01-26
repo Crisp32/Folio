@@ -6,12 +6,8 @@ $accountUsername = escapeString($_REQUEST["uname"]);
 // Init DB
 $db = db();
 
-// Init PHPMailer
-use PHPMailer\PHPMailer\PHPMailer;
-
-require_once("../PHPMailer/PHPMailer.php");
-require_once("../PHPMailer/SMTP.php");
-require_once("../PHPMailer/Exception.php");
+// Init Composer
+require_once "../vendor/autoload.php";
 
 $isVerified = getUserData("verified", "username='$accountUsername'");
 $newCode = generateVerificationCode();
@@ -20,37 +16,40 @@ if ($isVerified == 0) {
     if (!empty($accountUsername)) {
 
         $email = getUserData("email", "username='$accountUsername'");
-        $code = getUserData("verificationCode", "username='$accountUsername'");
 
         if (!empty($email)) {
-            $mail = new PHPMailer();
+            $mail = new \SendGrid\Mail\Mail();
 
-            // Send Email
-            initPHPMailer($mail, $email);
+            $mail->setFrom($folioEmail, $folioName);
+            $mail->setSubject("Resent Fol.io Account Verification Code");
+            $mail->addTo($email, $accountUsername);
 
-            // Update User
             updateUser("verificationCode", $newCode, "username='$accountUsername'");
 
-            $mail->Subject = "Resent Folio Verification Code";
-            $mail->Body = "
+            $mail->addContent("text/html", "
             <body style='background-color: #252529; padding: 20px; border: 7px solid #252529; border-radius: 7px' >
                 <h2 style='color: white; position: absolute; margin: auto' >Hello $accountUsername, your new verification code is: </h2>
                 <h1 style='color: #f53643; font-size: 40px; margin-top: 5px; position: absolute' >$newCode</h1>
             </body>
-            ";
+            ");
+            
+            // Initialize SendGrid
+            $sendgrid = new \SendGrid($SENDGRID_API_KEY);
+            
+            // Send Mail
+            try {
+                $res = $sendgrid->send($mail);
 
-            // Send
-            if ($mail->send()) {
-                echo json_encode(array(
+                echo json_encode([
                     "success" => true,
-                    "message" => "Resent Code to $accountUsername's Email Address"
-                ));
+                    "message" => "Resent Verification Code to $accountUsername's Email Address"
+                ]);
             }
-            else {
-                echo json_encode(array(
+            catch (Exception $err) {
+                echo json_encode([
                     "success" => false,
-                    "message" => substr($mail->ErrorInfo, 0, 40) . "..."
-                ));
+                    "message" => $err->getMessage()
+                ]);
             }
         }
         else {

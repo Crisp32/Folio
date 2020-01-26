@@ -103,7 +103,8 @@ class Forum {
             $db = $GLOBALS["db"];
 
             // Get Array of Members
-            $members = $this->getMembers();
+            $membersOrig = $this->getMembers();
+            $members = $membersOrig;
             $memberIndex = array_search($uid, $members);
             unset($members[$memberIndex]);
 
@@ -125,19 +126,20 @@ class Forum {
             else {
 
                 // Demote
-                $newOwner = $this->ownerUID;
+                $oldOwner = $this->ownerUID;
+                $newOwner = $oldOwner;
 
                 if ($this->isModerator($uid)) {
                     if ($this->ownerUID == $uid) {
 
                         // Promote Random Mod (or Member)
-                        $newOwner = $this->selectRandomOwner();
+                        $newOwner = selectRandomOwner($uid, $this->getModerators(), $membersOrig);
                         
                         if ($this->isModerator($newOwner)) {
                             $this->demote($newOwner); // Remove Moderator Rank
                         }
 
-                        Notification::push($newOwner, "You are the new owner of: <strong>$this->name</strong>", "[Old Owner has Left]");
+                        Notification::push($newOwner, "You are the new owner of: <strong>$this->name</strong>", "[@$oldOwner has Left]");
                     }
 
                     $this->demote($uid);
@@ -244,32 +246,6 @@ class Forum {
             else {
                 return false;
             }
-        }
-        else {
-            return false;
-        }
-    }
-
-    public function selectRandomOwner() {
-        $forumId = $this->FID;
-
-        if (isset($forumId)) {
-            $mods = $this->getModerators();
-            $modsLen = count($mods);
-            $newOwner = 0;
-
-            if ($modsLen >= 2) {
-                // Select Random Moderator
-                $newOwner = $mods[mt_rand(0, $modsLen - 1)];
-            }
-            else {
-                // Select Random Member
-                $members = $this->getMembers();
-                $newOwner = $members[mt_rand(0, count($members) - 1)];
-            }
-
-            // Return new Owner UID
-            return $newOwner;
         }
         else {
             return false;
@@ -484,17 +460,7 @@ class User {
                 $modList = json_decode($modsEncoded, true);
                 $modIndex = array_search($uid, $modList);
 
-                $owner = $assoc["owner"];
-
-                if ($owner == $uid) {
-                    $mlist = $memberList;
-                    unset($mlist[$memberIndex]);
-
-                    $owner = $mlist[mt_rand(0, count($mlist))];
-
-                    $forumName = $assoc["name"];
-                    Notification::push($owner, "You Are the New Owner of $forumName", "[The Old Owner has Deleted their Account]");
-                }
+                $owner = selectRandomOwner($uid, $modList, $memberList);
                 
                 if (count($memberList) > 0) {
                     $db->query("UPDATE forums SET owner='$owner', members=JSON_REMOVE('$membersEncoded', '$[$memberIndex]'), mods=JSON_REMOVE('$modsEncoded', '$[$modIndex]'), bans=JSON_REMOVE('$bansEncoded', '$[$banIndex]') WHERE fid=$forum");
@@ -545,8 +511,7 @@ class User {
 
         if ($db->query($updateQuery)) {
             return [
-                "success" => true,
-                "count" => $count
+                "success" => true
             ];
         }
         else return [
@@ -576,8 +541,7 @@ class User {
 
         if ($db->query($updateQuery)) {
             return [
-                "success" => true,
-                "count" => $count
+                "success" => true
             ];
         }
         else return [
@@ -708,7 +672,6 @@ class ForumPost {
 
         return [
             "success" => $updateQuery,
-            "count" => $count,
             "upvoted" => $upvoted
         ];
     }
@@ -743,7 +706,6 @@ class ForumPost {
 
         return [
             "success" => $updateQuery,
-            "count" => $count,
             "downvoted" => $downvoted
         ];
     }
@@ -773,7 +735,6 @@ class ForumPost {
 
         return [
             "success" => $updateQuery,
-            "count" => $count,
             "upvoted" => false,
             "downvoted" => false
         ];

@@ -69,7 +69,6 @@ if (validateSession($_SESSION["user"])) {
                 // Send Successful Response to Client
                 echo json_encode([
                     "success" => true,
-                    "likes" => $likes,
                     "liked" => $liked
                 ]);
             }

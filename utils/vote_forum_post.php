@@ -48,8 +48,7 @@ if (validateSession($_SESSION["user"])) {
 
             if ($upvoteQry["success"]) {
                 echo json_encode([
-                    "success" => true,
-                    "votes" => $upvoteQry["count"]
+                    "success" => true
                 ]);
             }
             else {
@@ -64,8 +63,7 @@ if (validateSession($_SESSION["user"])) {
 
             if ($downvoteQry["success"]) {
                 echo json_encode([
-                    "success" => true,
-                    "votes" => $downvoteQry["count"]
+                    "success" => true
                 ]);
             }
             else {

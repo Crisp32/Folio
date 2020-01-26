@@ -173,11 +173,17 @@ function loadErrorProfile() {
 }
 
 // Profile User Voting
-function voteUser() {
+function voteUser(voteCount, countAmount) {
+    $(".votes").attr("disabled", true);
 
     // Get State of Buttons
     let upvote = $(".upvote").hasClass("upvote-selected");
     let downvote = $(".downvote").hasClass("downvote-selected");
+
+    // Mofify Vote Count Element
+    let votes = voteCount + countAmount;
+
+    $(".votes").text(parseInt(votes));
 
     // Send Request to Server
     $.ajax({
@@ -190,20 +196,25 @@ function voteUser() {
             target: profile
         },
         success: function(res) {
-            if (res.success) {
-                $(".votes").text(res.votes);
-            }
-            else {
+            if (!res.success) {
                 $(".upvote").removeClass("upvote-selected");
                 $(".downvote").removeClass("downvote-selected");
                 $(".votes").removeAttr("style");
 
                 popUp("clientm-fail", res.message, null);
+
+                // Revert Count
+                $(".votes").text(voteCount);
             }
         },
         error: function(err) {
             popUp("clientm-fail", "Failed to Contact Server", null);
+
+            // Revert Count
+            $(".votes").text(voteCount);
         }
+    }).done(function() {
+        $(".votes").removeAttr("disabled");
     });
 }
 
@@ -364,7 +375,7 @@ function createForum() {
     let forumDescription = $("#forum-desc-textarea").val();
 
     // Display 'Loading'
-    popUp("clientm-fail", "Loading", null);
+    popUp("clientm-fail", "Loading...", null);
 
     // Client Side Check
     if (forumName.length > 15) {

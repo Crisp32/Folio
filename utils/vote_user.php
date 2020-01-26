@@ -51,7 +51,6 @@ if (validateSession($_SESSION["user"])) {
             else {
                 echo json_encode([
                     "success" => true,
-                    "votes" => $upvoteQry["count"]
                 ]);
             }
         }
@@ -66,7 +65,6 @@ if (validateSession($_SESSION["user"])) {
             else {
                 echo json_encode([
                     "success" => true,
-                    "votes" => $downvoteQry["count"]
                 ]);
             }
         }
@@ -81,10 +79,8 @@ if (validateSession($_SESSION["user"])) {
             else {
                 echo json_encode([
                     "success" => true,
-                    "votes" => $removeVoteQry["count"]
                 ]);
             }
-            
         }
     }
     else {

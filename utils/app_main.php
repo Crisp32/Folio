@@ -33,6 +33,12 @@ $SORT_POPULAR = "popular";
 $CONTENT_USERS = "users";
 $CONTENT_FORUMS = "forums";
 
+// Email Variables
+$folioEmail = "foliowebapp@gmail.com";
+$folioName = "Fol.io";
+
+$SENDGRID_API_KEY = "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";
+
 // List of Possible Countries
 $countries = [
     "Canada",
@@ -111,22 +117,6 @@ function fetchLocationsHtml() {
     }
 
     return $final;
-}
-
-function initPHPMailer($mail, $sendTo) {
-    // SMTP Settings
-    $mail->isSMTP();
-    $mail->Host = "smtp.gmail.com";
-    $mail->SMTPAuth = true;
-    $mail->Username = "foliowebapp@gmail.com";
-    $mail->Password = "phpapp2328";
-    $mail->Port = 465;
-    $mail->SMTPSecure = "ssl";
-
-    // Email Settings
-    $mail->isHTML(true);
-    $mail->setFrom($sendTo, "Folio");
-    $mail->addAddress($sendTo);
 }
 
 // Verification Code Algorithm
@@ -263,6 +253,38 @@ function parseBool($str) {
 
 function currentDate() {
     return date("Y-m-d");
+}
+
+// Random Owner Selection
+function selectRandomOwner($excludeUID, $mods, $members) {
+    $modsLen = count($mods);
+    $newOwner = null;
+
+    if ($modsLen >= 2) {
+        // Select Random Moderator
+        $modList = $mods;
+        $modIndex = array_search($excludeUID, $modList);
+
+        if ($modIndex !== null && $modIndex !== "") {
+            unset($modList[$modIndex]);
+        }
+
+        $newOwner = $modList[mt_rand(0, count($modList))];
+    }
+    else {
+        // Select Random Member
+        $memberList = $members;
+        $memberIndex = array_search($excludeUID, $memberList);
+
+        if ($memberIndex == null|| $memberIndex == "") {
+            unset($memberList[$memberIndex]);
+        }
+
+        $newOwner = $memberList[mt_rand(0, count($memberList))];
+    }
+
+    // Return new Owner UID
+    return $newOwner;
 }
 
 ?>

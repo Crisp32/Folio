@@ -69,7 +69,7 @@
         
         <div class="profile-section" style="margin-bottom: -15px; margin-top: 45px" >
           <div class="profile-section-container" >
-            <h2 class="section-title" style="margin-bottom: 10px" >Trending Posts <div class="bullet-point" >&#8628;</div></h2>
+            <h2 class="section-title" style="margin-bottom: 10px" >Trending Posts</h2>
           </div>
         </div>
         <br />
