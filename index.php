@@ -39,12 +39,12 @@
 
             <div class="credit-name" >&copy; Connell Reffo<br />&#8226; Developed 2019-2020</div>
 
-            <div class="link-title" >Report Bugs to this Email Address:</div>
+            <div class="link-title" >Report Issues to this Email Address:</div>
             <a class="h-link" href="mailto:foliowebapp@gmail.com" >foliowebapp@gmail.com</a>
             <div style="margin-bottom: 23px" ></div>
 
-            <div class="link-title" >View the Project on GitHub:</div>
-            <a class="h-link" href="#" >https://github.com/folio</a>
+            <div class="link-title" >View the Developer on GitHub:</div>
+            <a class="h-link" href="https://github.com/Crisp32" target="_blank" >https://github.com/Crisp32</a>
           </div>
         </div>
         <br />
