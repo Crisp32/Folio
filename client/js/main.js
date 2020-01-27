@@ -331,9 +331,7 @@ function register() {
                     popUp("clientm-success", res.message, null);
                     
                     // Prompt User for Verification Code
-                    if (res.verify) {
-                        verifyPage();
-                    }
+                    verifyPage();
                 }
                 else {
                     popUp("clientm-fail", res.message, null);
