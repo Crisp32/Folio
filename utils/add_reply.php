@@ -99,8 +99,9 @@ if (validateSession($_SESSION["user"])) {
         if ($error["success"]) {
 
             // Insert Into Database
+            $replyContent = utf8_encode($replyContent);
             $addReplyQuery = $db->query("UPDATE comments SET repliesCount=repliesCount+1, usersReplied=JSON_ARRAY_INSERT('$usersRepliedEncoded', '$[0]', JSON_ARRAY($RID, $user, '$replyContent', '$date')) WHERE cid='$commentCID' AND type='$type'");
-                
+            
             if ($addReplyQuery) {
                 if ($commentOwner != $user) {
                     $commentContent = getCommentData("content", $type, "cid=$commentCID");
@@ -115,7 +116,7 @@ if (validateSession($_SESSION["user"])) {
                     "reply" => [
                         "0" => [
                             "user" => getUserData("username", "uid='$user'"),
-                            "content" => $replyContent,
+                            "content" => utf8_decode($replyContent),
                             "date" => $date,
                             "rid" => $RID,
                             "rank" => $rank,

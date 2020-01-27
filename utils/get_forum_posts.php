@@ -102,9 +102,9 @@ if (isset($forum) || isset($_REQUEST["username"]) || isset($_REQUEST["suggested"
 
             // Push to Posts Array
             array_push($posts, [
-                "title" => htmlFormat($post["title"]),
+                "title" => htmlFormat(utf8_decode($post["title"])),
+                "body" => htmlFormat(utf8_decode($post["body"])),
                 "posterName" => getUserData("username", "uid=" . $post["uid"]),
-                "body" => htmlFormat($post["body"]),
                 "voteCount" => intval($post["voteCount"]),
                 "date" => $post["date"],
                 "pid" => $post["pid"],

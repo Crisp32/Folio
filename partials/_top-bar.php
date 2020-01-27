@@ -114,6 +114,22 @@ if (validateSession($_SESSION["user"])) {
 			if ($_SERVER["REQUEST_URI"] != "/register.php" && $_SERVER['REQUEST_URI'] != "/login.php") {
 				echo '<button class="standard-button inl top-bar-btns" onclick="location.replace(\'/register.php\')" >Register</button>';
 			}
+
+			echo '
+			<div class="profile-bar-container" id="open-basic-options" >
+				<div style="float: left; margin-right: -15px" class="top-bar-btns-menu" >
+					<img src="/images/other/options-icon.svg" class="profile-image-bar" />
+					<button class="standard-button inl profile-username-btn" onclick="toggleOptions()" ></button>
+				</div>
+
+				<div class="account-options" id="not-logged-in-options" >
+					<a class="skip-reg" href="/login.php" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Login</div></a><br />
+					<a class="skip-reg" href="/register.php" ><div class="bullet-point" >-&gt;</div><div class="account-option" > Register</div></a>
+
+					<br/><button class="close-options standard-button" onclick="toggleOptions()" >Close</button>
+				</div>
+			</div>
+			';
 		}
 
 		?>

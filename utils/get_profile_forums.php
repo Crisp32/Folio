@@ -28,8 +28,8 @@ if (userExists($prof->user["uid"])) {
         if (!empty($forum)) {
             $forumJSON = [
                 "owner" => getUserData("username", "uid='".$forumData->ownerUID."'"),
-                "name" => $forumData->name,
-                "description" => $forumData->description,
+                "name" => htmlFormat(utf8_decode($forumData->name)),
+                "description" => htmlFormat(utf8_decode($forumData->description)),
                 "icon" => $forumData->iconURL,
                 "date" => $forumData->date
             ];

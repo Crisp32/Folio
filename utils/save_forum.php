@@ -62,7 +62,7 @@ if (validateSession($_SESSION["user"])) {
         // Check User Permissions
         if ($forum->isModerator($user)) {
             $forum->update("iconPath", $icon);
-            $forum->update("description", $desc);
+            $forum->update("description", utf8_encode($desc));
 
             echo json_encode([
                 "success" => true,

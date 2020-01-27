@@ -139,7 +139,8 @@ class Forum {
                             $this->demote($newOwner); // Remove Moderator Rank
                         }
 
-                        Notification::push($newOwner, "You are the new owner of: <strong>$this->name</strong>", "[@$oldOwner has Left]");
+                        $oldOwnerName = getUserData("username", "uid=$oldOwner");
+                        Notification::push($newOwner, "You are the new owner of: <strong>$this->name</strong>", "[@$oldOwnerName has Left]");
                     }
 
                     $this->demote($uid);
@@ -443,34 +444,52 @@ class User {
 
             // Loop through each Forum
             foreach ($forums as $forum) {
-                $assoc = $db->query("SELECT name, members, bans, mods, owner FROM forums WHERE fid=$forum")->fetch_array(MYSQLI_ASSOC);
-                
-                // Member List
-                $membersEncoded = $assoc["members"];
-                $memberList = json_decode($membersEncoded, true);
-                $memberIndex = array_search($uid, $memberList);
+                $assoc = $db->query("SELECT * FROM forums WHERE fid=$forum")->fetch_array(MYSQLI_ASSOC);
 
-                // Ban List
-                $bansEncoded = $assoc["bans"];
-                $banList = json_decode($bansEncoded, true);
-                $banIndex = array_search($uid, $banList);
+                if (!empty($assoc["name"])) {
 
-                // Moderator List
-                $modsEncoded = $assoc["mods"];
-                $modList = json_decode($modsEncoded, true);
-                $modIndex = array_search($uid, $modList);
+                    // Member List
+                    $membersEncoded = $assoc["members"];
+                    $memberList = json_decode($membersEncoded, true);
+                    $memberIndex = array_search($uid, $memberList);
+    
+                    // Ban List
+                    $bansEncoded = $assoc["bans"];
+                    $banList = json_decode($bansEncoded, true);
+                    $banIndex = array_search($uid, $banList);
+                    $ban_sql = "";
 
-                $owner = selectRandomOwner($uid, $modList, $memberList);
-                
-                if (count($memberList) > 0) {
-                    $db->query("UPDATE forums SET owner='$owner', members=JSON_REMOVE('$membersEncoded', '$[$memberIndex]'), mods=JSON_REMOVE('$modsEncoded', '$[$modIndex]'), bans=JSON_REMOVE('$bansEncoded', '$[$banIndex]') WHERE fid=$forum");
-                }
-                else {
-                    $db->query("DELETE FROM forums WHERE fid=$forum");
+                    if (!empty($banIndex)) {
+                        $ban_sql = ", bans=JSON_REMOVE('$bansEncoded', '$[$banIndex]')";
+                    }
+    
+                    // Moderator List
+                    $modsEncoded = $assoc["mods"];
+                    $modList = json_decode($modsEncoded, true);
+                    $modIndex = array_search($uid, $modList);
+                    $mod_sql = "";
+
+                    if (!empty($modIndex)) {
+                        $mod_sql = ", mods=JSON_REMOVE('$modsEncoded', '$[$modIndex]')";
+                    }
+    
+                    // Generate New Owner
+                    $owner = $assoc["owner"];
+    
+                    if ($owner == $uid) {
+                        $owner = selectRandomOwner($uid, $modList, $memberList);
+                    }
+                    
+                    if (count($memberList) > 1) {
+                        $query = $db->query("UPDATE forums SET owner=$owner, members=JSON_REMOVE('$membersEncoded', '$[$memberIndex]') $mod_sql $ban_sql WHERE fid=$forum");
+                    }
+                    else {
+                        $query = $db->query("DELETE FROM forums WHERE fid=$forum");
+                    }
                 }
             }
 
-            return $db->query("DELETE FROM users WHERE uid=$uid");
+            return $db->multi_query("DELETE FROM users WHERE uid=$uid; DELETE FROM notifications WHERE uid=$uid");
         }
         else {
             return false;

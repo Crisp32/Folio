@@ -56,6 +56,7 @@ if (validateSession($_SESSION["user"])) {
             }
 
             $commentCount = intval($profile->user["commentCount"]);
+            $commentContent = utf8_encode($commentContent);
             $insertStatement = "INSERT INTO comments (uid, commenterId, type, content, postDate, usersLiked, likes, usersReplied, repliesCount) VALUES ('$profileId', '$activeUser', '$type', '$commentContent', '$postDate', '[]', '0', '[]', '0');";
             $updateStatement = "UPDATE users SET commentCount=commentCount+1 WHERE uid=$profileId;";
         }
@@ -83,6 +84,7 @@ if (validateSession($_SESSION["user"])) {
             }
 
             $commentCount = intval($forumPost->post["commentCount"]);
+            $commentContent = utf8_encode($commentContent);
             $insertStatement = "INSERT INTO comments (uid, commenterId, type, content, postDate, usersLiked, likes, usersReplied, repliesCount) VALUES ('$id', '$activeUser', '$type', '$commentContent', '$postDate', '[]', '0', '[]', '0');";
             $updateStatement = "UPDATE forumPosts SET commentCount=commentCount+1 WHERE pid=$id;";
         }
@@ -132,7 +134,7 @@ if (validateSession($_SESSION["user"])) {
                             "comment" => [
                                 "0" => [
                                     "user" => $user->user["username"],
-                                    "content" => $commentContent,
+                                    "content" => utf8_decode($commentContent),
                                     "date" => $postDate,
                                     "replies" => null,
                                     "likes" => 0,

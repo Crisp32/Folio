@@ -41,11 +41,41 @@ $SENDGRID_API_KEY = "SG.gHTeA91XTQ6rhvP0Vn7pCA.174-f1qHjiqI5VwA39-sQ77A8xgT53xSm
 
 // List of Possible Countries
 $countries = [
+    "Argentina",
+    "Australia",
+    "Bangladesh",
+    "Brazil",
     "Canada",
+    "Columbia",
     "Costa Rica",
     "Cuba",
+    "China",
+    "Chile",
+    "Egypt",
+    "Finland",
+    "France",
+    "Germany",
+    "India",
+    "Indonesia",
+    "Iran",
+    "Italy",
+    "Japan",
     "Mexico",
-    "United States"
+    "Netherlands",
+    "Nigeria",
+    "Pakistan",
+    "Poland",
+    "Philippines",
+    "Russia",
+    "South Africa",
+    "South Korea",
+    "Sweden",
+    "Switzerland",
+    "Taiwan",
+    "Thailand",
+    "Turkey",
+    "United States",
+    "United Kingdom"
 ];
 
 // Get Forum IDs By Name
@@ -228,11 +258,6 @@ function validateSession($session) {
     else {
         return false;
     }
-}
-
-// Remove Key From Array
-function removeFromArray($array, $key) {
-    unset($array[array_search(strval($key), $array)]);
 }
 
 function htmlFormat($string) {

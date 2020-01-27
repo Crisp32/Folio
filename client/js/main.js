@@ -11,6 +11,15 @@ const REMOVED_CONTENT = "[DELETED]";
 // Display loading until page loads
 window.onload = function() {
 
+    // On Page Resize
+    $(window).resize(function() {
+        let mediaQuery = window.matchMedia("(max-width: 700px)");
+    
+        if (!mediaQuery.matches) {
+            hideOptions();
+        }
+    });
+
     // Login on Enter Clicked
     $("#login-pass").keypress(function(e) {
         if(e.which == 13) {
@@ -25,6 +34,15 @@ window.onload = function() {
         if (document.getElementById("open-options") != null) {
             if (!document.getElementById("open-options").contains(e.target)) {
                 if (!document.getElementById("acc-options").contains(e.target)) {
+                    hideOptions();
+                }
+            }
+        }
+        
+        // Basic Options (not logged in)
+        if (document.getElementById("open-basic-options") != null) {
+            if (!document.getElementById("open-basic-options").contains(e.target)) {
+                if (!document.getElementById("not-logged-in-options").contains(e.target)) {
                     hideOptions();
                 }
             }
@@ -969,7 +987,7 @@ function showNotifications() {
 
     // Get Notifications from Database
     if (!hasLoadedInbox) {
-        if (parseInt($(".notifs-count")) > 0) {
+        if (parseInt($(".notif-count").text()) > 0) {
             $.ajax({
                 type: "POST",
                 url: "../../utils/get_notifications.php",
@@ -1000,6 +1018,7 @@ function showNotifications() {
         }
         else {
             $(".notifs-empty").text("Inbox Empty");
+            hasLoadedInbox = true;
         }
     }
 }

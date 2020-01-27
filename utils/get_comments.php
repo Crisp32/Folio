@@ -39,7 +39,7 @@ if ($type == $TYPE_PROFILE) {
                         $replyData = [
                             "rid" => $reply[0],
                             "uid" => $reply[1],
-                            "content" => $reply[2],
+                            "content" => utf8_decode($reply[2]),
                             "date" => $reply[3]
                         ];
 
@@ -100,7 +100,7 @@ if ($type == $TYPE_PROFILE) {
                 // Push to Comments Array
                 array_push($comments, [
                     "user" => getUserData("username", "uid='".$comment["commenterId"]."'"),
-                    "content" => $comment["content"],
+                    "content" => utf8_decode($comment["content"]),
                     "date" => $comment["postDate"],
                     "likes" => $comment["likes"],
                     "liked" => $liked,
@@ -157,7 +157,7 @@ else if ($type == $TYPE_FORUMPOST) {
                     $replyData = [
                         "rid" => $reply[0],
                         "uid" => $reply[1],
-                        "content" => $reply[2],
+                        "content" => utf8_decode($reply[2]),
                         "date" => $reply[3]
                     ];
 
@@ -224,7 +224,7 @@ else if ($type == $TYPE_FORUMPOST) {
             // Push to Comments Array
             array_push($comments, [
                 "user" => getUserData("username", "uid='".$comment["commenterId"]."'"),
-                "content" => $comment["content"],
+                "content" => utf8_decode($comment["content"]),
                 "date" => $comment["postDate"],
                 "likes" => $comment["likes"],
                 "liked" => $liked,

@@ -68,6 +68,7 @@ if (isset($_SESSION["user"])) {
     }
     else {
         // Success Outcome
+        $bio = utf8_encode($bio);
         $query = "UPDATE users SET profileImagePath='$image', profileBio='$bio', accountLocation='$loc', allowComments='$comments' WHERE uid='$user'";
         
         // Run Through SQLite

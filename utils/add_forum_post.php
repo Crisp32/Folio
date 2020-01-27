@@ -49,6 +49,9 @@ if (validateSession($_SESSION["user"])) {
         }
         else {
             // Add to Database
+            $title = utf8_encode($title);
+            $body = utf8_encode($body);
+
             $addPostQuery = $forum->addPost(escapeString($title), escapeString($body), $user, $forumId);
             
             if ($addPostQuery["success"]) {
@@ -68,8 +71,8 @@ if (validateSession($_SESSION["user"])) {
                     "success" => true,
                     "post" => [
                         "0" => [
-                            "title" => $title,
-                            "body" => $body,
+                            "title" => utf8_decode($title),
+                            "body" => utf8_decode($body),
                             "posterName" => getUserData("username", "uid='$user'"),
                             "date" => currentDate(),
                             "rank" => $rank,

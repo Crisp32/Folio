@@ -1,1 +1,1 @@
-Commands out of sync; you can't run this command now
+UPDATE forums SET owner=5, members=JSON_REMOVE('[9, 5]', '$[0]'), mods=JSON_REMOVE('[]', '$[]'), bans=JSON_REMOVE('[4]', '$[]') WHERE fid=1

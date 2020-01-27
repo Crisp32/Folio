@@ -39,6 +39,10 @@
 
             <div class="credit-name" >&copy; Connell Reffo<br />&#8226; Developed 2019-2020</div>
 
+            <div class="link-title" >Report Bugs to this Email Address:</div>
+            <a class="h-link" href="mailto:foliowebapp@gmail.com" >foliowebapp@gmail.com</a>
+            <div style="margin-bottom: 23px" ></div>
+
             <div class="link-title" >View the Project on GitHub:</div>
             <a class="h-link" href="#" >https://github.com/folio</a>
           </div>
@@ -69,13 +73,13 @@
         
         <div class="profile-section" style="margin-bottom: -15px; margin-top: 45px" >
           <div class="profile-section-container" >
-            <h2 class="section-title" style="margin-bottom: 10px" >Trending Posts</h2>
+            <h2 class="section-title" style="margin-bottom: 10px" >Trending Posts <img class="title-img" src="/images/other/dropdown-icon.svg" ></h2>
           </div>
         </div>
         <br />
         
         <div id="forum-posts-container" class="home-forum-posts" >
-          <div class="posts-empty res-empty" >Loading Posts...</div>
+          <div class="res-empty posts-empty profile-section">Loading Posts...</div>
         </div>
 
         <?php require("partials/_client-msg.php"); ?>

@@ -105,6 +105,7 @@ function loadProfile(username) {
             query: username
         },
         success: function(res) {
+
             // Display Success/Error to user
             if (res.success) {
 
@@ -148,9 +149,7 @@ function loadProfile(username) {
                 getProfileForums();
             }
             else {
-                popUp("clientm-fail", res.message, null);
-                $("#comments-container").append('<div style="font-size: 25px" class="comments-empty res-empty">No Comments to Display</div>');
-                loadErrorProfile();
+                location.replace("/error/404.html");
             } 
         },
         error: function(err) {

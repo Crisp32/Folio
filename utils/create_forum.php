@@ -70,6 +70,12 @@ if (validateSession($_SESSION["user"])) {
             "message" => "Forum Name Cannot Contain $illegalChars"
         ]);
     }
+    else if ($forumName != utf8_decode($forumName)) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Forum Name Cannot Contain Special Characters"
+        ]);
+    }
     else {
         // Null Check Forum Icon
         if (empty($forumIcon)) {
@@ -77,6 +83,8 @@ if (validateSession($_SESSION["user"])) {
         }
 
         // Insert new Forum into DB
+        $forumDesc = utf8_encode($forumDesc);
+
         $forum = new Forum($user, $forumName, $forumIcon, $forumDesc);
         $createForum = $forum->create();
 
@@ -96,7 +104,7 @@ if (validateSession($_SESSION["user"])) {
                         "0" => [
                             "owner" => $userInstance->user["username"],
                             "name" => $forumName,
-                            "description" => $forumDesc,
+                            "description" => utf8_decode($forumDesc),
                             "icon" => $forumIcon,
                             "date" => currentDate()
                         ]

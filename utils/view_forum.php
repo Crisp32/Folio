@@ -36,8 +36,8 @@ if (isset($_REQUEST["fquery"]) && !empty($_REQUEST["fquery"]) && forumExists($_R
             "forum" => [
                 "joined" => $joinedForum,
                 "members" => count($forum->getMembers()),
-                "name" => $forum->name,
-                "description" => htmlFormat($forum->description),
+                "name" => utf8_decode($forum->name),
+                "description" => htmlFormat(utf8_decode($forum->description)),
                 "icon" => $forum->iconURL,
                 "date" => $forum->date,
                 "moderator" => $moderator,

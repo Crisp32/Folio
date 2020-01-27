@@ -61,7 +61,7 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
             "activeUser" => $isActiveUser,
             "username" => $profileName,
             "image" => $profileImage,
-            "bio" => htmlFormat($profileBio),
+            "bio" => htmlFormat(utf8_decode($profileBio)),
             "location" => $profileLocation,
             "votes" => $voteCount,
             "upvoted" => $upvoted,

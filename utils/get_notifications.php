@@ -21,8 +21,8 @@ if (validateSession($_SESSION["user"])) {
     while ($notif = $notfications->fetch_array(MYSQLI_ASSOC)) {
         array_push($notifResponse, [
             "nid" => $notif["nid"],
-            "body" => $notif["message"],
-            "sub" => $notif["subMessage"],
+            "body" => utf8_decode($notif["message"]),
+            "sub" => utf8_decode($notif["subMessage"]),
             "date" => $notif["date"]
         ]);
     }

@@ -56,6 +56,12 @@ else if (strlen($username) > $maxChars) {
         "message" => "Username is too Long (Maximum $maxChars Characters)"
     ));
 }
+else if ($username != utf8_decode($username)) {
+    echo json_encode(array(
+        "success" => false,
+        "message" => "Username cannot Contain Special Characters"
+    ));
+}
 else if (empty($password) || empty($confPass) || $password != strip_tags($password) || $confPass != strip_tags($confPass)) {
     echo json_encode(array(
         "success" => false,
@@ -66,6 +72,12 @@ else if ($password != $confPass) {
     echo json_encode(array(
         "success" => false,
         "message" => "Passwords don't Match"
+    ));
+}
+else if ($password != utf8_decode($password)) {
+    echo json_encode(array(
+        "success" => false,
+        "message" => "Password cannot Contain Special Characters"
     ));
 }
 else if (strlen($password) > $maxChars) {

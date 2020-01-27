@@ -48,7 +48,7 @@
         </div><br />
 
         <div class="p-header settings-option-header" >Forum Description
-          <textarea style="margin-bottom: 20px" type="text" class="input-field" id="forum-desc-textarea" >Sample Text</textarea>
+          <textarea style="margin-bottom: 20px; width: calc(100% - 20px)" type="text" class="input-field" id="forum-desc-textarea" >Sample Text</textarea>
         </div><br />
 
         <!--Manage Banned Members-->
