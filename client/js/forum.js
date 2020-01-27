@@ -942,6 +942,14 @@ function memberAction(user, action) {
                         case "unban":
                             $("#forum-members").text(parseInt($("#forum-members").text()) + 1);
                             hasShowed = false;
+
+                            if ($(".banned-members-container").children().length == 1) {
+                                $(".bans-empty").css("display", "block");
+                            }
+                            else {
+                                $(".bans-empty").css("display", "none");
+                            }
+                            
                             break;
                     }
 

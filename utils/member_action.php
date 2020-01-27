@@ -57,15 +57,14 @@ if (validateSession($_SESSION["user"])) {
 
                 // Check Ranks
                 if (!$forumInstance->isModerator($targetUserId) || $user == $forumInstance->ownerUID) {
-                    $forumInstance->banMember($targetUserId);
-
-                    Notification::push($targetUserId, "You have been Banned from: <strong>".$forumInstance->name."</strong>", "[Banned By @$username]");
-
-                    // Send Success to Client
-                    echo json_encode([
-                        "success" => true,
-                        "message" => "Banned $targetUsername"
-                    ]);
+                    if ($forumInstance->banMember($targetUserId)) {
+                        
+                        // Send Success to Client
+                        echo json_encode([
+                            "success" => true,
+                            "message" => "Banned $targetUsername"
+                        ]);
+                    }
                 }
                 else {
                     echo json_encode([
