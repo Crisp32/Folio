@@ -5,9 +5,11 @@
  */
 
 function db() {
-    $server = "remotemysql.com";
-    $username = "CRWpW7yfGa";
-    $password = "gYaLrd0qZ7";
+
+    // Following was removed for privacy reasons
+    $server = "";
+    $username = "";
+    $password = "";
     
     // Create Connection
     $db = new mysqli($server, $username, $password, $username);
