@@ -37,7 +37,7 @@ $CONTENT_FORUMS = "forums";
 $folioEmail = "foliowebapp@gmail.com";
 $folioName = "Fol.io";
 
-$SENDGRID_API_KEY = "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";
+$SENDGRID_API_KEY = ""; // Removed for privacy reasons
 
 // List of Possible Countries
 $countries = [
