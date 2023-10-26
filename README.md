@@ -13,6 +13,7 @@ fol.io is a platform where anyone can join and contribute to forums over any top
  - Server
    - PHP 7.3
    - SQL
+   - SendGrid
  - Client
    - HTML
    - CSS
