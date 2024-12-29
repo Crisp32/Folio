@@ -1,0 +1,2 @@
+CREATE DATABASE IF NOT EXISTS folio_db;
+USE folio_db;

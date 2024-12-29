@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Logout Functionality
  * @author Connell Reffo
@@ -11,5 +12,3 @@ if (isset($_SESSION["user"])) {
     echo json_encode("Logged out " . $_SESSION["user"]);
     session_unset();
 }
-
-?>

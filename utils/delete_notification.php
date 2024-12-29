@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Notification Remover
  * @author Connell Reffo
@@ -23,15 +24,13 @@ if (validateSession($_SESSION["user"])) {
             echo json_encode([
                 "success" => true
             ]);
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => $db->error
             ]);
         }
-    }
-    else { // Delete Individual Notifications
+    } else { // Delete Individual Notifications
         $notification = Notification::getAssoc($nid);
 
         if ($notification["uid"] == $user) {
@@ -39,23 +38,20 @@ if (validateSession($_SESSION["user"])) {
                 echo json_encode([
                     "success" => true
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => $db->error
                 ]);
             }
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => "You do not have Permission to Perform this Action"
             ]);
         }
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be Logged in to Delete Notifications"

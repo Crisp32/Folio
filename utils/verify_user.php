@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio final Account Registration step
  * Connell Reffo 2019
@@ -38,47 +39,39 @@ if ($isVerified == 0) {
                             "redirect" => true,
                             "message" => "Successfully Verified your Account"
                         ));
-                    }
-                    else  {
+                    } else {
                         echo json_encode(array(
                             "success" => false,
                             "message" => $db->error
                         ));
                     }
-                }
-                else {
+                } else {
                     echo json_encode(array(
                         "success" => false,
                         "message" => "That Code didn't work"
                     ));
                 }
-            }
-            else {
+            } else {
                 echo json_encode(array(
                     "success" => false,
                     "message" => "Please Enter the Code sent to your Email"
                 ));
             }
-        }
-        else {
+        } else {
             echo json_encode(array(
                 "success" => false,
                 "message" => "There are no users with that name"
             ));
         }
-    }
-    else {
+    } else {
         echo json_encode(array(
             "success" => false,
             "message" => "Please Enter your Account Username"
         ));
     }
-}
-else {
+} else {
     echo json_encode(array(
         "success" => false,
         "message" => "$username is already verified"
     ));
 }
-
-?>

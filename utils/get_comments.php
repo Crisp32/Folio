@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Comment Grabber
  * @author Connell Reffo
@@ -27,7 +28,7 @@ if ($type == $TYPE_PROFILE) {
         if (getUserData("allowComments", "uid='$profileUID'") == 1) {
             $queryComments = $db->query("SELECT * FROM comments WHERE uid='$profileUID' AND type='profile' ORDER BY cid DESC LIMIT $min, $max");
             $comments = [];
-            
+
             while ($comment = $queryComments->fetch_array(MYSQLI_ASSOC)) {
 
                 // Get Replies
@@ -46,8 +47,7 @@ if ($type == $TYPE_PROFILE) {
                         // Check if Active user can Delete the Comment
                         if (strval($_SESSION["user"]) == strval($replyData["uid"]) || strval($_SESSION["user"]) == strval($profileUID)) {
                             $delDisplay = "block";
-                        }
-                        else {
+                        } else {
                             $delDisplay = "none";
                         }
 
@@ -59,7 +59,7 @@ if ($type == $TYPE_PROFILE) {
                         }
 
                         $replyJSON = [
-                            "user" => getUserData("username", "uid='".$replyData["uid"]."'"),
+                            "user" => getUserData("username", "uid='" . $replyData["uid"] . "'"),
                             "content" => $replyData["content"],
                             "date" => $replyData["date"],
                             "rid" => $replyData["rid"],
@@ -78,8 +78,7 @@ if ($type == $TYPE_PROFILE) {
                 // Check if Active user can Delete the Comment
                 if (strval($_SESSION["user"]) == strval($comment["commenterId"]) || strval($_SESSION["user"]) == strval($profileUID)) {
                     $delDisplayComment = "block";
-                }
-                else {
+                } else {
                     $delDisplayComment = "none";
                 }
 
@@ -99,7 +98,7 @@ if ($type == $TYPE_PROFILE) {
 
                 // Push to Comments Array
                 array_push($comments, [
-                    "user" => getUserData("username", "uid='".$comment["commenterId"]."'"),
+                    "user" => getUserData("username", "uid='" . $comment["commenterId"] . "'"),
                     "content" => utf8_decode($comment["content"]),
                     "date" => $comment["postDate"],
                     "likes" => $comment["likes"],
@@ -116,20 +115,17 @@ if ($type == $TYPE_PROFILE) {
                 "success" => true,
                 "comments" => $comments
             ]);
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false
             ]);
         }
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false
         ]);
     }
-}
-else if ($type == $TYPE_FORUMPOST) {
+} else if ($type == $TYPE_FORUMPOST) {
     $postId = escapeString($_REQUEST["pid"]);
 
     // Null Check PID
@@ -164,8 +160,7 @@ else if ($type == $TYPE_FORUMPOST) {
                     // Check if Active user can Delete the Comment
                     if ($forumPost->post["uid"] == $_SESSION["user"] || $forumInstance->isModerator($_SESSION["user"]) || $comment["commenterId"] == $_SESSION["user"]) {
                         $delDisplay = "block";
-                    }
-                    else {
+                    } else {
                         $delDisplay = "none";
                     }
 
@@ -174,13 +169,12 @@ else if ($type == $TYPE_FORUMPOST) {
 
                     if ($forumInstance->ownerUID == $replyData["uid"]) {
                         $rank = "owner";
-                    }
-                    else if ($forumInstance->isModerator($replyData["uid"])) {
+                    } else if ($forumInstance->isModerator($replyData["uid"])) {
                         $rank = "mod";
                     }
 
                     $replyJSON = [
-                        "user" => getUserData("username", "uid='".$replyData["uid"]."'"),
+                        "user" => getUserData("username", "uid='" . $replyData["uid"] . "'"),
                         "content" => $replyData["content"],
                         "date" => $replyData["date"],
                         "rid" => $replyData["rid"],
@@ -199,8 +193,7 @@ else if ($type == $TYPE_FORUMPOST) {
             // Check if Active user can Delete the Comment
             if ($forumPost->post["uid"] == $_SESSION["user"] || $comment["commenterId"] == $_SESSION["user"] || $forumInstance->isModerator($_SESSION["user"])) {
                 $delDisplayComment = "block";
-            }
-            else {
+            } else {
                 $delDisplayComment = "none";
             }
 
@@ -216,14 +209,13 @@ else if ($type == $TYPE_FORUMPOST) {
 
             if ($forumInstance->ownerUID == $comment["commenterId"]) {
                 $rank = "owner";
-            }
-            else if ($forumInstance->isModerator($comment["commenterId"])) {
+            } else if ($forumInstance->isModerator($comment["commenterId"])) {
                 $rank = "mod";
             }
 
             // Push to Comments Array
             array_push($comments, [
-                "user" => getUserData("username", "uid='".$comment["commenterId"]."'"),
+                "user" => getUserData("username", "uid='" . $comment["commenterId"] . "'"),
                 "content" => utf8_decode($comment["content"]),
                 "date" => $comment["postDate"],
                 "likes" => $comment["likes"],
@@ -240,15 +232,13 @@ else if ($type == $TYPE_FORUMPOST) {
             "success" => true,
             "comments" => $comments
         ]);
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => "Invalid Post ID"
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false
     ]);

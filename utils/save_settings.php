@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Account Settings Save Functionality
  * @author Connell Reffo
@@ -25,8 +26,7 @@ if (isset($_SESSION["user"])) {
     // Allow Comments
     if ($comments == "0") {
         $comments = 0;
-    }
-    else {
+    } else {
         $comments = 1;
     }
 
@@ -47,50 +47,42 @@ if (isset($_SESSION["user"])) {
             "success" => false,
             "message" => "Image URL cannot exceed $maxChars Characters"
         ]);
-    }
-    else if (strlen($bio) > $maxBioChars) {
+    } else if (strlen($bio) > $maxBioChars) {
         echo json_encode([
             "success" => false,
             "message" => "Bio cannot exceed $maxBioChars Characters"
         ]);
-    }
-    else if (strlen($bio) == 0) {
+    } else if (strlen($bio) == 0) {
         echo json_encode([
             "success" => false,
             "message" => "Bio must be more than 0 Characters"
         ]);
-    }
-    else if (!validURL($image) && !$defImage) {
+    } else if (!validURL($image) && !$defImage) {
         echo json_encode([
             "success" => false,
             "message" => "The Specified Image does not Exist"
         ]);
-    }
-    else {
+    } else {
         // Success Outcome
         $bio = utf8_encode($bio);
         $query = "UPDATE users SET profileImagePath='$image', profileBio='$bio', accountLocation='$loc', allowComments='$comments' WHERE uid='$user'";
-        
+
         // Run Through SQLite
         if ($db->query($query)) {
             echo json_encode([
                 "success" => true,
                 "imgURL" => $image
             ]);
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => "SQLite Error"
             ]);
         }
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "Invalid Session"
     ]);
 }
-
-?>

@@ -9,7 +9,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - schema:/var/lib/mysql
+      - ./schema:/docker-entrypoint-initdb.d
 
   php:
     build:
@@ -22,6 +22,3 @@ services:
       - .:/var/www/html
     depends_on:
       - mysql
-
-volumes:
-  schema:

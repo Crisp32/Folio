@@ -10,7 +10,7 @@
 body {
   background-color: #252529;
   color: lightgrey;
-  font-family: 'Ubuntu', sans-serif;
+  font-family: "Ubuntu", sans-serif;
   margin: auto;
 }
 
@@ -28,7 +28,7 @@ body {
 }
 
 .leave-forum-msg {
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 16px;
   margin-bottom: 15px;
   margin-left: 12px;
@@ -76,12 +76,13 @@ body {
 
 #user-posts-modal .posts-empty {
   background-color: #29292e;
-    border: 3px solid #29292e;
-    margin-bottom: 0px;
-    width: 424px;
+  border: 3px solid #29292e;
+  margin-bottom: 0px;
+  width: 424px;
 }
 
-#post-forum-section, #post-forum-sorting {
+#post-forum-section,
+#post-forum-sorting {
   margin-bottom: 35px;
   width: 460px;
 }
@@ -105,15 +106,17 @@ body {
   display: none;
 }
 
-#settings-load-screen, .load-scrn {
+#settings-load-screen,
+.load-scrn {
   color: lightgrey;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 27px;
   text-align: center;
   margin-top: 23px;
 }
 
-#settings-load-screen > img, .load-scrn > img {
+#settings-load-screen > img,
+.load-scrn > img {
   width: 150px;
   text-align: center;
   margin-top: 40px;
@@ -179,7 +182,7 @@ body {
 #profile-name {
   color: white;
   display: inline-block;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 35px;
   font-weight: lighter;
   margin: auto;
@@ -190,7 +193,10 @@ body {
   width: 230px;
 }
 
-#profile-location, #join-date, #creation-date, #forum-members {
+#profile-location,
+#join-date,
+#creation-date,
+#forum-members {
   display: inline-block;
   font-weight: bold;
   letter-spacing: 1px;
@@ -198,7 +204,7 @@ body {
 
 #profile-media-container {
   display: inline-block;
-  transform: translateY(-45px)
+  transform: translateY(-45px);
 }
 
 #location-icon {
@@ -218,7 +224,7 @@ body {
   border: 3px solid #3c3c42;
   border-radius: 5px;
   color: white;
-  font-family: 'Ubuntu', sans-serif;
+  font-family: "Ubuntu", sans-serif;
   font-size: 17px;
   text-align: left;
   line-height: 23px;
@@ -235,11 +241,11 @@ body {
 }
 
 pre#bio {
-  white-space: pre-wrap;       /* Since CSS 2.1 */
-  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-  white-space: -pre-wrap;      /* Opera 4-6 */
-  white-space: -o-pre-wrap;    /* Opera 7 */
-  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  white-space: pre-wrap; /* Since CSS 2.1 */
+  white-space: -moz-pre-wrap; /* Mozilla, since 1999 */
+  white-space: -pre-wrap; /* Opera 4-6 */
+  white-space: -o-pre-wrap; /* Opera 7 */
+  word-wrap: break-word; /* Internet Explorer 5.5+ */
 }
 
 .profile-name-cont #bio {
@@ -247,9 +253,9 @@ pre#bio {
 }
 
 #loading-info {
-	display: block;
-	font-family: 'Ubuntu Mono', monospace;
-	font-size: 30px;
+  display: block;
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 30px;
   top: 50%;
   left: calc(50% - 110px);
   position: absolute;
@@ -273,7 +279,7 @@ pre#bio {
   border-radius: 3px;
   color: white;
   display: inline-block;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 21px;
   transition: 0.3s;
   margin-bottom: 15px;
@@ -294,7 +300,7 @@ pre#bio {
   border-radius: 3px;
   color: white;
   display: inline-block;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 22px;
   transition: 0.3s;
   text-align: left;
@@ -357,7 +363,7 @@ div#top-bar {
 }
 
 #profile-items-container {
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 18px;
   margin-left: 15px;
   margin-top: -22px;
@@ -427,7 +433,7 @@ div#top-bar {
 
 .item-num {
   color: white;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 23px;
   transform: translateY(-12px);
   margin-right: 14px;
@@ -447,7 +453,7 @@ div#top-bar {
 }
 
 .credit-name {
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 18px;
   line-height: 20px;
   margin-bottom: 20px;
@@ -486,7 +492,7 @@ button.del-account {
   border: none;
   border-radius: 3px;
   cursor: pointer;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 18px;
   margin-top: 16px;
   margin-bottom: 15px;
@@ -531,7 +537,7 @@ button.del-account {
   background-color: #1d1d23;
   border: none;
   border-radius: 3px;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 18px;
   text-align: left;
   margin-bottom: 5px;
@@ -553,7 +559,7 @@ button.del-account {
   background-color: #242429;
   border: none;
   border-radius: 4px;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   letter-spacing: 1px;
   margin-top: 10px;
@@ -587,7 +593,10 @@ button.del-account {
   max-width: 150px;
 }
 
-.load-more-comments:disabled, .load-more-comments[disabled], .show-post-comments:disabled, .show-post-comments[disabled] {
+.load-more-comments:disabled,
+.load-more-comments[disabled],
+.show-post-comments:disabled,
+.show-post-comments[disabled] {
   background-color: white;
   color: black;
 }
@@ -596,7 +605,7 @@ button.del-account {
   background-color: white;
   border: none;
   border-radius: 3px;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 19px;
   transition: 0.3s;
   margin-top: 12px;
@@ -642,7 +651,7 @@ button.edit-forum-btn {
   border-radius: 3px;
   color: black;
   display: none;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 18px;
   transition: 0.3s;
   padding: 5px;
@@ -669,7 +678,7 @@ button.post-forum-btn {
   border: 3px solid #3c3c42;
   border-radius: 3px;
   color: white;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   margin-bottom: 15px;
   margin-left: 12px;
@@ -682,7 +691,7 @@ button.post-forum-btn {
   border: 3px solid #3c3c42;
   border-radius: 3px;
   color: white;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   margin-left: 12px;
   padding: 8px;
@@ -696,7 +705,7 @@ button.post-forum-btn {
   border: none;
   border-radius: 3px;
   color: white;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   transition: 0.3s;
   margin-top: 8px;
@@ -729,7 +738,7 @@ button.post-forum-btn {
   border-radius: 5px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.25);
   color: white;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   transition: 0.3s;
   margin-top: 20px;
@@ -765,7 +774,7 @@ button.post-forum-btn {
 
 .res-empty {
   color: #64ff79;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   font-style: italic;
   text-align: center;
@@ -797,7 +806,7 @@ button.post-forum-btn {
 .votes {
   background-position: center;
   color: lightgrey;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 35px;
   text-align: left;
   transform: translateX(100px);
@@ -931,7 +940,7 @@ button.like-icon-selected > img {
   border: 3px solid #3c3c42;
   border-radius: 3px;
   color: white;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   margin-top: 10px;
   transition: 0.3s;
@@ -970,7 +979,7 @@ div.form-footer {
 
 .footer-text {
   color: #1a1a1a;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 30px;
   transform: translateY(calc(-50% + 3px));
   padding-top: 20px;
@@ -978,7 +987,7 @@ div.form-footer {
 
 .header-text {
   color: #1a1a1a;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 40px;
   margin: auto;
   padding-top: 30px;
@@ -1000,7 +1009,7 @@ div.form-footer {
 
 .side-info > ul {
   color: lightgrey;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   list-style-type: none;
   padding: 0;
 }
@@ -1027,7 +1036,7 @@ div.form-footer {
 
 .p-header {
   color: white;
-  font-family: 'Ubuntu', sans-serif;
+  font-family: "Ubuntu", sans-serif;
   font-size: 20px;
   text-align: left;
   transition: 0.3s;
@@ -1059,17 +1068,17 @@ div.form-footer {
 }
 
 div.bullet-point {
-	color: #f53643;
-	display: inline-block;
+  color: #f53643;
+  display: inline-block;
 }
 
 .add-comment {
   border-radius: 3px;
   border: none;
-	background-color: #242429;
-	color: white;
-	font-family: 'Ubuntu Mono', monospace;
-	font-size: 23px;
+  background-color: #242429;
+  color: white;
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 23px;
   padding: 10px;
   margin-bottom: 15px;
   margin-left: 12px;
@@ -1081,9 +1090,9 @@ div.bullet-point {
   border-radius: 3px;
   border: none;
   background-color: #242429;
-	color: #adadad;
-	font-family: 'Ubuntu Mono', monospace;
-	font-size: 23px;
+  color: #adadad;
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 23px;
   padding: 10px;
   margin-top: 20px;
   margin-right: 12px;
@@ -1097,31 +1106,31 @@ div.bullet-point {
   background-color: #1d1d21;
   transition: 0.3s;
 }
-  
+
 button.standard-button {
-	background-color: #1e1e24;
+  background-color: #1e1e24;
   border-radius: 3px;
   border: none;
-	color: #adadad;
-	font-family: 'Ubuntu Mono', monospace;
-	font-size: 20px;
-	padding: 13px;
-	margin-top: 20px;
-	transition: 0.3s;
+  color: #adadad;
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 20px;
+  padding: 13px;
+  margin-top: 20px;
+  transition: 0.3s;
 }
-  
+
 button.standard-button:hover {
-	cursor: pointer;
-	background-color: #18181c;
-	color: white;
-	transition: 0.3s;
+  cursor: pointer;
+  background-color: #18181c;
+  color: white;
+  transition: 0.3s;
 }
-  
+
 button.reg-button {
-	color: grey;
+  color: grey;
   background-color: #1a1a1a;
   background-position: center;
-	border: none;
+  border: none;
   margin-top: 30px;
   margin-bottom: 5px;
   transition: 0.3s;
@@ -1129,15 +1138,18 @@ button.reg-button {
 }
 
 button.reg-button:hover {
-	color: white;
-	cursor: pointer;
-  background: #1a1a1a radial-gradient(circle, transparent 1%, #1a1a1a 1%) center/15000%;
-	border: none;
+  color: white;
+  cursor: pointer;
+  background: #1a1a1a radial-gradient(circle, transparent 1%, #1a1a1a 1%)
+    center/15000%;
+  border: none;
   transition: 0.75s;
 }
 
-button.login-success, button.login-success:hover, button.login-success:active {
-	color: black;
+button.login-success,
+button.login-success:hover,
+button.login-success:active {
+  color: black;
   background-color: white;
   background-position: center;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.15), 0 6px 20px 0 rgba(0, 0, 0, 0.15);
@@ -1151,20 +1163,20 @@ button.reg-button:active {
   background-size: 100%;
   transition: 0s;
 }
-  
+
 .inl {
   margin-right: 20px;
 }
-  
+
 h1.header {
-	color: white;
-	text-align: left;
-	padding-left: 10px;
-	display: inline-block;
-	font-size: 50px;
-	margin-bottom: 20px;
-	margin-top: 13px;
-	margin-left: 10px;
+  color: white;
+  text-align: left;
+  padding-left: 10px;
+  display: inline-block;
+  font-size: 50px;
+  margin-bottom: 20px;
+  margin-top: 13px;
+  margin-left: 10px;
 }
 
 .clientm {
@@ -1185,7 +1197,7 @@ button.clientm-success {
   border: none;
   border-top: 6px solid #34c24e;
   border-radius: 3px;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   transition: 0.3s, color 0.2s;
   padding: 10px;
@@ -1196,10 +1208,10 @@ button.clientm-success {
 
 button.clientm-success:hover {
   color: lightgrey;
-	cursor: pointer;
-	background-color: #111114;
-	border-color: #29943d;
-	transition: 0.3s;
+  cursor: pointer;
+  background-color: #111114;
+  border-color: #29943d;
+  transition: 0.3s;
 }
 
 button.clientm-fail {
@@ -1209,7 +1221,7 @@ button.clientm-fail {
   border: none;
   border-top: 6px solid #ed001f;
   border-radius: 3px;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   transition: 0.3s;
   padding: 10px;
@@ -1220,10 +1232,10 @@ button.clientm-fail {
 
 button.clientm-fail:hover {
   color: lightgrey;
-	cursor: pointer;
-	background-color: #111114;
-	border-color: #c4001a;
-	transition: 0.3s;
+  cursor: pointer;
+  background-color: #111114;
+  border-color: #c4001a;
+  transition: 0.3s;
 }
 
 .banned-members-container {
@@ -1316,7 +1328,7 @@ button.standard-button.profile-username-btn {
   background-color: #1e1e21;
   border-top: 3px solid #2e2e33;
   box-shadow: 0 15px 8px 0 rgba(0, 0, 0, 0.4), 0 3px 20px 0 rgba(0, 0, 0, 0.5);
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 18px;
   text-align: left;
   position: fixed;
@@ -1381,7 +1393,7 @@ button.standard-button.profile-username-btn {
   border: none;
   border-radius: 3px;
   color: lightgrey;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   transition: 0.3s ease;
   padding: 4px;
@@ -1398,7 +1410,7 @@ button.standard-button.profile-username-btn {
 
 .skip-reg {
   color: lightgrey;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 18px;
   text-decoration: none;
   transition: 0.15s;
@@ -1485,7 +1497,8 @@ div.login-form-container {
   width: 80px;
 }
 
-.profile-forum-title, .forum-member-name {
+.profile-forum-title,
+.forum-member-name {
   color: lightgrey;
   font-size: 20px;
   top: 14px;
@@ -1524,7 +1537,7 @@ div.login-form-container {
   background-color: white;
   border-radius: 2px;
   border: none;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 16px;
   transition: 0.3s;
   transform: translateY(-1px);
@@ -1552,7 +1565,7 @@ button.close-members-modal {
   border: none;
   border-radius: 2px;
   color: white;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   transition: 0.3s;
   margin-bottom: 15px;
@@ -1630,7 +1643,7 @@ button.close-members-modal {
 }
 
 .add-reply {
-  margin-top: -20px
+  margin-top: -20px;
 }
 
 .add-reply > * {
@@ -1665,12 +1678,14 @@ button.close-members-modal {
   padding: 8px;
 }
 
-.commenter-name > a, .profile-forum-title > a {
+.commenter-name > a,
+.profile-forum-title > a {
   color: #bababa;
   text-decoration: none;
 }
 
-.commenter-name > a:hover, .profile-forum-title > a:hover {
+.commenter-name > a:hover,
+.profile-forum-title > a:hover {
   cursor: pointer;
   text-decoration: underline;
 }
@@ -1712,7 +1727,7 @@ button.close-members-modal {
 
 .reply-indent {
   border-left: 3px solid grey;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 40px;
   text-align: right;
   transform: translate(-30px, -6px);
@@ -1813,7 +1828,9 @@ img.forum-editor-folio {
 }
 
 /* User Settings Menu */
-#settings-bg, .create-forum-modal-bg, .modal-bg {
+#settings-bg,
+.create-forum-modal-bg,
+.modal-bg {
   background-color: rgba(0, 0, 0, 0.5);
   display: none;
   text-align: center;
@@ -1873,7 +1890,8 @@ img.forum-editor-folio {
   margin-right: 80px;
 }
 
-#bio-textarea, #forum-desc-textarea {
+#bio-textarea,
+#forum-desc-textarea {
   float: left;
   text-align: left;
   margin-bottom: 35px;
@@ -1915,7 +1933,8 @@ button.save-btn {
 
 button.save-btn:hover {
   color: lightgrey;
-  background: #36bf50 radial-gradient(circle, transparent 1%, #29943d 1%) center/15000%;
+  background: #36bf50 radial-gradient(circle, transparent 1%, #29943d 1%)
+    center/15000%;
   border-color: rgba(0, 0, 0, 0);
   transition: 0.5s;
   margin-left: 10px;
@@ -1940,7 +1959,8 @@ button.close-btn {
 
 button.close-btn:hover {
   color: lightgrey;
-  background: #bf3636 radial-gradient(circle, transparent 1%, #942929 1%) center/15000%;
+  background: #bf3636 radial-gradient(circle, transparent 1%, #942929 1%)
+    center/15000%;
   border-color: rgba(0, 0, 0, 0);
   transition: 0.5s;
   margin-left: 10px;
@@ -2069,29 +2089,24 @@ div.login-form-container button {
 
 /* Mobile Compatibility */
 @media (max-width: 450px) {
-
   .top-bar-btns {
     overflow: hidden;
     width: 17vw;
   }
-
 }
 
 @media (min-width: 455px) {
-
   .downvote:hover {
     filter: sepia(200%) saturate(1500%) brightness(70%) hue-rotate(200deg);
   }
-  
+
   .upvote:hover {
     filter: sepia(100%) saturate(1500%) brightness(70%) hue-rotate(150deg);
   }
-
 }
 
 /* Mobile Viewport Styling */
 @media (max-width: 700px) {
-
   .top-bar-btns {
     display: none;
   }
@@ -2111,11 +2126,11 @@ div.login-form-container button {
   #reg-form .input-field {
     width: calc(100% - 23px);
   }
-  
+
   #reg-form .dropdown {
     width: calc(100% - 1px);
   }
-  
+
   #reg-form button {
     width: calc(100% - 1px);
   }
@@ -2123,7 +2138,7 @@ div.login-form-container button {
   div.login-form-container input {
     width: calc(100% - 25px);
   }
-  
+
   div.login-form-container button {
     width: calc(100% - 3px);
   }
@@ -2143,11 +2158,13 @@ div.login-form-container button {
     width: calc(90vw + 20px);
   }
 
-  .profile-section, #post-forum-section, #post-forum-sorting {
+  .profile-section,
+  #post-forum-section,
+  #post-forum-sorting {
     width: calc(90vw + 15px);
   }
 
-  #forum-posts-container.home-forum-posts .profile-section{
+  #forum-posts-container.home-forum-posts .profile-section {
     width: calc(90vw + 15px);
   }
 
@@ -2184,7 +2201,7 @@ div.login-form-container button {
   }
 
   #profile-name {
-    font-size: 30px; 
+    font-size: 30px;
   }
 
   #profile-media-container {
@@ -2195,7 +2212,8 @@ div.login-form-container button {
     transform: translateY(-35px);
   }
 
-  #bio, .profile-name-cont #bio {
+  #bio,
+  .profile-name-cont #bio {
     margin-right: 0;
     width: calc(100% - 46px);
   }
@@ -2224,7 +2242,8 @@ div.login-form-container button {
     max-width: unset;
   }
 
-  #user-posts-modal .forum-post-container, .forum-post-comments {
+  #user-posts-modal .forum-post-container,
+  .forum-post-comments {
     width: calc(100% - 35px);
   }
 
@@ -2235,7 +2254,7 @@ div.login-form-container button {
   div.login-form-container {
     width: 90vw;
   }
-  
+
   .searchbar-short {
     width: 50px;
   }
@@ -2246,7 +2265,7 @@ div.login-form-container button {
     position: relative;
     width: auto;
   }
-  
+
   .register-prompt-container {
     transform: translate(25%, -25px);
     width: 70%;
@@ -2279,10 +2298,11 @@ div.login-form-container button {
     transform: translate(4px, 20px);
   }
 
-  button.login-success, button.login-success:hover, button.login-success:active {
+  button.login-success,
+  button.login-success:hover,
+  button.login-success:active {
     width: 100%;
   }
-
 }
 
 /* Login/Register Form */
@@ -2321,7 +2341,6 @@ select.input-field {
 }
 
 @media (max-width: 1300px) {
-
   .side-info {
     display: inline-block;
     font-size: 30px;
@@ -2371,7 +2390,8 @@ select.input-field {
   padding: 5px;
 }
 
-#settings-menu .p-header > input, #settings-menu .p-header > .input-field {
+#settings-menu .p-header > input,
+#settings-menu .p-header > .input-field {
   width: calc(100% - 23px);
 }
 
@@ -2438,7 +2458,7 @@ button.close-search-btn {
   border-radius: 3px;
   border: none;
   color: black;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 20px;
   transition: 0.3s;
   margin: auto;
@@ -2532,7 +2552,7 @@ button.top-bar-btns {
 
 .forum-post-votes {
   display: inline-block;
-  font-family: 'Ubuntu Mono', monospace;
+  font-family: "Ubuntu Mono", monospace;
   font-size: 34px;
   text-align: left;
   transform: translate(100px, 3px);

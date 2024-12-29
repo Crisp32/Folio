@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Search Result Handler
  * Connell Reffo 2019
@@ -14,13 +15,15 @@ $db = db();
 
 if (!empty($searchTerm)) {
     $filter = $_REQUEST["filter"];
-    
+
     // Get Users
     if ($filter == $FILTER_ALL || $filter == $FILTER_USERS) {
         $queryUsers = $db->query("SELECT username, profileImagePath FROM users WHERE username LIKE '%$searchTerm%' LIMIT 20");
-        
+
         while ($res = $queryUsers->fetch_array(MYSQLI_ASSOC)) {
-            array_push($arrayFinal, [
+            array_push(
+                $arrayFinal,
+                [
                     "name" => $res["username"],
                     "profileImage" => $res["profileImagePath"],
                     "type" => "user"
@@ -28,13 +31,15 @@ if (!empty($searchTerm)) {
             );
         }
     }
-    
+
     // Get Forums
     if ($filter == $FILTER_ALL || $filter == $FILTER_FORUMS) {
         $queryForums = $db->query("SELECT name, iconPath FROM forums WHERE name LIKE '%$searchTerm%' LIMIT 20");
 
         while ($res = $queryForums->fetch_array(MYSQLI_ASSOC)) {
-            array_push($arrayFinal, [
+            array_push(
+                $arrayFinal,
+                [
                     "name" => $res["name"],
                     "profileImage" => $res["iconPath"],
                     "type" => "forum"
@@ -46,5 +51,3 @@ if (!empty($searchTerm)) {
 
 // Return Results to Client
 echo json_encode($arrayFinal);
-
-?>

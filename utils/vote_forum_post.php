@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Forum Post Vote Handler
  * @author Connell Reffo
@@ -27,15 +28,13 @@ if (validateSession($_SESSION["user"])) {
         // Parse String Bool
         if ($upvote == "true") {
             $upvote = true;
-        }
-        else {
+        } else {
             $upvote = false;
         }
 
         if ($downvote == "true") {
             $downvote = true;
-        }
-        else {
+        } else {
             $downvote = false;
         }
 
@@ -50,30 +49,26 @@ if (validateSession($_SESSION["user"])) {
                 echo json_encode([
                     "success" => true
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => "Unable to Upvote Post"
                 ]);
             }
-        }
-        else if ($downvote && !$upvote) { // Add/Remove Downvote
+        } else if ($downvote && !$upvote) { // Add/Remove Downvote
             $downvoteQry = $forumPost->downvote($user);
 
             if ($downvoteQry["success"]) {
                 echo json_encode([
                     "success" => true
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => "Unable to Downvote Post"
                 ]);
             }
-        }
-        else { // Remove All
+        } else { // Remove All
             $removeVoteQry = $forumPost->removeVotes($user);
 
             if ($removeVoteQry["success"]) {
@@ -81,23 +76,20 @@ if (validateSession($_SESSION["user"])) {
                     "success" => true,
                     "votes" => $removeVoteQry["count"]
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => $db->error
                 ]);
             }
         }
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => "You Are not a Member of this Forum"
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be Logged in to Vote on Forums"

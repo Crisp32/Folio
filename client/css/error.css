@@ -8,55 +8,55 @@
 
 /* Tags */
 body {
-    background-color: #252529;
-    color: white;
-    font-family: 'Ubuntu', sans-serif;
-    margin: auto;
+  background-color: #252529;
+  color: white;
+  font-family: "Ubuntu", sans-serif;
+  margin: auto;
 }
 
 *:focus {
-    outline: none;
+  outline: none;
 }
 
 * {
-    -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* IDs */
 #container {
-    text-align: center;
-    margin-top: 32vh;
+  text-align: center;
+  margin-top: 32vh;
 }
 
 #logo-img {
-    display: inline-block;
-    transform: translateY(20px);
-    margin: auto;
-    margin-right: 10px;
-    pointer-events: none;
-    width: 100px;
+  display: inline-block;
+  transform: translateY(20px);
+  margin: auto;
+  margin-right: 10px;
+  pointer-events: none;
+  width: 100px;
 }
 
 #status-code {
-    display: inline-block;
-    font-size: 100px;
-    margin: auto;
+  display: inline-block;
+  font-size: 100px;
+  margin: auto;
 }
 
 #error-desc {
-    color: rgb(177, 177, 177);
-    font-family: 'Ubuntu Mono', monospace;
-    font-size: 20px;
-    margin-top: 5px;
-    padding: 5px
+  color: rgb(177, 177, 177);
+  font-family: "Ubuntu Mono", monospace;
+  font-size: 20px;
+  margin-top: 5px;
+  padding: 5px;
 }
 
 #redirect-home {
-    color: rgb(155, 227, 255);
-    font-size: 18px;
-    text-decoration: none;
+  color: rgb(155, 227, 255);
+  font-size: 18px;
+  text-decoration: none;
 }
 
 #redirect-home:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }

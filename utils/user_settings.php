@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Account Settings Grabber
  * Connell Reffo
@@ -29,19 +30,15 @@ if (isset($_SESSION["user"])) {
             "comments" => $userInstance->user["allowComments"],
             "email" => $userInstance->user["email"]
         ]);
-    }
-    catch (Exception $err) {
+    } catch (Exception $err) {
         echo json_encode([
             "success" => false,
             "message" => substr($err, 0, 23)
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "Invalid Session"
     ]);
 }
-
-?>

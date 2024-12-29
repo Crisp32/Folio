@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Get Banned Members
  * @author Connell Reffo
@@ -50,15 +51,13 @@ if (forumExists($forumName)) {
             "success" => true,
             "bans" => $membersJSON
         ]);
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => "You don't have Permission to View this"
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "There are no Forums with that Name"

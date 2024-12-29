@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio User Vote Handler
  * Connell Reffo 2019
@@ -27,15 +28,13 @@ if (validateSession($_SESSION["user"])) {
         // Parse String Bool
         if ($upvote == "true") {
             $upvote = true;
-        }
-        else {
+        } else {
             $upvote = false;
         }
 
         if ($downvote == "true") {
             $downvote = true;
-        }
-        else {
+        } else {
             $downvote = false;
         }
 
@@ -47,55 +46,46 @@ if (validateSession($_SESSION["user"])) {
                     "success" => false,
                     "message" => "Unable to Upvote User"
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => true,
                 ]);
             }
-        }
-        else if ($downvote && !$upvote) { // Downvote Event
+        } else if ($downvote && !$upvote) { // Downvote Event
             $downvoteQry = $targetUser->downvote($activeUser);
             if (!$downvoteQry["success"]) {
                 echo json_encode([
                     "success" => false,
                     "message" => "Unable to Downvote User"
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => true,
                 ]);
             }
-        }
-        else { // Neutral Event
+        } else { // Neutral Event
             $removeVoteQry = $targetUser->removeVote($activeUser);
             if (!$removeVoteQry["success"]) {
                 echo json_encode([
                     "success" => false,
                     "message" => "Unable to Change Vote"
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => true,
                 ]);
             }
         }
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => "Invalid Target User"
         ]);
     }
-}
-else {
+} else {
     // Return Error
     echo json_encode([
         "success" => false,
         "message" => "You must be Logged in to Upvote/Downvote"
     ]);
 }
-
-?>

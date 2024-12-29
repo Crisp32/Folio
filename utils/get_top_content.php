@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Top Content Grabber
  * @author Connell Reffo
@@ -33,15 +34,13 @@ if ($contentType == $CONTENT_USERS) {
             "success" => true,
             "users" => $userList
         ]);
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => $db->error
         ]);
     }
-}
-else if ($contentType == $CONTENT_FORUMS) {
+} else if ($contentType == $CONTENT_FORUMS) {
     $query = $db->query("SELECT name, iconPath, JSON_LENGTH(members) AS memberCount FROM forums ORDER BY JSON_LENGTH(members) DESC LIMIT $LIMIT");
 
     if ($query) {
@@ -60,15 +59,13 @@ else if ($contentType == $CONTENT_FORUMS) {
             "success" => true,
             "forums" => $forumList
         ]);
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => $db->error
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "Invalid Content Type"

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Profile Forum Grabber
  * Connell Reffo 2020
@@ -27,13 +28,13 @@ if (userExists($prof->user["uid"])) {
         $forumData = getForumDataById($forum);
         if (!empty($forum)) {
             $forumJSON = [
-                "owner" => getUserData("username", "uid='".$forumData->ownerUID."'"),
+                "owner" => getUserData("username", "uid='" . $forumData->ownerUID . "'"),
                 "name" => htmlFormat(utf8_decode($forumData->name)),
                 "description" => htmlFormat(utf8_decode($forumData->description)),
                 "icon" => $forumData->iconURL,
                 "date" => $forumData->date
             ];
-    
+
             array_push($profileForums, $forumJSON);
             $index++;
         }
@@ -43,12 +44,9 @@ if (userExists($prof->user["uid"])) {
     echo json_encode([
         "forums" => $profileForums
     ]);
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "The Requested Profile dosen't Exist"
     ]);
 }
-
-?>

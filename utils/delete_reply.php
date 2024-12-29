@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Comment Reply Deletion
  * @author Connell Reffo
@@ -50,13 +51,12 @@ if (validateSession($_SESSION["user"])) {
             $forum = getForumDataById($forumPost->post["fid"]);
 
             $conditions = ($replyAssoc["uid"] == $user || $forumPost->post["uid"] == $user || $forum->isModerator($user) || $comment["commenterId"] == $user);
-        }
-        else if ($comment["type"] == $TYPE_PROFILE) {
+        } else if ($comment["type"] == $TYPE_PROFILE) {
             $conditions = ($replyAssoc["uid"] == $user || $comment["uid"] == $user);
         }
-        
+
         if ($conditions) {
-            
+
             // Update Database
             $updateQuery = "UPDATE comments SET usersReplied=JSON_REMOVE('$repliesEncoded', '$[$replyIndex]'), repliesCount=repliesCount-1 WHERE cid='$CID'";
 
@@ -65,36 +65,33 @@ if (validateSession($_SESSION["user"])) {
                     "success" => true,
                     "message" => "Deleted Reply!"
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => $db->error
                 ]);
             }
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => "You don't have Permission to Perform this Action"
             ]);
         }
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => $db->error
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be Logged in to Delete Replies"
     ]);
 }
 
-function findReply($replyId, $replies) {
+function findReply($replyId, $replies)
+{
     $index = 0;
 
     foreach ($replies as $reply) {
@@ -110,5 +107,3 @@ function findReply($replyId, $replies) {
 
     return false;
 }
-
-?>
