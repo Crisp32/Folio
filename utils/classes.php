@@ -120,10 +120,12 @@ class Forum
             $removeJoinedForumQuery = "UPDATE users SET joinedForums=JSON_REMOVE('$joinedForumsEncoded', '$[$forumIndex]') WHERE uid='$uid'";
 
             if (count($members) == 0) {
+                // Delete related forum posts
+                $deleteForumPostsQuery = "DELETE FROM forumPosts WHERE fid='$forumId'";
 
                 // Delete Forum
                 return [
-                    "success" => $db->query($removeJoinedForumQuery) && $this->delete(),
+                    "success" => $db->query($deleteForumPostsQuery) && $db->query($removeJoinedForumQuery) && $this->delete(),
                     "doReload" => true
                 ];
             } else {
@@ -788,8 +790,20 @@ class Notification
     {
         $db = $GLOBALS["db"];
 
-        $count = $db->query("SELECT COUNT(*) AS 'count' FROM notifications WHERE uid=$uid");
-        return intval($count->fetch_array(MYSQLI_ASSOC)["count"]);
+        // Free any previous results
+        while ($db->more_results() && $db->next_result()) {
+            if ($result = $db->store_result()) {
+                $result->free();
+            }
+        }
+
+        $result = $db->query("SELECT COUNT(*) AS 'count' FROM notifications WHERE uid=$uid");
+
+        // Who needs error handling?
+        $count = intval($result->fetch_array(MYSQLI_ASSOC)["count"]);
+        $result->free();
+
+        return $count;
     }
 
     public static function delete($nid)
