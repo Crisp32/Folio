@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Comment Reply Functionality
  * @author Connell Reffo
@@ -30,14 +31,12 @@ if (validateSession($_SESSION["user"])) {
             "success" => false,
             "message" => "Reply must not Exceed $maxReplyLength Characters"
         ]);
-    }
-    else if (strlen($replyContent) == 0) {
+    } else if (strlen($replyContent) == 0) {
         echo json_encode([
             "success" => false,
             "message" => "Reply must be Greater than 0 Characters"
         ]);
-    }
-    else {
+    } else {
         $error = [
             "success" => false,
             "message" => ""
@@ -48,7 +47,7 @@ if (validateSession($_SESSION["user"])) {
         $usersReplied = json_decode($usersRepliedEncoded);
         $RID = count($usersReplied);
         $date = currentDate();
-        
+
         // Post Comment For a Profile
         if ($type == $TYPE_PROFILE) {
             $allowComments = (getUserData("allowComments", "uid='$commentOwner'") == 1);
@@ -59,13 +58,11 @@ if (validateSession($_SESSION["user"])) {
 
             if ($allowComments) {
                 $error["success"] = true;
-            }
-            else {
+            } else {
                 $error["message"] = "This User has Commenting Disabled";
             }
-        }
-        else if ($type == $TYPE_FORUMPOST) {
-            
+        } else if ($type == $TYPE_FORUMPOST) {
+
             // Get Forum Post Data
             $postId = getCommentData("uid", $TYPE_FORUMPOST, "cid=$commentCID");
 
@@ -77,19 +74,16 @@ if (validateSession($_SESSION["user"])) {
 
             if ($forum->ownerUID == $user) {
                 $rank = "owner";
-            }
-            else if ($forum->isModerator($user)) {
+            } else if ($forum->isModerator($user)) {
                 $rank = "mod";
             }
 
             if ($forum->hasMember($user)) {
                 $error["success"] = true;
-            }
-            else {
+            } else {
                 $error["message"] = "You Must be a Member of this Forum to Reply to Comments";
             }
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => "Invalid Type"
@@ -101,7 +95,7 @@ if (validateSession($_SESSION["user"])) {
             // Insert Into Database
             $replyContent = utf8_encode($replyContent);
             $addReplyQuery = $db->query("UPDATE comments SET repliesCount=repliesCount+1, usersReplied=JSON_ARRAY_INSERT('$usersRepliedEncoded', '$[0]', JSON_ARRAY($RID, $user, '$replyContent', '$date')) WHERE cid='$commentCID' AND type='$type'");
-            
+
             if ($addReplyQuery) {
                 if ($commentOwner != $user) {
                     $commentContent = getCommentData("content", $type, "cid=$commentCID");
@@ -124,24 +118,19 @@ if (validateSession($_SESSION["user"])) {
                         ]
                     ]
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => $db->error
                 ]);
             }
-        }
-        else {
+        } else {
             echo json_encode($error);
         }
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be logged in to Reply to Comments"
     ]);
 }
-
-?>

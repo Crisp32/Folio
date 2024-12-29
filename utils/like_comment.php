@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Comment Liking
  * @author Connell Reffo
@@ -26,7 +27,7 @@ if (validateSession($_SESSION["user"])) {
         $canLike = true;
 
         if ($commentData["type"] == $TYPE_FORUMPOST) {
-            
+
             // Get Forum Post Data
             $forumPost = new ForumPost();
             $forumPost->getDataById($commentData["uid"]);
@@ -34,14 +35,13 @@ if (validateSession($_SESSION["user"])) {
             // Get Forum Data
             $forum = getForumDataById($forumPost->post["fid"]);
             $canLike = $forum->hasMember($user);
-        }
-        else if ($commentData["type"] == $TYPE_PROFILE) {
+        } else if ($commentData["type"] == $TYPE_PROFILE) {
             $canLike = (getUserData("allowComments", "uid='$profileId'") == 1);
         }
 
         // Validate Permissions
         if ($canLike) {
-            
+
             // Check if User has Already Liked Comment
             $likesArray = json_decode($commentData["usersLiked"]);
             $likesArrayEncoded = $commentData["usersLiked"];
@@ -53,8 +53,7 @@ if (validateSession($_SESSION["user"])) {
                 $likes = $commentData["likes"] - 1; // Remove Like
                 $liked = false;
                 $likeQuery = "UPDATE comments SET likes=$likes, usersLiked=JSON_REMOVE('$likesArrayEncoded', '$[$likeIndex]') WHERE cid='$CID'";
-            }
-            else {
+            } else {
 
                 // Has Not Liked
                 $likes = $commentData["likes"] + 1; // Add Like
@@ -71,33 +70,27 @@ if (validateSession($_SESSION["user"])) {
                     "success" => true,
                     "liked" => $liked
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => $db->error
                 ]);
             }
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => "You do not have Permission to Perform this Action"
             ]);
         }
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => $db->error
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be Logged in to Like Comments"
     ]);
 }
-
-?>

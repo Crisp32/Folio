@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Login Request Handler
  * Connell Reffo 2019
@@ -38,8 +39,7 @@ if (!empty($username)) {
                     "success" => false,
                     "message" => "That account is not yet Verified"
                 ));
-            }
-            else {
+            } else {
 
                 // Check for Matching Password
                 if (password_verify($password, $userPass)) {
@@ -50,34 +50,28 @@ if (!empty($username)) {
 
                     // Create Session
                     $_SESSION["user"] = $user->user["uid"];
-                }
-                else {
+                } else {
                     echo json_encode(array(
                         "success" => false,
                         "message" => "Incorrect Password"
                     ));
                 }
-            }       
-        }
-        else {
+            }
+        } else {
             echo json_encode(array(
                 "success" => false,
                 "message" => "There is no Account with the Specified Name"
             ));
         }
-    }
-    else {
+    } else {
         echo json_encode(array(
             "success" => false,
             "message" => "Invalid Password"
         ));
     }
-}
-else {
+} else {
     echo json_encode(array(
         "success" => false,
         "message" => "Invalid Username"
     ));
 }
-
-?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Forum Post Grabber
  * @author Connell Reffo
@@ -25,7 +26,7 @@ if (isset($forum) || isset($_REQUEST["username"]) || isset($_REQUEST["suggested"
     // Select Sorting Method
     $sortMethod = $_REQUEST["sort"];
     $sort;
-    
+
     switch ($sortMethod) {
         case $SORT_OLD:
             $sort = "ORDER BY pid ASC LIMIT $min, $max";
@@ -43,15 +44,13 @@ if (isset($forum) || isset($_REQUEST["username"]) || isset($_REQUEST["suggested"
         $uid = getUserData("uid", "username='$username'");
 
         $condition = "uid=$uid";
-    }
-    else if (isset($_REQUEST["suggested"])) {
+    } else if (isset($_REQUEST["suggested"])) {
         $suggested = parseBool($_REQUEST["suggested"]);
 
         if ($suggested) {
             $condition = "voteCount>0 AND commentCount>0";
         }
-    }
-    else { // For Normal Forum Viewing
+    } else { // For Normal Forum Viewing
         $forumInstance = getForumDataById(getForumIdByName($forum));
         $forumId = $forumInstance->FID;
 
@@ -70,7 +69,7 @@ if (isset($forum) || isset($_REQUEST["username"]) || isset($_REQUEST["suggested"
                 $forumInstance = getForumDataById($post["fid"]);
                 $forumId = $forumInstance->FID;
             }
-            
+
             // Check if Voted on Post
             $upvoted = false;
             $downvoted = false;
@@ -78,8 +77,7 @@ if (isset($forum) || isset($_REQUEST["username"]) || isset($_REQUEST["suggested"
 
             if (in_array($user, $votes["upvotes"])) {
                 $upvoted = true;
-            }
-            else if (in_array($user, $votes["downvotes"])) {
+            } else if (in_array($user, $votes["downvotes"])) {
                 $downvoted = true;
             }
 
@@ -88,8 +86,7 @@ if (isset($forum) || isset($_REQUEST["username"]) || isset($_REQUEST["suggested"
 
             if ($forumInstance->ownerUID == $post["uid"]) {
                 $rank = "owner";
-            }
-            else if ($forumInstance->isModerator($post["uid"])) {
+            } else if ($forumInstance->isModerator($post["uid"])) {
                 $rank = "mod";
             }
 
@@ -122,15 +119,13 @@ if (isset($forum) || isset($_REQUEST["username"]) || isset($_REQUEST["suggested"
             "success" => true,
             "posts" => $posts
         ]);
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => $db->error
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "Invalid Forum Name"

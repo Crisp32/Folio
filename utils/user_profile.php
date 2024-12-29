@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Profile Loader
  * Connell Reffo 2019
@@ -29,7 +30,7 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
 
     // Null Check DB Response
     if (!empty($profileName) && !empty($uid)) {
-        
+
         // Null Check Date
         if (empty($date)) {
             $date = "00-00-0000";
@@ -49,8 +50,7 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
 
             if ($user->upvotedBy($activeUser)) {
                 $upvoted = true;
-            }
-            else if ($user->downvotedBy($activeUser)) {
+            } else if ($user->downvotedBy($activeUser)) {
                 $downvoted = true;
             }
         }
@@ -69,22 +69,17 @@ if (!empty($_REQUEST["query"]) && strpos($_REQUEST["query"], " ") == false) {
             "date" => $date,
             "comments" => $allowComments
         ));
-    }
-    else {
+    } else {
         // Return 404 Error
         echo json_encode(array(
             "success" => false,
             "message" => "404 Error: User not Found"
         ));
     }
-}
-else {
+} else {
     // Return 404 Error
     echo json_encode(array(
         "success" => false,
         "message" => "404 Error: User not Found"
     ));
 }
-
-
-?>

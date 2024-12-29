@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Forum Joiner
  * @author Connell Reffo
@@ -26,7 +27,7 @@ if (validateSession($_SESSION["user"])) {
 
         // Check if Banned from Forum
         if (!$forumInstance->isBanned($user)) {
-            
+
             // Check if User is already in Forum
             if ($forumInstance->hasMember($user)) {
                 $removeMemberQry = $forumInstance->removeMember($user);
@@ -37,48 +38,40 @@ if (validateSession($_SESSION["user"])) {
                         "joined" => false,
                         "reload" => $removeMemberQry["doReload"]
                     ]);
-                }
-                else {
+                } else {
                     echo json_encode([
                         "success" => false,
                         "message" => $db->error
                     ]);
                 }
-            }
-            else {
+            } else {
                 if ($forumInstance->addMember($user)) {
                     echo json_encode([
                         "success" => true,
                         "joined" => true
                     ]);
-                }
-                else {
+                } else {
                     echo json_encode([
                         "success" => false,
                         "message" => $db->error
                     ]);
                 }
             }
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => "You are Banned from this Forum"
             ]);
         }
-    }
-    else {
+    } else {
         json_encode([
             "success" => false,
             "message" => "A Forum with that Name dosen't exist"
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You must Be Logged in to Join Forums"
     ]);
 }
-
-?>

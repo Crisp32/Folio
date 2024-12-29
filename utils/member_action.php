@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Member Manager
  * @author Connell Reffo
@@ -38,15 +39,14 @@ if (validateSession($_SESSION["user"])) {
                 if (!$forumInstance->isModerator($targetUserId) || $user == $forumInstance->ownerUID) {
                     $forumInstance->removeMember($targetUserId);
 
-                    Notification::push($targetUserId, "You have been kicked from: <strong>".$forumInstance->name."</strong>", "[Kicked By @$username]");
+                    Notification::push($targetUserId, "You have been kicked from: <strong>" . $forumInstance->name . "</strong>", "[Kicked By @$username]");
 
                     // Send Success to Client
                     echo json_encode([
                         "success" => true,
                         "message" => "Kicked $targetUsername"
                     ]);
-                }
-                else {
+                } else {
                     echo json_encode([
                         "success" => false,
                         "message" => "You can't Kick this User"
@@ -58,15 +58,14 @@ if (validateSession($_SESSION["user"])) {
                 // Check Ranks
                 if (!$forumInstance->isModerator($targetUserId) || $user == $forumInstance->ownerUID) {
                     if ($forumInstance->banMember($targetUserId)) {
-                        
+
                         // Send Success to Client
                         echo json_encode([
                             "success" => true,
                             "message" => "Banned $targetUsername"
                         ]);
                     }
-                }
-                else {
+                } else {
                     echo json_encode([
                         "success" => false,
                         "message" => "You can't Ban this User"
@@ -78,22 +77,19 @@ if (validateSession($_SESSION["user"])) {
                 // Check Ranks
                 if (!$forumInstance->isModerator($targetUserId) || $user == $forumInstance->ownerUID) {
                     if ($forumInstance->promote($targetUserId)) {
-                        Notification::push($targetUserId, "You have been promoted in: <strong>".$forumInstance->name."</strong>", "[Promoted By @$username]");
+                        Notification::push($targetUserId, "You have been promoted in: <strong>" . $forumInstance->name . "</strong>", "[Promoted By @$username]");
 
                         echo json_encode([
                             "success" => true,
                             "message" => "Promoted $targetUsername"
                         ]);
-                    }
-                    else {
+                    } else {
                         echo json_encode([
                             "success" => false,
                             "message" => "Unable to Promote User"
                         ]);
                     }
-
-                }
-                else {
+                } else {
                     echo json_encode([
                         "success" => false,
                         "message" => "You can't Promote this User"
@@ -105,22 +101,19 @@ if (validateSession($_SESSION["user"])) {
                 // Check Ranks
                 if (!$forumInstance->isModerator($targetUserId) || $user == $forumInstance->ownerUID) {
                     if ($forumInstance->demote($targetUserId)) {
-                        Notification::push($targetUserId, "You have been demoted in: <strong>".$forumInstance->name."</strong>", "[Demoted By @$username]");
+                        Notification::push($targetUserId, "You have been demoted in: <strong>" . $forumInstance->name . "</strong>", "[Demoted By @$username]");
 
                         echo json_encode([
                             "success" => true,
                             "message" => "Demoted $targetUsername"
                         ]);
-                    }
-                    else {
+                    } else {
                         echo json_encode([
                             "success" => false,
                             "message" => "Unable to Demote User"
                         ]);
                     }
-
-                }
-                else {
+                } else {
                     echo json_encode([
                         "success" => false,
                         "message" => "You can't Demote this User"
@@ -136,16 +129,13 @@ if (validateSession($_SESSION["user"])) {
                             "success" => true,
                             "message" => "Unbanned $targetUsername"
                         ]);
-                    }
-                    else {
+                    } else {
                         echo json_encode([
                             "success" => false,
                             "message" => "Unable to Unban User"
                         ]);
                     }
-
-                }
-                else {
+                } else {
                     echo json_encode([
                         "success" => false,
                         "message" => "You can't Unban this User"
@@ -159,15 +149,13 @@ if (validateSession($_SESSION["user"])) {
                 ]);
                 break;
         }
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => "You don't have Permission to Perform this Action"
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be Logged in to Perform this Action"

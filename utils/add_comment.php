@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Comment Posting for Profiles and Blog Posts
  * @author Connell Reffo
@@ -42,7 +43,7 @@ if (validateSession($_SESSION["user"])) {
     $rank = "member";
 
     if ($type == $TYPE_PROFILE) {
-        
+
         // Get Profile Data
         $profile = new User();
         $profile->getUserDataByName($id);
@@ -59,12 +60,10 @@ if (validateSession($_SESSION["user"])) {
             $commentContent = utf8_encode($commentContent);
             $insertStatement = "INSERT INTO comments (uid, commenterId, type, content, postDate, usersLiked, likes, usersReplied, repliesCount) VALUES ('$profileId', '$activeUser', '$type', '$commentContent', '$postDate', '[]', '0', '[]', '0');";
             $updateStatement = "UPDATE users SET commentCount=commentCount+1 WHERE uid=$profileId;";
-        }
-        else {
+        } else {
             $error["message"] = "This User has Commenting Disabled";
         }
-    }
-    else if ($type == $TYPE_FORUMPOST) {
+    } else if ($type == $TYPE_FORUMPOST) {
 
         // Get Forum Post Data
         $forumPost = new ForumPost();
@@ -78,8 +77,7 @@ if (validateSession($_SESSION["user"])) {
 
             if ($forum->ownerUID == $activeUser) {
                 $rank = "owner";
-            }
-            else if ($forum->isModerator($activeUser)) {
+            } else if ($forum->isModerator($activeUser)) {
                 $rank = "mod";
             }
 
@@ -87,8 +85,7 @@ if (validateSession($_SESSION["user"])) {
             $commentContent = utf8_encode($commentContent);
             $insertStatement = "INSERT INTO comments (uid, commenterId, type, content, postDate, usersLiked, likes, usersReplied, repliesCount) VALUES ('$id', '$activeUser', '$type', '$commentContent', '$postDate', '[]', '0', '[]', '0');";
             $updateStatement = "UPDATE forumPosts SET commentCount=commentCount+1 WHERE pid=$id;";
-        }
-        else {
+        } else {
             $error["message"] = "You Must be a Member of this Forum to Comment";
         }
     }
@@ -102,8 +99,7 @@ if (validateSession($_SESSION["user"])) {
                         "success" => false,
                         "message" => "Comment Must be Less than $maxCommentLength Characters"
                     ]);
-                }
-                else {
+                } else {
                     // Push Notification
                     $username = $user->user["username"];
 
@@ -114,8 +110,7 @@ if (validateSession($_SESSION["user"])) {
                             $postName = $forumPost->post["title"];
                             Notification::push($postOwner, "@$username commented on your post: <strong>$postName</strong>", $commentContent);
                         }
-                    }
-                    else if ($type == $TYPE_PROFILE) {
+                    } else if ($type == $TYPE_PROFILE) {
                         if ($profileId != $activeUser) {
                             $profileName = $profile->user["username"];
                             Notification::push($profileId, "@$username commented on your profile", $commentContent);
@@ -125,7 +120,7 @@ if (validateSession($_SESSION["user"])) {
                     // Update Database
                     $query = $db->multi_query($insertStatement . $updateStatement);
 
-                    if ($query) {            
+                    if ($query) {
                         $cid = $db->insert_id;
 
                         // Send Successful Response
@@ -144,34 +139,29 @@ if (validateSession($_SESSION["user"])) {
                                 ]
                             ]
                         ]);
-                    }
-                    else {
+                    } else {
                         echo json_encode([
                             "success" => false,
                             "message" => $db->error
                         ]);
                     }
                 }
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => "Comment Must be Greater than 0 Characters"
                 ]);
             }
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => "The Maximum Amount of Comments here has been Reached"
             ]);
         }
-    }
-    else {
+    } else {
         echo json_encode($error);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You must be logged in to Comment"

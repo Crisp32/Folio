@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Main PHP File
  * @author Connell Reffo
@@ -11,7 +12,7 @@ include_once "classes.php";
 
 // Init DB
 $db = db();
- 
+
 // Global Constants
 $TYPE_PROFILE = "profile";
 $TYPE_FORUMPOST = "forumpost";
@@ -36,8 +37,6 @@ $CONTENT_FORUMS = "forums";
 // Email Variables
 $folioEmail = "foliowebapp@gmail.com";
 $folioName = "Fol.io";
-
-$SENDGRID_API_KEY = ""; // Removed for privacy reasons
 
 // List of Possible Countries
 $countries = [
@@ -79,7 +78,8 @@ $countries = [
 ];
 
 // Get Forum IDs By Name
-function getForumIdByName($forumName) {
+function getForumIdByName($forumName)
+{
     $db = $GLOBALS["db"];
     $query = "SELECT fid FROM forums WHERE name='$forumName'";
     $FID = $db->query($query)->fetch_array(MYSQLI_ASSOC)["fid"];
@@ -88,7 +88,8 @@ function getForumIdByName($forumName) {
 }
 
 // Get all Forum Data
-function getForumDataById($forumId) {
+function getForumDataById($forumId)
+{
     $db = $GLOBALS["db"];
 
     $query = "SELECT * FROM forums WHERE fid=$forumId";
@@ -103,42 +104,42 @@ function getForumDataById($forumId) {
         $forum->date = $forumArray["date"];
 
         return $forum;
-    }
-    else {
+    } else {
         return false;
     }
 }
 
 // Check if a Forum Exists
-function forumExists($forumName) {
+function forumExists($forumName)
+{
     $db = $GLOBALS["db"];
     $query = "SELECT name FROM forums WHERE name='$forumName'";
     $result = $db->query($query)->fetch_array(MYSQLI_ASSOC)["name"];
 
     if (!empty($result)) {
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
 
 // Check if User Exists
-function userExists($uid) {
+function userExists($uid)
+{
     $db = $GLOBALS["db"];
     $query = "SELECT uid FROM users WHERE uid='$uid'";
     $result = $db->query($query)->fetch_array(MYSQLI_ASSOC)["uid"];
 
     if (!empty($result) && $uid !== null && $uid !== "") {
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
 
 // Generate <option> tags for Account Location input field
-function fetchLocationsHtml() {
+function fetchLocationsHtml()
+{
     $countries = $GLOBALS["countries"];
     $final = "<option value='' >I'd Rather not Say</option>\n";
 
@@ -150,34 +151,38 @@ function fetchLocationsHtml() {
 }
 
 // Verification Code Algorithm
-function generateVerificationCode() {
-    return strtoupper(substr(md5(strval(mt_rand(0, 200))), 0, 8));
+function generateVerificationCode()
+{
+    // Removed SendGrid so this is going to be hardcoded for demonstration purposess
+    return 69420;
 }
 
 // Returns User Information
-function getUserData($column, $condition) {
+function getUserData($column, $condition)
+{
     $db = $GLOBALS["db"];
     $query = $db->query("SELECT $column FROM users WHERE $condition");
 
     if ($query) {
         $row = $query->fetch_array(MYSQLI_ASSOC);
         return $row[$column];
-    }
-    else {
+    } else {
         return false;
     }
 }
 
 // Change Users in DB
-function updateUser($column, $value, $condition) {
+function updateUser($column, $value, $condition)
+{
     $db = $GLOBALS["db"];
     $query = $db->query("UPDATE users SET $column = '$value' WHERE $condition");
-    
+
     return $query;
 }
 
 // Calculate Votes
-function calcVotes($votingData) {
+function calcVotes($votingData)
+{
     $votes = explode(":", $votingData);
     $voteCount = 1;
 
@@ -185,65 +190,68 @@ function calcVotes($votingData) {
         foreach ($votes as $vote) {
             if (strpos($vote, "+") !== false) {
                 $voteCount++;
-            }
-            else {
+            } else {
                 $voteCount--;
             }
         }
     }
-    
+
     return $voteCount;
 }
 
 // Prevent SQL Injection Attack
-function escapeString($str) {
+function escapeString($str)
+{
     return str_replace("'", "\'", htmlspecialchars(strip_tags($str), ENT_QUOTES, "UTF-8"));
 }
 
 // Validate Location Boolean
-function validLocation($country) {
+function validLocation($country)
+{
     $countries = $GLOBALS["countries"];
 
     return in_array($country, $countries);
 }
 
 // Validate that a file exists on Seperate Server
-function validURL($url) {
-    if (!empty($url)) {
-        $header_response = get_headers($url);
+function validURL($url)
+{
+    if (!empty($url) && filter_var($url, FILTER_VALIDATE_URL)) {
+        $header_response = @get_headers($url);
 
         if ($header_response) {
-            if (strpos($header_response[0], "404") !== false){
+            if (strpos($header_response[0], "404") !== false) {
+                return false;
+            } else {
                 return true;
             }
-            else {
-                return true;
-            }
-        }
-        else {
+        } else {
             return false;
         }
-    }
-    else {
-        return true;
+    } else {
+        return false;
     }
 }
 
 // Retrieve Data from a Comment
-function getCommentData($column, $type, $condition) {
+function getCommentData($column, $type, $condition)
+{
     $db = $GLOBALS["db"];
 
     $finalCondition = "AND type='$type'";
-    if ($type == "*") { $finalCondition = ""; }
-    
+    if ($type == "*") {
+        $finalCondition = "";
+    }
+
     $query = $db->query("SELECT $column FROM comments WHERE $condition $finalCondition");
     $array = $query->fetch_array(MYSQLI_ASSOC);
-    
+
     return $array[$column];
 }
 
 // Set a Random Default Profile Picture to User
-function randomProfileImage() {
+function randomProfileImage()
+{
     $list = json_decode(file_get_contents("../json/profile-images.json"), true);
     $image = $list[rand(0, count($list) - 1)];
 
@@ -251,37 +259,40 @@ function randomProfileImage() {
 }
 
 // Validate Sessions
-function validateSession($session) {
+function validateSession($session)
+{
     if (isset($session) && $session !== null && $session !== "") {
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
 
-function htmlFormat($string) {
+function htmlFormat($string)
+{
     $str = html_entity_decode(htmlspecialchars_decode($string));
     $str = str_replace("&#039;", "'", $str);
 
     return $str;
 }
 
-function parseBool($str) {
+function parseBool($str)
+{
     if (strtolower($str) == "true") {
         return true;
-    }
-    else {
+    } else {
         return false;
     }
 }
 
-function currentDate() {
+function currentDate()
+{
     return date("Y-m-d");
 }
 
 // Random Owner Selection
-function selectRandomOwner($excludeUID, $mods, $members) {
+function selectRandomOwner($excludeUID, $mods, $members)
+{
     $modsLen = count($mods);
     $newOwner = null;
 
@@ -295,13 +306,12 @@ function selectRandomOwner($excludeUID, $mods, $members) {
         }
 
         $newOwner = $modList[mt_rand(0, count($modList))];
-    }
-    else {
+    } else {
         // Select Random Member
         $memberList = $members;
         $memberIndex = array_search($excludeUID, $memberList);
 
-        if ($memberIndex == null|| $memberIndex == "") {
+        if ($memberIndex == null || $memberIndex == "") {
             unset($memberList[$memberIndex]);
         }
 
@@ -311,5 +321,3 @@ function selectRandomOwner($excludeUID, $mods, $members) {
     // Return new Owner UID
     return $newOwner;
 }
-
-?>

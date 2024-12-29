@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Notifications Grabber
  * @author Connell Reffo 2019
@@ -32,8 +33,7 @@ if (validateSession($_SESSION["user"])) {
         "success" => true,
         "notifications" => $notifResponse
     ]);
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be Logged in to View your Notifications"

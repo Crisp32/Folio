@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Forum Saving
  * @author Connell Reffo
@@ -25,32 +26,27 @@ if (validateSession($_SESSION["user"])) {
             "success" => false,
             "message" => "Forum Icon URL Must be 150 Characters or Less"
         ]);
-    }
-    else if (strlen($desc) > 300) {
+    } else if (strlen($desc) > 300) {
         echo json_encode([
             "success" => false,
             "message" => "Forum Description Must be 300 Characters or Less"
         ]);
-    }
-    else if (strlen($desc) == 0) {
+    } else if (strlen($desc) == 0) {
         echo json_encode([
             "success" => false,
             "message" => "Forum Description Must be Greater than 0 Characters"
         ]);
-    }
-    else if (!forumExists($forumName)) {
+    } else if (!forumExists($forumName)) {
         echo json_encode([
             "success" => false,
             "message" => "Unknown Forum"
         ]);
-    }
-    else if (!validURL($icon)) {
+    } else if (!validURL($icon)) {
         echo json_encode([
             "success" => false,
             "message" => "The Specified Icon dosen't Exist"
         ]);
-    }
-    else {
+    } else {
         // Null Check Forum Icon
         if (empty($icon)) {
             $icon = randomProfileImage();
@@ -68,20 +64,16 @@ if (validateSession($_SESSION["user"])) {
                 "success" => true,
                 "icon" => $icon
             ]);
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => "You don't have Permission to Perform this Action"
             ]);
         }
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be Logged in to Perform this Action"
     ]);
 }
-
-?>

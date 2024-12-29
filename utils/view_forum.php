@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Forum Grabber
  * @author Connell Reffo
@@ -44,18 +45,14 @@ if (isset($_REQUEST["fquery"]) && !empty($_REQUEST["fquery"]) && forumExists($_R
                 "banned" => $banned
             ]
         ]);
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => "There are no Forums with that Name"
         ]);
     }
-}
-else {  
+} else {
     echo json_encode([
         "redirect" => true
     ]);
 }
-
-?>

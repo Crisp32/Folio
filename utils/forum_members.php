@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Forum Members Grabber
  * @author Connell Reffo
@@ -49,12 +50,10 @@ if (forumExists($forumName)) {
                     // Check if Member is Mod
                     if ($moderator) {
                         $demotable = true;
-                    }
-                    else {
+                    } else {
                         $promotable = true;
                     }
-                }
-                else if ($forum->isModerator($user) && !$moderator) { // Is Moderator
+                } else if ($forum->isModerator($user) && !$moderator) { // Is Moderator
                     $removable = true;
 
                     // Check if Member is Mod
@@ -84,12 +83,9 @@ if (forumExists($forumName)) {
         "success" => true,
         "members" => $membersJSON
     ]);
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "There are no Forums with that Name"
     ]);
 }
-
-?>

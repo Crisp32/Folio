@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Account Deletion
  * @author Connell Reffo
@@ -28,47 +29,18 @@ if (validateSession($_SESSION["user"])) {
         if ($updateQuery) {
             $username = $userInstance->user["username"];
 
-            // Create Mail Object
-            $mail = new \SendGrid\Mail\Mail();
-
-            $mail->setFrom($folioEmail, $folioName);
-            $mail->setSubject("Confirm Fol.io Account Deletion");
-            $mail->addTo($userInstance->user["email"], $username);
-  
-            $mail->addContent("text/html", "
-            <body style='background-color: #252529; padding: 20px; border: 7px solid #252529; border-radius: 7px' >
-                <h2 style='color: white; position: absolute; margin: auto' >Hello $username, your verification code is: </h2>
-                <h1 style='color: #f53643; font-size: 40px; margin-top: 5px; position: absolute' >$newCode</h1>
-            </body>
-            ");
-
-            // Initialize SendGrid
-            $sendgrid = new \SendGrid($SENDGRID_API_KEY);
-
-            // Send Mail
-            try {
-                $res = $sendgrid->send($mail);
-
-                echo json_encode([
-                    "success" => true,
-                    "message" => "Sent Verification Code to your Email"
-                ]);
-            }
-            catch (Exception $err) {
-                echo json_encode([
-                    "success" => false,
-                    "message" => $err->getMessage()
-                ]);
-            }
-        }
-        else {
+            // Not actually anymore
+            echo json_encode([
+                "success" => true,
+                "message" => "Sent Verification Code to your Email"
+            ]);
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => $db->error
             ]);
         }
-    }
-    else {
+    } else {
         if ($userInstance->user["verificationCode"] == $_REQUEST["code"]) {
             $deleteQuery = $userInstance->deleteAccount();
 
@@ -80,23 +52,20 @@ if (validateSession($_SESSION["user"])) {
                     "success" => true,
                     "deleted" => true
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => $db->error
                 ]);
             }
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => "Incorrect Verification Code"
             ]);
         }
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be Logged in to Delete your Account"

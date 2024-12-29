@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Forum Post Deleter
  * @author Connell Reffo
@@ -33,22 +34,19 @@ if (validateSession($_SESSION["user"])) {
             echo json_encode([
                 "success" => true
             ]);
-        }
-        else {
+        } else {
             json_encode([
                 "success" => false,
                 "message" => $db->error
             ]);
         }
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => "You don't have Permission to Delete this"
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be Logged in to Perform this Action"

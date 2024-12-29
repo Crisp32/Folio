@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Forum Poster
  * @author Connell Reffo
@@ -28,32 +29,28 @@ if (validateSession($_SESSION["user"])) {
                 "success" => false,
                 "message" => "Title Must not Exceed 20 Characters"
             ]);
-        }
-        else if (strlen($title) == 0) {
+        } else if (strlen($title) == 0) {
             echo json_encode([
                 "success" => false,
                 "message" => "Title Must be Greater than 0 Characters"
             ]);
-        }
-        else if (strlen($body) > 300) {
+        } else if (strlen($body) > 300) {
             echo json_encode([
                 "success" => false,
                 "message" => "Body Must not Exceed 300 Characters"
             ]);
-        }
-        else if (strlen($body) == 0) {
+        } else if (strlen($body) == 0) {
             echo json_encode([
                 "success" => false,
                 "message" => "Body Must be Greater than 0 Characters"
             ]);
-        }
-        else {
+        } else {
             // Add to Database
             $title = utf8_encode($title);
             $body = utf8_encode($body);
 
             $addPostQuery = $forum->addPost(escapeString($title), escapeString($body), $user, $forumId);
-            
+
             if ($addPostQuery["success"]) {
 
                 // Get Rank
@@ -61,8 +58,7 @@ if (validateSession($_SESSION["user"])) {
 
                 if ($forum->ownerUID == $user) {
                     $rank = "owner";
-                }
-                else if ($forum->isModerator($user)) {
+                } else if ($forum->isModerator($user)) {
                     $rank = "mod";
                 }
 
@@ -85,23 +81,20 @@ if (validateSession($_SESSION["user"])) {
                         ]
                     ]
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => $db->error
                 ]);
             }
         }
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => "You be a Member of this Forum to Post this"
         ]);
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be Logged in to Post to Forums"

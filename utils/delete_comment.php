@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Comment Deletion
  * Connell Reffo 2019
@@ -29,12 +30,11 @@ if (validateSession($_SESSION["user"])) {
         $updateQuery;
 
         if ($commentType == $TYPE_PROFILE) {
-            $profile = escapeString(getUserData("uid", "username='".$_REQUEST["profile"]."'"));
+            $profile = escapeString(getUserData("uid", "username='" . $_REQUEST["profile"] . "'"));
 
             $canDelete = ($user == $profile && $commentProfile == $profile);
             $updateQuery = "UPDATE users SET commentCount=commentCount-1 WHERE uid=$profile;";
-        }
-        else if ($commentType == $TYPE_FORUMPOST) {
+        } else if ($commentType == $TYPE_FORUMPOST) {
 
             // Get Forum Post Data
             $forumPost = new ForumPost();
@@ -47,7 +47,7 @@ if (validateSession($_SESSION["user"])) {
             $canDelete = ($user == $forumPost->post["uid"] || $forum->isModerator($user));
             $updateQuery = "UPDATE forumPosts SET commentCount=commentCount-1 WHERE pid=$pid;";
         }
-    
+
         if ($user == $commentOwner || $canDelete) {
             $delQuery = "DELETE FROM comments WHERE cid=$cid;";
 
@@ -56,34 +56,27 @@ if (validateSession($_SESSION["user"])) {
                     "success" => true,
                     "message" => "Deleted Comment!"
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => $db->error
                 ]);
             }
-        }
-        else {
+        } else {
             echo json_encode([
                 "success" => false,
                 "message" => "You don't have Permission to Perform this Action"
             ]);
         }
-    }
-    else {
+    } else {
         echo json_encode([
             "success" => false,
             "message" => $db->error
         ]);
     }
-
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You must be Logged in to Perform this Action"
     ]);
 }
-
-?>

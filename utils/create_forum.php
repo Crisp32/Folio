@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Forum Creator
  * @author Connell Reffo
@@ -27,8 +28,7 @@ if (validateSession($_SESSION["user"])) {
             "success" => false,
             "message" => "Forum Name Must be Under 15 Characters"
         ]);
-    }
-    else if (empty($forumName) || strlen($forumName) == 0) {
+    } else if (empty($forumName) || strlen($forumName) == 0) {
         echo json_encode([
             "success" => false,
             "message" => "Invalid Forum Name"
@@ -39,8 +39,7 @@ if (validateSession($_SESSION["user"])) {
             "success" => false,
             "message" => "Forum Description Must be Under 300 Characters"
         ]);
-    }
-    else if (empty($forumDesc) || strlen($forumDesc) == 0) {
+    } else if (empty($forumDesc) || strlen($forumDesc) == 0) {
         echo json_encode([
             "success" => false,
             "message" => "Invalid Forum Description"
@@ -51,32 +50,27 @@ if (validateSession($_SESSION["user"])) {
             "success" => false,
             "message" => "Forum Icon URL Must be Under 150 Characters"
         ]);
-    }
-    else if (!validURL($forumIcon)) {
+    } else if (!validURL($forumIcon)) {
         echo json_encode([
             "success" => false,
             "message" => "The Specified Icon dosen't Exist"
         ]);
-    }
-    else if (forumExists($forumName)) {
+    } else if (forumExists($forumName)) {
         echo json_encode([
             "success" => false,
             "message" => "A Forum with this Name Already Exists"
         ]);
-    }
-    else if (strpbrk($forumName, $illegalChars)) {
+    } else if (strpbrk($forumName, $illegalChars)) {
         echo json_encode([
             "success" => false,
             "message" => "Forum Name Cannot Contain $illegalChars"
         ]);
-    }
-    else if ($forumName != utf8_decode($forumName)) {
+    } else if ($forumName != utf8_decode($forumName)) {
         echo json_encode([
             "success" => false,
             "message" => "Forum Name Cannot Contain Special Characters"
         ]);
-    }
-    else {
+    } else {
         // Null Check Forum Icon
         if (empty($forumIcon)) {
             $forumIcon = randomProfileImage();
@@ -93,8 +87,7 @@ if (validateSession($_SESSION["user"])) {
                 "success" => false,
                 "message" => $db->error
             ]);
-        }
-        else {
+        } else {
             // Add Active User as Member
             $forum->FID = getForumIdByName($forumName);
             if ($forum->addMember($user)) {
@@ -110,22 +103,17 @@ if (validateSession($_SESSION["user"])) {
                         ]
                     ]
                 ]);
-            }
-            else {
+            } else {
                 echo json_encode([
                     "success" => false,
                     "message" => $db->error
                 ]);
             }
-            
         }
     }
-}
-else {
+} else {
     echo json_encode([
         "success" => false,
         "message" => "You Must be Logged in to Create Forums"
     ]);
 }
-
-?>

@@ -8,8 +8,5 @@
             "name": "Connell Reffo",
             "email": "connellr023@gmail.com"
         }
-    ],
-    "require": {
-        "sendgrid/sendgrid": "^7.4"
-    }
+    ]
 }
