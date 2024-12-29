@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Folio Main Class File
  * @author Connell Reffo
@@ -10,7 +11,8 @@ include_once "database.php";
 // Init DB
 $db = db();
 
-class Forum {
+class Forum
+{
     public $ownerUID;
     public $name;
     public $iconURL;
@@ -19,14 +21,16 @@ class Forum {
     public $FID; // Corresponds to the FID in DB
     public $date;
 
-    public function __construct($ownerUID, $name, $iconURL, $description) {
+    public function __construct($ownerUID, $name, $iconURL, $description)
+    {
         $this->ownerUID = &$ownerUID;
         $this->name = &$name;
         $this->iconURL = &$iconURL;
         $this->description = &$description;
     }
 
-    public function create() {
+    public function create()
+    {
         $ownerUID = $this->ownerUID;
         $name = $this->name;
         $iconURL = $this->iconURL;
@@ -39,7 +43,8 @@ class Forum {
         return $db->query($insertStatement);
     }
 
-    public function addMember($uid) {
+    public function addMember($uid)
+    {
         $FID = $this->FID;
 
         if ($FID !== null && $FID !== "") {
@@ -54,35 +59,34 @@ class Forum {
             $result = $db->multi_query($updateForum . $updateUser);
 
             return $result;
-        }
-        else {
+        } else {
             throw new Exception("Property FID is not Assigned");
         }
     }
 
-    public function hasMember($uid) {
+    public function hasMember($uid)
+    {
         $forumId = $this->FID;
 
         // Check if Forum ID is Assigned
         if (isset($forumId)) {
             if ($uid !== null && $uid !== "") {
-                
+
                 // Get List of Members
                 $members = $this->getMembers();
 
                 // Return Boolean
                 return in_array($uid, $members);
-            }
-            else {
+            } else {
                 return false;
             }
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function delete() {
+    public function delete()
+    {
         $forumId = $this->FID;
 
         if (isset($forumId)) {
@@ -90,13 +94,13 @@ class Forum {
             $deleteQuery = $db->multi_query("DELETE FROM forums WHERE fid=$forumId; DELETE FROM comments WHERE type='forumpost' AND uid IN (SELECT pid FROM forumPosts WHERE fid=$forumId); DELETE FROM forumPosts WHERE fid=$forumId;");
 
             return $deleteQuery;
-        }
-        else {
+        } else {
             throw new Exception("Property FID is not Assigned");
         }
     }
 
-    public function removeMember($uid) {
+    public function removeMember($uid)
+    {
         $forumId = $this->FID;
 
         if (isset($forumId)) {
@@ -122,8 +126,7 @@ class Forum {
                     "success" => $db->query($removeJoinedForumQuery) && $this->delete(),
                     "doReload" => true
                 ];
-            }
-            else {
+            } else {
 
                 // Demote
                 $oldOwner = $this->ownerUID;
@@ -134,7 +137,7 @@ class Forum {
 
                         // Promote Random Mod (or Member)
                         $newOwner = selectRandomOwner($uid, $this->getModerators(), $membersOrig);
-                        
+
                         if ($this->isModerator($newOwner)) {
                             $this->demote($newOwner); // Remove Moderator Rank
                         }
@@ -154,40 +157,40 @@ class Forum {
                     "doReload" => false
                 ];
             }
-        }
-        else {
+        } else {
             throw new Exception("Property FID is not Assigned");
         }
     }
 
-    public function unban($uid) {
+    public function unban($uid)
+    {
         $forumId = $this->FID;
 
         if (isset($forumId)) {
-            $db = $GLOBALS["db"];    
+            $db = $GLOBALS["db"];
 
             // Get Array of Banned Members
             $bans = $this->getBannedMembers();
             $banIndex = array_search($uid, $bans);
-            
+
             // Update Database
             $bansEncoded = json_encode($bans);
             $unbanQuery = "UPDATE forums SET bans=JSON_REMOVE('$bansEncoded', '$[$banIndex]') WHERE fid='$forumId'";
 
             return $db->query($unbanQuery);
-        }
-        else {
+        } else {
             throw new Exception("Property FID is not Assigned");
         }
     }
 
-    public function getMembers() {
+    public function getMembers()
+    {
         $forumId = $this->FID;
 
         // Check if Forum ID is Assigned
         if (isset($forumId)) {
             $db = $GLOBALS["db"];
-                
+
             // Get String of Members    
             $selectQuery = $db->query("SELECT members FROM forums WHERE fid='$forumId'");
             $members = $selectQuery->fetch_array(MYSQLI_ASSOC)["members"];
@@ -195,17 +198,16 @@ class Forum {
             // Return Array of Members' UID
             if (!empty($members)) {
                 return json_decode($members, true);
-            }
-            else {
+            } else {
                 return [];
             }
-        }
-        else {
+        } else {
             throw new Exception("Property FID is not Assigned");
         }
     }
 
-    public function getModerators() {
+    public function getModerators()
+    {
         $forumId = $this->FID;
 
         // Check if Forum ID is Assigned
@@ -220,40 +222,38 @@ class Forum {
             if (!empty($mods)) {
                 $modsArr = json_decode($mods, true);
                 return $modsArr;
-            }
-            else {
+            } else {
                 return [];
             }
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function isModerator($uid) {
+    public function isModerator($uid)
+    {
         $forumId = $this->FID;
 
         // Check if Forum ID is Assigned
         if (isset($forumId)) {
             if ($uid !== null && $uid !== "") {
-                
+
                 // Get String of Moderators
                 $mods = $this->getModerators();
 
                 // Return Boolean
                 $bool = (in_array($uid, $mods) || $uid == $this->ownerUID);
                 return $bool;
-            }
-            else {
+            } else {
                 return false;
             }
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function getBannedMembers() {
+    public function getBannedMembers()
+    {
         $forumId = $this->FID;
 
         // Check if Forum ID is Assigned
@@ -267,27 +267,26 @@ class Forum {
             // Return Array of Banned Members' UID
             if (!empty($bans)) {
                 return json_decode($bans, true);
-            }
-            else {
+            } else {
                 return [];
             }
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function isBanned($uid) {
+    public function isBanned($uid)
+    {
         if ($uid !== null && $uid !== "") {
             $bans = $this->getBannedMembers();
             return in_array($uid, $bans);
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function banMember($uid) {
+    public function banMember($uid)
+    {
         $forumId = $this->FID;
 
         // Check if Forum ID is Assigned
@@ -301,17 +300,16 @@ class Forum {
 
                 // Update DB
                 return $db->query("UPDATE forums SET bans=JSON_ARRAY_INSERT('$bans', '$[0]', $uid) WHERE fid='$forumId'") && $this->removeMember($uid)["success"];
-            }
-            else {
+            } else {
                 return true;
             }
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function promote($uid) {
+    public function promote($uid)
+    {
         $forumId = $this->FID;
 
         // Check if Forum ID is Assigned
@@ -327,17 +325,16 @@ class Forum {
 
                 $addModQuery = "UPDATE forums SET mods=JSON_ARRAY_INSERT('$modsEncoded', '$[0]', $uid) WHERE fid='$forumId'";
                 return $db->query($addModQuery);
-            }
-            else {
+            } else {
                 return false;
             }
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function demote($uid) {
+    public function demote($uid)
+    {
         $forumId = $this->FID;
 
         // Check if Forum ID is Assigned
@@ -354,17 +351,16 @@ class Forum {
 
                 $addModQuery = "UPDATE forums SET mods=JSON_REMOVE('$modsEncoded', '$[$modIndex]') WHERE fid='$forumId'";
                 return $db->query($addModQuery);
-            }
-            else {
+            } else {
                 return false;
             }
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function addPost($title, $body, $userId, $forumId) {
+    public function addPost($title, $body, $userId, $forumId)
+    {
         $db = $GLOBALS["db"];
         $date = currentDate();
         $votes = json_encode([
@@ -379,7 +375,8 @@ class Forum {
         ];
     }
 
-    public function getMemberCount() {
+    public function getMemberCount()
+    {
         $db = $GLOBALS["db"];
         $forumId = $this->FID;
 
@@ -390,19 +387,22 @@ class Forum {
         return $count;
     }
 
-    public function update($column, $value) {
+    public function update($column, $value)
+    {
         $db = $GLOBALS["db"];
         $forumId = $this->FID;
         $query = $db->query("UPDATE forums SET $column='$value' WHERE fid='$forumId'");
-        
+
         return $query;
     }
 }
 
-class User {
+class User
+{
     public $user;
-    
-    public function getUserDataByName($username) {
+
+    public function getUserDataByName($username)
+    {
         $db = $GLOBALS["db"];
         $query = "SELECT * FROM users WHERE username='$username'";
         $userData = $db->query($query)->fetch_array(MYSQLI_ASSOC);
@@ -410,7 +410,8 @@ class User {
         $this->user = $userData;
     }
 
-    public function getUserDataByUID($UID) {
+    public function getUserDataByUID($UID)
+    {
         $db = $GLOBALS["db"];
         $query = "SELECT * FROM users WHERE uid='$UID'";
         $userData = $db->query($query)->fetch_array(MYSQLI_ASSOC);
@@ -418,7 +419,8 @@ class User {
         $this->user = $userData;
     }
 
-    public function getVotes() {
+    public function getVotes()
+    {
         $uid = $this->user["uid"];
         $db = $GLOBALS["db"];
 
@@ -428,17 +430,17 @@ class User {
         if ($selectResult) {
             $encodedArr = $selectResult->fetch_array(MYSQLI_ASSOC)["votes"];
             return json_decode($encodedArr, true);
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function deleteAccount() {
+    public function deleteAccount()
+    {
         $db = $GLOBALS["db"];
         $uid = $this->user["uid"];
         $joinedForums = $db->query("SELECT joinedForums FROM users WHERE uid=$uid");
-        
+
         if ($joinedForums) {
             $forums = json_decode($joinedForums->fetch_array(MYSQLI_ASSOC)["joinedForums"], true);
 
@@ -452,7 +454,7 @@ class User {
                     $membersEncoded = $assoc["members"];
                     $memberList = json_decode($membersEncoded, true);
                     $memberIndex = array_search($uid, $memberList);
-    
+
                     // Ban List
                     $bansEncoded = $assoc["bans"];
                     $banList = json_decode($bansEncoded, true);
@@ -462,7 +464,7 @@ class User {
                     if (!empty($banIndex)) {
                         $ban_sql = ", bans=JSON_REMOVE('$bansEncoded', '$[$banIndex]')";
                     }
-    
+
                     // Moderator List
                     $modsEncoded = $assoc["mods"];
                     $modList = json_decode($modsEncoded, true);
@@ -472,43 +474,44 @@ class User {
                     if (!empty($modIndex)) {
                         $mod_sql = ", mods=JSON_REMOVE('$modsEncoded', '$[$modIndex]')";
                     }
-    
+
                     // Generate New Owner
                     $owner = $assoc["owner"];
-    
+
                     if ($owner == $uid) {
                         $owner = selectRandomOwner($uid, $modList, $memberList);
                     }
-                    
+
                     if (count($memberList) > 1) {
                         $query = $db->query("UPDATE forums SET owner=$owner, members=JSON_REMOVE('$membersEncoded', '$[$memberIndex]') $mod_sql $ban_sql WHERE fid=$forum");
-                    }
-                    else {
+                    } else {
                         $query = $db->query("DELETE FROM forums WHERE fid=$forum");
                     }
                 }
             }
 
             return $db->multi_query("DELETE FROM users WHERE uid=$uid; DELETE FROM notifications WHERE uid=$uid");
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function upvotedBy($uid) {
+    public function upvotedBy($uid)
+    {
         $votes = $this->getVotes();
 
         return in_array($uid, $votes["upvotes"]);
     }
 
-    public function downvotedBy($uid) {
+    public function downvotedBy($uid)
+    {
         $votes = $this->getVotes();
 
         return in_array($uid, $votes["downvotes"]);
     }
 
-    public function upvote($voterId) {
+    public function upvote($voterId)
+    {
         $votes = $this->getVotes();
         $uid = $this->user["uid"];
         $db = $GLOBALS["db"];
@@ -532,13 +535,13 @@ class User {
             return [
                 "success" => true
             ];
-        }
-        else return [
+        } else return [
             "success" => false
         ];
     }
 
-    public function downvote($voterId) {
+    public function downvote($voterId)
+    {
         $votes = $this->getVotes();
         $uid = $this->user["uid"];
         $db = $GLOBALS["db"];
@@ -562,13 +565,13 @@ class User {
             return [
                 "success" => true
             ];
-        }
-        else return [
+        } else return [
             "success" => false
         ];
     }
 
-    public function removeVote($voterId) {
+    public function removeVote($voterId)
+    {
         $votes = $this->getVotes();
         $uid = $this->user["uid"];
         $db = $GLOBALS["db"];
@@ -594,25 +597,27 @@ class User {
                 "success" => true,
                 "count" => $count
             ];
-        }
-        else return [
+        } else return [
             "success" => false
         ];
     }
 
-    public function update($column, $value) {
+    public function update($column, $value)
+    {
         $db = $GLOBALS["db"];
         $UID = $this->user["uid"];
         $query = $db->query("UPDATE users SET $column='$value' WHERE uid='$UID'");
-        
+
         return $query;
     }
 }
 
-class ForumPost {
+class ForumPost
+{
     public $post;
 
-    public function getDataById($postId) {
+    public function getDataById($postId)
+    {
         $db = $GLOBALS["db"];
         $selectQuery = $db->query("SELECT * FROM forumPosts WHERE pid=$postId");
 
@@ -621,13 +626,13 @@ class ForumPost {
             $this->post = $result;
 
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function getVotes() {
+    public function getVotes()
+    {
         $db = $GLOBALS["db"];
         $pid = $this->post["pid"];
 
@@ -636,32 +641,35 @@ class ForumPost {
         if ($selectQuery) {
             $result = $selectQuery->fetch_array(MYSQLI_ASSOC)["votes"];
             return json_decode($result, true);
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function getVoteCount() {
+    public function getVoteCount()
+    {
         $votes = $this->getVotes();
         return count($votes["upvotes"]) - count($votes["downvotes"]);
     }
 
-    public function upvotedBy($uid) {
+    public function upvotedBy($uid)
+    {
         $db = $GLOBALS["db"];
         $votes = $this->getVotes();
 
         return in_array($uid, $votes["upvotes"]);
     }
 
-    public function downvotedBy($uid) {
+    public function downvotedBy($uid)
+    {
         $db = $GLOBALS["db"];
         $votes = $this->getVotes();
 
         return in_array($uid, $votes["downvotes"]);
     }
 
-    public function upvote($uid) {
+    public function upvote($uid)
+    {
         $votes = $this->getVotes();
         $db = $GLOBALS["db"];
         $upvoted = false;
@@ -670,8 +678,7 @@ class ForumPost {
         if ($this->upvotedBy($uid)) {
             $voteIndex = array_search($uid, $votes["upvotes"]);
             unset($votes["upvotes"][$voteIndex]);
-        }
-        else {
+        } else {
             array_push($votes["upvotes"], intval($uid));
             $upvoted = true;
         }
@@ -695,7 +702,8 @@ class ForumPost {
         ];
     }
 
-    public function downvote($uid) {
+    public function downvote($uid)
+    {
         $votes = $this->getVotes();
         $db = $GLOBALS["db"];
         $downvoted = false;
@@ -704,8 +712,7 @@ class ForumPost {
         if ($this->downvotedBy($uid)) {
             $voteIndex = array_search($uid, $votes["downvotes"]);
             unset($votes["downvotes"][$voteIndex]);
-        }
-        else {
+        } else {
             array_push($votes["downvotes"], intval($uid));
             $downvoted = true;
         }
@@ -729,7 +736,8 @@ class ForumPost {
         ];
     }
 
-    public function removeVotes($uid) {
+    public function removeVotes($uid)
+    {
         $votes = $this->getVotes();
         $db = $GLOBALS["db"];
 
@@ -760,9 +768,10 @@ class ForumPost {
     }
 }
 
-class Notification {
-
-    public function push($uid, $body, $subMessage) {
+class Notification
+{
+    public static function push($uid, $body, $subMessage)
+    {
         $maxNotifs = 60;
 
         if (Notification::getCount($uid) < $maxNotifs) {
@@ -770,33 +779,34 @@ class Notification {
             $date = currentDate();
 
             return $db->query("INSERT INTO notifications (uid, message, subMessage, date) VALUES ($uid, '$body', '$subMessage', '$date')");
-        }
-        else {
+        } else {
             return true;
         }
     }
 
-    public function getCount($uid) {
+    public static function getCount($uid)
+    {
         $db = $GLOBALS["db"];
 
         $count = $db->query("SELECT COUNT(*) AS 'count' FROM notifications WHERE uid=$uid");
         return intval($count->fetch_array(MYSQLI_ASSOC)["count"]);
     }
 
-    public function delete($nid) {
+    public static function delete($nid)
+    {
         $db = $GLOBALS["db"];
         return $db->query("DELETE FROM notifications WHERE nid=$nid");
     }
 
-    public function getAssoc($nid) {
+    public static function getAssoc($nid)
+    {
         $db = $GLOBALS["db"];
         $query = $db->query("SELECT * FROM notifications WHERE nid=$nid");
 
         if ($query) {
             $notif = $query->fetch_array(MYSQLI_ASSOC);
             return $notif;
-        }
-        else {
+        } else {
             return false;
         }
     }

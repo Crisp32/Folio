@@ -366,6 +366,8 @@ div#top-bar {
 
 /* Classes */
 .title-img {
+  pointer-events: none;
+  user-select: none;
   display: inline-block;
   margin-bottom: -4px;
   margin-left: 10px;

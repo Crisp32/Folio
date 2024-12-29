@@ -12,7 +12,7 @@ fol.io is a platform where anyone can join and contribute to forums over any top
 # Languages/Tools Used:
 
 - Server
-  - PHP 7.3 (updated to 8.3)
+  - PHP 7.3
   - SQL
   - SendGrid
   - Docker (for revival)
