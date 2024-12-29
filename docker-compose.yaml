@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  mysql:
+    build:
+      context: .
+      dockerfile: db.dockerfile
+    container_name: mysql_folio_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: folio_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpassword
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    networks:
+      - backend-network
+
+networks:
+  backend-network:
+    driver: bridge
