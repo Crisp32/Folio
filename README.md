@@ -13,7 +13,7 @@
 
 The original project was developed in 2019-2020. The revival was done in 2024. The revival was done for fun and to see how much I have improved since the original project.
 
-The revival stays true to the original with code mofified only to make it work in 2024.
+The revival stays true to the original with code mofified only to make it work in 2024. Even the above overview is the same... which is why you will find spelling and grammatical errors.
 
 The revival was done in Docker to make it easier to run the project on any machine. Features like email verification have been removed. All verification codes are hardcoded to be `69420`.
 
