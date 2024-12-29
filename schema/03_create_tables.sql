@@ -8,6 +8,7 @@ CREATE TABLE users (
     accountLocation VARCHAR(255),
     allowComments BOOLEAN DEFAULT TRUE,
     voteCount INT DEFAULT 0,
+    votes JSON,
     joinedForums JSON,
     verificationCode VARCHAR(255),
     verified BOOLEAN DEFAULT FALSE,

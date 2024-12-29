@@ -100,24 +100,22 @@ if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
     $passHash = password_hash($password, PASSWORD_BCRYPT, array("cost" => 11));
     $profImg = randomProfileImage();
     $date = currentDate();
+    $db = $GLOBALS["db"];
     $query = "INSERT INTO
         users (username, email, accountLocation, password, verificationCode, verified, profileBio, voteCount, date, allowComments, profileImagePath, votes, joinedForums) 
         VALUES('$username', '$email', '$location', '$passHash', '$code', '0', 'Sample Bio', '0', '$date', '1', '$profImg', '$votesJSON', '[]')
     ";
 
-    if (insertUser($query)) {
+    if ($db->query($query)) {
         // Not anymore
         echo json_encode([
             "success" => true,
             "message" => "Sent Verification Code to $email"
         ]);
+    } else {
+        echo json_encode([
+            "success" => false,
+            "message" => $db->error
+        ]);
     }
-}
-
-function insertUser($query)
-{
-    $db = $GLOBALS["db"];
-
-    $result = $db->query($query);
-    return $result;
 }

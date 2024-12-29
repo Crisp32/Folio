@@ -216,12 +216,12 @@ function validLocation($country)
 // Validate that a file exists on Seperate Server
 function validURL($url)
 {
-    if (!empty($url)) {
-        $header_response = get_headers($url);
+    if (!empty($url) && filter_var($url, FILTER_VALIDATE_URL)) {
+        $header_response = @get_headers($url);
 
         if ($header_response) {
             if (strpos($header_response[0], "404") !== false) {
-                return true;
+                return false;
             } else {
                 return true;
             }
@@ -229,7 +229,7 @@ function validURL($url)
             return false;
         }
     } else {
-        return true;
+        return false;
     }
 }
 

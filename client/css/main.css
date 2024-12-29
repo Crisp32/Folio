@@ -755,6 +755,7 @@ button.post-forum-btn {
 }
 
 .view-user-posts {
+  transition: width 0s ease;
   margin-bottom: -5px;
   width: 461px;
 }
